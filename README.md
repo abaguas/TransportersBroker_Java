@@ -43,7 +43,8 @@ mkdir ...
 [3] Obter código fonte do projeto (versão entregue)
 
 ```
-git clone https://github.com/tecnico-distsys/A_64-project.git (via https)
+git clone https://github.com/tecnico-distsys/A_64-project.git (via https) 
+git clone git@github.com:tecnico-distsys/A_64-project.git (via ssh)
 ```
 
 

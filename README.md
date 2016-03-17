@@ -10,7 +10,7 @@ João Neto - 78745 - joao.b.neto@ist.utl.pt
 
 
 Repositório:
-[tecnico-distsys/C_XX-project](https://github.com/tecnico-distsys/A_64-project/)
+[tecnico-distsys/A_64-project](https://github.com/tecnico-distsys/A_64-project/)
 
 -------------------------------------------------------------------------------
 

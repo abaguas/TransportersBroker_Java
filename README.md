@@ -43,9 +43,9 @@ mkdir ...
 [3] Obter código fonte do projeto (versão entregue)
 
 ```
-git clone ... 
+git clone https://github.com/tecnico-distsys/A_64-project.git (via https)
 ```
-*(colocar aqui comandos git para obter a versão entregue a partir da tag e depois apagar esta linha)*
+
 
 
 [4] Instalar módulos de bibliotecas auxiliares

@@ -1,4 +1,7 @@
-/target/
+/broker-ws-cli/target/
+/broker-ws/target/
+/transporter-ws-cli/target/
+/transporter-ws/
 .classpath
 .settings
 .project

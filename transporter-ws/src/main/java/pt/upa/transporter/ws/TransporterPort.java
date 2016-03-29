@@ -17,8 +17,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public String ping(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return "Transporter working correctly";
 	}
 
 	@Override

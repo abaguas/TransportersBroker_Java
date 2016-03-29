@@ -2,7 +2,15 @@ package pt.upa.broker.ws;
 
 import java.util.List;
 
+import pt.upa.transporter.ws.TransporterPortType;
+import pt.upa.transporter.ws.cli.*;
+import java.util.Map;
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+
 import javax.jws.WebService;
+import javax.xml.ws.BindingProvider;
 
 @WebService(
 	    endpointInterface="pt.upa.broker.ws.BrokerPortType",
@@ -13,11 +21,11 @@ import javax.jws.WebService;
 	    serviceName="BrokerService"
 	)
 
-public class BrokerPort implements BrokerPortType{
-
+public class BrokerPort implements BrokerPortType {
+	
 	@Override
 	public String ping(String name) {
-		// TODO Auto-generated method stub
+		TransporterClient tc = new TransporterClient();
 		return null;
 	}
 

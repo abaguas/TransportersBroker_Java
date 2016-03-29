@@ -25,7 +25,12 @@ public class BrokerPort implements BrokerPortType {
 	
 	@Override
 	public String ping(String name) {
-		TransporterClient tc = new TransporterClient();
+		try {
+			TransporterClient tc = new TransporterClient();
+		} catch (TransporterClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 

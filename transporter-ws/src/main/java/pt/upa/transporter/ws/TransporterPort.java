@@ -12,12 +12,11 @@ import javax.jws.WebService;
 	targetNamespace="http://ws.transporter.upa.pt/",
 	serviceName="TransporterService"
 )
-
 public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public String ping(String name) {
-		return "Transporter working correctly";
+		return "Pong";
 	}
 
 	@Override

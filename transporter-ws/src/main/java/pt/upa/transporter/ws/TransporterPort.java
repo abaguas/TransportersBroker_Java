@@ -1,5 +1,6 @@
 package pt.upa.transporter.ws;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -15,6 +16,8 @@ import javax.jws.WebService;
 )
 public class TransporterPort implements TransporterPortType{
 
+	private ArrayList<JobView> jobs = new ArrayList<JobView>();
+	
 	@Override
 	public String ping(String name) {
 		return "Pong";
@@ -91,25 +94,45 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		// TODO Auto-generated method stub
-		return null;
+		JobView jv = getJobById(id);
+		if(jv == null)
+		{
+			BadJobFault fault = new BadJobFault();
+			fault.setId(id);
+			throw new BadJobFault_Exception("invalid ID", fault);
+		}
+			
+		if(!accept)
+			return null;
+		else
+		{
+			jv.setJobState(JobStateView.ACCEPTED);
+			return jv;
+		}
 	}
 
 	@Override
 	public JobView jobStatus(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return getJobById(id);
 	}
 
 	@Override
 	public List<JobView> listJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return jobs;
 	}
 
 	@Override
 	public void clearJobs() {
-		// TODO Auto-generated method stub
-		
+		jobs.clear();
+	}
+
+	public JobView getJobById(String id){
+		for (JobView j: jobs){
+			if (id==j.getJobIdentifier()){
+				return j;
+			}
+		}
+		return null;
 	}
 
 }

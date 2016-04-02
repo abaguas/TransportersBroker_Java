@@ -134,28 +134,22 @@ public class TransporterClient implements TransporterPortType {
 
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return port.decideJob(id, accept);
 	}
 
 	@Override
 	public JobView jobStatus(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return port.jobStatus(id);
 	}
 
 	@Override
 	public List<JobView> listJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return port.listJobs();
 	}
 
 	@Override
 	public void clearJobs() {
-		// TODO Auto-generated method stub
-		
+		port.clearJobs();
 	}
-
-	// TODO
 
 }

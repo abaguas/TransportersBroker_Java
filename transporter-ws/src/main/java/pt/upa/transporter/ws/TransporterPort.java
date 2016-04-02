@@ -32,7 +32,21 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		// TODO Auto-generated method stub
-		return null;
+		JobView jv = getJobById(id);
+		if(jv == null)
+		{
+			BadJobFault fault = new BadJobFault();
+			fault.setId(id);
+			throw new BadJobFault_Exception("invalid ID", fault);
+		}
+			
+		if(!accept)
+			return null;
+		else
+		{
+			jv.setJobState(JobStateView.ACCEPTED);
+			return jv;
+		}
 	}
 
 	@Override

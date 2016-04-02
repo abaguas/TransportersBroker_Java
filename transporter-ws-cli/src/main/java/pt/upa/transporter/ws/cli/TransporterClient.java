@@ -150,9 +150,7 @@ public class TransporterClient implements TransporterPortType {
 
 	@Override
 	public void clearJobs() {
-		// TODO Auto-generated method stub
+		port.clearJobs();
 	}
-
-	// TODO
 
 }

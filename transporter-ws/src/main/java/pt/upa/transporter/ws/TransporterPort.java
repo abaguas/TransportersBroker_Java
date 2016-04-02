@@ -61,8 +61,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public void clearJobs() {
-		// TODO Auto-generated method stub
-		
+		jobs.clear();
 	}
 
 	public JobView getJobById(String id){

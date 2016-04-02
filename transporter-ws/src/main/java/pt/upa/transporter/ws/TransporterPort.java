@@ -1,5 +1,6 @@
 package pt.upa.transporter.ws;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -14,6 +15,8 @@ import javax.jws.WebService;
 )
 public class TransporterPort implements TransporterPortType{
 
+	private ArrayList<JobView> jobs = new ArrayList<JobView>();
+	
 	@Override
 	public String ping(String name) {
 		return "Pong";
@@ -34,8 +37,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public JobView jobStatus(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return searchJobById(id);
 	}
 
 	@Override
@@ -48,6 +50,15 @@ public class TransporterPort implements TransporterPortType{
 	public void clearJobs() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public JobView searchJobById(String id){
+		for (JobView j: jobs){
+			if (id==j.getJobIdentifier()){
+				return j;
+			}
+		}
+		return null;
 	}
 
 }

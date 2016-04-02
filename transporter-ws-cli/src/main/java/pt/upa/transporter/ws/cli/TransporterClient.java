@@ -140,8 +140,7 @@ public class TransporterClient implements TransporterPortType {
 
 	@Override
 	public JobView jobStatus(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return port.jobStatus(id);
 	}
 
 	@Override
@@ -153,7 +152,6 @@ public class TransporterClient implements TransporterPortType {
 	@Override
 	public void clearJobs() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	// TODO

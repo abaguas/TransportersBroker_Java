@@ -1,11 +1,14 @@
 package pt.upa.broker.ws;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.upa.transporter.ws.TransporterPortType;
-import pt.upa.transporter.ws.cli.*;
-import java.util.Map;
+import pt.upa.transporter.ws.cli.TransporterClient;
+import pt.upa.transporter.ws.cli.TransporterClientException;
+
 import java.util.Properties;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
@@ -25,6 +28,8 @@ import javax.xml.ws.BindingProvider;
 )
 
 public class BrokerPort implements BrokerPortType {
+	
+	private ArrayList<TransportView> transporterViews = new ArrayList<TransportView>();
 	
 	public String getUrlUDDI () {
 		java.io.InputStream is = this.getClass().getResourceAsStream("my.properties");

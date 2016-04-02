@@ -145,8 +145,7 @@ public class TransporterClient implements TransporterPortType {
 
 	@Override
 	public List<JobView> listJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return port.listJobs();
 	}
 
 	@Override

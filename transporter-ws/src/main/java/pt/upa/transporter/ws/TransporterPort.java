@@ -37,13 +37,12 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public JobView jobStatus(String id) {
-		return searchJobById(id);
+		return getJobById(id);
 	}
 
 	@Override
 	public List<JobView> listJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return jobs;
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class TransporterPort implements TransporterPortType{
 		
 	}
 
-	public JobView searchJobById(String id){
+	public JobView getJobById(String id){
 		for (JobView j: jobs){
 			if (id==j.getJobIdentifier()){
 				return j;

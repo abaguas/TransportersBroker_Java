@@ -79,9 +79,17 @@ public class BrokerPort implements BrokerPortType {
 	}
 
 	@Override
-	public void clearTransports() {
-		for(TransportView tv : transporterViews)
-			transporterViews.remove(tv);		
+	public void clearTransports() { //FIXME se cliente falhar, apagar o transporterViews deve falhar tambem?
+		for(TransportView tv : transporterViews) {
+			transporterViews.remove(tv);
+		try {
+			TransporterClient client = new TransporterClient(getUrlUDDI(), "UPATranporter 1");
+			client.clearJobs();
+		} catch (TransporterClientException e) {
+			e.printStackTrace();
+		} //FIXME
+
+		}
 	}
 
 	// TODO

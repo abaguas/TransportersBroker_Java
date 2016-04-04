@@ -1,6 +1,7 @@
 package pt.upa.transporter.ws;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -17,6 +18,12 @@ import javax.jws.WebService;
 public class TransporterPort implements TransporterPortType{
 
 	private ArrayList<JobView> jobs = new ArrayList<JobView>();
+	private ArrayList<String> regiaoSul = new ArrayList<String>(
+			Arrays.asList("Setúbal", "Évora", "Portalegre", "Beja", "Faro"));
+	private ArrayList<String> regiaoCentro = new ArrayList<String>(
+			Arrays.asList("Lisboa", "Leiria", "Santarém", "Castelo Branco", "Coimbra", "Aveiro", "Viseu", "Guarda"));
+	private ArrayList<String> regiaoNorte = new ArrayList<String>(
+			Arrays.asList("Porto", "Braga", "Viana do Castelo", "Vila Real", "Bragança"));
 	
 	@Override
 	public String ping(String name) {
@@ -26,7 +33,7 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-	//O PAR ORIGIN-DESTINATION E UNICO?
+	//FIXME O PAR ORIGIN-DESTINATION E UNICO?
 		if(price<0){
 			BadPriceFault bpf = new BadPriceFault();
 			bpf.setPrice(price);
@@ -45,7 +52,7 @@ public class TransporterPort implements TransporterPortType{
 		
 		JobView jv= getJobByRoute(origin, destination);
 		
-		if(price<100 && operate(origin,destination)){
+		if(price<100 && operate(origin,destination, jv.getCompanyName())){
 			Random rand = new Random();
 			int offer;
 			
@@ -76,9 +83,21 @@ public class TransporterPort implements TransporterPortType{
 		return Integer.parseInt(number);
 	}
 
-	public boolean operate(String origin, String destination){
-		//TODO where does the transporter operate?
-		return true;
+	public boolean operate(String origin, String destination, String name){
+		if ((regiaoNorte.contains(origin) || regiaoCentro.contains(origin)) && 
+			((regiaoNorte.contains(destination) || regiaoCentro.contains(destination)))){
+			if (numberTransporter(name)%2==0){
+				return true;
+			}
+			else return false;
+		}
+		else if ((regiaoSul.contains(origin) || regiaoCentro.contains(origin)) && 
+			((regiaoSul.contains(destination) || regiaoCentro.contains(destination)))){
+			if (numberTransporter(name)%2==1){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public JobView getJobByRoute(String origin, String destination){

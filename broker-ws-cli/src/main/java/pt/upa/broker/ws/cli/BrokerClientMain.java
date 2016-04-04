@@ -4,6 +4,11 @@ public class BrokerClientMain {
 	
 	public static void main(String[] args) {
 
-        BrokerClient client = new BrokerClient();
+        try {
+			BrokerClient client = new BrokerClient("uddiURL", "name");
+		} catch (BrokerClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

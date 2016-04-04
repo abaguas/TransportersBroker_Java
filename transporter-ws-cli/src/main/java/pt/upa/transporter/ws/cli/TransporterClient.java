@@ -93,7 +93,7 @@ public class TransporterClient implements TransporterPortType {
         createStub(endpointURL);
     }
     
-    public String lookUp (String uddiURL, String name) throws Exception{ //má prática?
+    public String lookUp (String uddiURL, String name) throws Exception{ //FIXME má prática?
     	System.out.printf("Contacting UDDI at %s%n", uddiURL);
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
     	System.out.printf("Looking for '%s'%n", name);

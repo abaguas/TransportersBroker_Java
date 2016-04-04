@@ -50,6 +50,7 @@ public class BrokerPort implements BrokerPortType {
 			tc.ping(name);
 		} catch (TransporterClientException e) {
 			// TODO Auto-generated catch block
+			//FIXME como lidamos com esta excecao?
 			e.printStackTrace();
 		}
 		return null;

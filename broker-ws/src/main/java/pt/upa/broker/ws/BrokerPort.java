@@ -65,20 +65,23 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		UnknownTransportFault fault = new UnknownTransportFault();
+		fault.setId(id);
+		for(TransportView tv : transporterViews)
+			if(tv.getId().equals(id))
+				return tv;
+		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 
 	@Override
 	public List<TransportView> listTransports() {
-		// TODO Auto-generated method stub
-		return null;
+		return transporterViews;
 	}
 
 	@Override
 	public void clearTransports() {
-		// TODO Auto-generated method stub
-		
+		for(TransportView tv : transporterViews)
+			transporterViews.remove(tv);		
 	}
 
 	// TODO

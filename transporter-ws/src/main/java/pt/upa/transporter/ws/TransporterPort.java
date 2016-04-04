@@ -39,12 +39,12 @@ public class TransporterPort implements TransporterPortType{
 			bpf.setPrice(price);
 			throw new BadPriceFault_Exception("The price must be positive", bpf);
 		}
-		if(!(origin.equals("Norte") || origin.equals("Centro") || origin.equals("Sul"))){
+		if(!(regiaoNorte.contains(origin) || regiaoCentro.contains(origin) || regiaoSul.contains(origin))){
 			BadLocationFault blf = new BadLocationFault();
 			blf.setLocation(origin);
 			throw new BadLocationFault_Exception("Unknown origin", blf);
 		}
-		if(!(destination.equals("Norte") || destination.equals("Centro") || destination.equals("Sul"))){
+		if(!(regiaoNorte.contains(destination) || regiaoCentro.contains(destination) || regiaoSul.contains(destination))){
 			BadLocationFault blf = new BadLocationFault();
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);

@@ -4,11 +4,6 @@ public class BrokerClientMain {
 	
 	public static void main(String[] args) {
 
-        try {
-			BrokerClient client = new BrokerClient();
-		} catch (BrokerClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        BrokerClient client = new BrokerClient();
 	}
 }

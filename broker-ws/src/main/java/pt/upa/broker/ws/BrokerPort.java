@@ -55,6 +55,7 @@ public class BrokerPort implements BrokerPortType {
 			tc.ping(name);
 		} catch (TransporterClientException e) {
 			// TODO Auto-generated catch block
+			//FIXME como lidamos com esta excecao?
 			e.printStackTrace();
 		}
 		return null;
@@ -115,20 +116,31 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		UnknownTransportFault fault = new UnknownTransportFault();
+		fault.setId(id);
+		for(TransportView tv : transporterViews)
+			if(tv.getId().equals(id))
+				return tv;
+		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 
 	@Override
 	public List<TransportView> listTransports() {
-		// TODO Auto-generated method stub
-		return null;
+		return transporterViews;
 	}
 
 	@Override
-	public void clearTransports() {
-		// TODO Auto-generated method stub
-		
+	public void clearTransports() { //FIXME se cliente falhar, apagar o transporterViews deve falhar tambem?
+		for(TransportView tv : transporterViews) {
+			transporterViews.remove(tv);
+		try {
+			TransporterClient client = new TransporterClient(getUrlUDDI(), "UPATranporter 1");
+			client.clearJobs();
+		} catch (TransporterClientException e) {
+			e.printStackTrace();
+		} //FIXME
+
+		}
 	}
 
 	public TransportView getTransportById(String id){

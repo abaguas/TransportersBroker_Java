@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import pt.upa.transporter.ws.BadLocationFault;
+import pt.upa.transporter.ws.BadLocationFault_Exception;
+import pt.upa.transporter.ws.BadPriceFault;
+import pt.upa.transporter.ws.BadPriceFault_Exception;
+import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.TransporterPortType;
 import pt.upa.transporter.ws.cli.TransporterClient;
 import pt.upa.transporter.ws.cli.TransporterClientException;
@@ -59,8 +64,53 @@ public class BrokerPort implements BrokerPortType {
 	public String requestTransport(String origin, String destination, int price)
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		TransporterClient tc=null;
+		JobView jv =null;
+		
+		try {
+			tc = new TransporterClient(getUrlUDDI(), "UPATransporter1");//FIXME nome do transporter
+		} catch (TransporterClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		try {
+			jv=tc.requestJob(origin, destination, price);
+			
+			
+		} catch (BadLocationFault_Exception e) {
+			UnknownLocationFault ulf = new UnknownLocationFault();
+			ulf.setLocation(e.getFaultInfo().getLocation());
+			throw new UnknownLocationFault_Exception(e.getMessage(), ulf);
+			
+		} catch (BadPriceFault_Exception e) {
+			InvalidPriceFault ipf = new InvalidPriceFault();
+			ipf.setPrice(e.getFaultInfo().getPrice());
+			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
+		}
+		
+		if(jv==null){
+			UnavailableTransportFault utf = new UnavailableTransportFault();
+			utf.setOrigin(origin);
+			utf.setDestination(destination);
+			throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
+		}
+		else{
+			
+			String id = jv.getJobIdentifier();
+			TransportView tv = getTransportById(id); //FIXME Create a new TransportView or get it by ID
+			
+			if(jv.getJobPrice()>tv.getPrice()){
+				UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
+				utpf.setBestPriceFound(price);
+				throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
+			
+			}
+				
+		}
+		
+		return null; //FIXME what should be returned?
 	}
 
 	@Override
@@ -81,6 +131,14 @@ public class BrokerPort implements BrokerPortType {
 		
 	}
 
+	public TransportView getTransportById(String id){
+		for (TransportView t: transporterViews){
+			if (id==t.getId()){
+				return t;
+			}
+		}
+		return null;
+	}
 	// TODO
 
 }

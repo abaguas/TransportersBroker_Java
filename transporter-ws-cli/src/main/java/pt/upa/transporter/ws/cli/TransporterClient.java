@@ -122,7 +122,7 @@ public class TransporterClient implements TransporterPortType {
     
 	@Override
 	public String ping(String name) {
-		return port.ping("Ping");
+		return port.ping(name);
 	}//é preciso apanhar aqui uma exceçao?
 
 	@Override

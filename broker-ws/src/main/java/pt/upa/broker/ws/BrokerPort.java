@@ -52,13 +52,10 @@ public class BrokerPort implements BrokerPortType {
 	public String ping(String name) {
 		try {
 			TransporterClient tc = new TransporterClient(getUrlUDDI(), name); //completar com UDDIURL
-			tc.ping(name);
+			return tc.ping(name);
 		} catch (TransporterClientException e) {
-			// TODO Auto-generated catch block
-			//FIXME como lidamos com esta excecao?
-			e.printStackTrace();
+			return "Unreachable";
 		}
-		return null;
 	}
 
 	@Override
@@ -110,7 +107,6 @@ public class BrokerPort implements BrokerPortType {
 			}
 				
 		}
-		
 		return null; //FIXME what should be returned?
 	}
 

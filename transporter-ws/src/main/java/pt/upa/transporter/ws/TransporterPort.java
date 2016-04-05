@@ -106,12 +106,17 @@ public class TransporterPort implements TransporterPortType{
 	}
 	
 	public JobView getJobByRoute(String origin, String destination){
+		int min = 100;
+		JobView best =null;
 		for (JobView j : jobs){
 			if(origin==j.getJobOrigin() && destination==j.getJobDestination()){
-				return j;
+				if(j.getJobPrice()<min){
+					best=j;
+					min=j.getJobPrice();
+				}
 			}
 		}
-		return null;
+		return best;
 	}
 	
 

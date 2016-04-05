@@ -1,9 +1,11 @@
 package pt.upa.transporter.ws.cli;
 
+import java.util.Collection;
 import java.util.List;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import java.util.Map;
 
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 
 import pt.upa.transporter.ws.BadJobFault_Exception;
@@ -93,11 +95,25 @@ public class TransporterClient implements TransporterPortType {
         createStub(endpointURL);
     }
     
-    public String lookUp (String uddiURL, String name) throws Exception{ //FIXME má prática?
+    public String lookUp (String uddiURL, String name) throws JAXRException { //FIXME má prática?
     	System.out.printf("Contacting UDDI at %s%n", uddiURL);
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
     	System.out.printf("Looking for '%s'%n", name);
         String endpointAddress = uddiNaming.lookup(name);
+        
+        if (endpointAddress == null) {
+            System.out.println("Not found!");
+            return null;
+        } else {
+            return endpointAddress;
+        }
+    }
+    
+    public Collection<String> list(String uddiURL, String name) throws JAXRException { //UpaTransporter%
+    	System.out.printf("Contacting UDDI at %s%n", uddiURL);
+    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	System.out.printf("Looking for '%s'%n", name);
+        Collection<String> endpointAddress = uddiNaming.list(name);
         
         if (endpointAddress == null) {
             System.out.println("Not found!");

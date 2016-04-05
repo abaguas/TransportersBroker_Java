@@ -1,5 +1,6 @@
 package pt.upa.transporter.ws.cli;
 
+import java.util.Collection;
 import java.util.List;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import java.util.Map;
@@ -99,6 +100,20 @@ public class TransporterClient implements TransporterPortType {
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
     	System.out.printf("Looking for '%s'%n", name);
         String endpointAddress = uddiNaming.lookup(name);
+        
+        if (endpointAddress == null) {
+            System.out.println("Not found!");
+            return null;
+        } else {
+            return endpointAddress;
+        }
+    }
+    
+    public Collection<String> list(String uddiURL, String name) throws JAXRException { //UpaTransporter%
+    	System.out.printf("Contacting UDDI at %s%n", uddiURL);
+    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	System.out.printf("Looking for '%s'%n", name);
+        Collection<String> endpointAddress = uddiNaming.list(name);
         
         if (endpointAddress == null) {
             System.out.println("Not found!");

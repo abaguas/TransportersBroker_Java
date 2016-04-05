@@ -5,6 +5,7 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
@@ -34,7 +35,7 @@ public class BrokerClient implements BrokerPortType{
         createStub(endpointURL);
     }
     
-    public String lookUp (String uddiURL, String name) throws Exception{ //FIXME má prática?
+    public String lookUp (String uddiURL, String name) throws JAXRException{ //FIXME má prática?
     	System.out.printf("Contacting UDDI at %s%n", uddiURL);
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
     	System.out.printf("Looking for '%s'%n", name);

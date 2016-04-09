@@ -131,9 +131,9 @@ public class BrokerPort implements BrokerPortType {
 		}
 	}
 	
-	public String chooseJob (ArrayList<JobView> jobViews, int price){
+	public String chooseJob (ArrayList<JobView> jobViews, int price) throws UnavailableTransportPriceFault_Exception{
 		JobView jv = null;
-		Transport transport = null;
+		Transport t = null;
 		
 		for (JobView j : jobViews) {
 			if (j.getJobPrice()<=price){
@@ -141,13 +141,18 @@ public class BrokerPort implements BrokerPortType {
 				price = j.getJobPrice();
 			}
 		}
+		
 		if (jv == null) {
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
-        transports.add(new Transport(jv, getId()));
-		setId(getId()+1);			
+		
+		t = new Transport(jv, Integer.toString(getId()) ,price);
+        transports.add(t);
+		setId(getId()+1);
+		
+		return t.getIdentifier();
 	}
 
 	@Override

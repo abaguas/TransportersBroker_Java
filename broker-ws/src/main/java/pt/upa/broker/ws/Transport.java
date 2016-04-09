@@ -2,6 +2,7 @@ package pt.upa.broker.ws;
 
 import pt.upa.broker.ws.TransportStateView;
 import pt.upa.broker.ws.TransportView;
+import pt.upa.transporter.ws.JobView;
 
 public class Transport {
 	
@@ -12,11 +13,11 @@ public class Transport {
 	private int price;
 	private TransportStateView state;
 
-	public Transport(jobView jv, int id) {
-		this.companyName = companyName;
-		this.identifier = identifier;
-		this.origin = origin;
-		this.destination = destination;
+	public Transport(JobView jv, String id, int price) {
+		this.companyName = jv.getCompanyName();
+		this.identifier = id;
+		this.origin = jv.getJobOrigin();
+		this.destination = jv.getJobDestination();
 		this.price = price;
 		state = TransportStateView.REQUESTED;
 	}

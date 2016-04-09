@@ -34,7 +34,7 @@ import javax.xml.ws.BindingProvider;
 
 public class BrokerPort implements BrokerPortType {
 	
-	private ArrayList<TransportView> transporterViews = new ArrayList<TransportView>();
+	private ArrayList<Transport> transports = new ArrayList<Transport>();  //transporterViews
 	
 	public String getUrlUDDI () {
 		java.io.InputStream is = this.getClass().getResourceAsStream("my.properties");
@@ -65,6 +65,7 @@ public class BrokerPort implements BrokerPortType {
 		
 		TransporterClient tc=null;
 		JobView jv =null;
+		Transport transport = null;
 		
 		try {
 			tc = new TransporterClient(getUrlUDDI(), "UPATransporter1");//FIXME nome do transporter
@@ -97,13 +98,12 @@ public class BrokerPort implements BrokerPortType {
 		else{
 			
 			String id = jv.getJobIdentifier();
-			TransportView tv = getTransportById(id); //FIXME Create a new TransportView or get it by ID
+			transport = getTransportById(id);
 			
-			if(jv.getJobPrice()>tv.getPrice()){
+			if(jv.getJobPrice()>transport.getPrice()){
 				UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 				utpf.setBestPriceFound(price);
 				throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
-			
 			}
 				
 		}
@@ -116,21 +116,25 @@ public class BrokerPort implements BrokerPortType {
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		UnknownTransportFault fault = new UnknownTransportFault();
 		fault.setId(id);
-		for(TransportView tv : transporterViews)
-			if(tv.getId().equals(id))
-				return tv;
+		for(Transport t : transports)
+			if(t.getIdentifier().equals(id))
+				return t.createTransportView();
 		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 
 	@Override
-	public List<TransportView> listTransports() {
-		return transporterViews;
+	public ArrayList<TransportView> listTransports() {
+		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
+		for (Transport t : transports) {
+			transportViews.add(t.createTransportView());
+		}
+		return transportViews;
 	}
 
 	@Override
 	public void clearTransports() { //FIXME se cliente falhar, apagar o transporterViews deve falhar tambem?
-		for(TransportView tv : transporterViews) {
-			transporterViews.remove(tv);
+		for(Transport t : transports) {
+			transports.remove(t);
 		try {
 			TransporterClient client = new TransporterClient(getUrlUDDI(), "UPATranporter 1");
 			client.clearJobs();
@@ -141,9 +145,9 @@ public class BrokerPort implements BrokerPortType {
 		}
 	}
 
-	public TransportView getTransportById(String id){
-		for (TransportView t: transporterViews){
-			if (id==t.getId()){
+	public Transport getTransportById(String id){
+		for (Transport t: transports){
+			if (id==t.getIdentifier()){
 				return t;
 			}
 		}

@@ -17,7 +17,7 @@ import javax.jws.WebService;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private ArrayList<JobView> jobs = new ArrayList<JobView>();
+	private ArrayList<Job> jobs = new ArrayList<Job>();
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
 			Arrays.asList("Setúbal", "Évora", "Portalegre", "Beja", "Faro"));
 	private ArrayList<String> regiaoCentro = new ArrayList<String>(
@@ -50,9 +50,9 @@ public class TransporterPort implements TransporterPortType{
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
 		
-		JobView jv= getJobByRoute(origin, destination);
+		Job j = getJobByRoute(origin, destination);
 		
-		if(price<100 && operate(origin,destination, jv.getCompanyName())){
+		if(price<100 && operate(origin,destination, j.getCompanyName())){
 			Random rand = new Random();
 			int offer;
 			
@@ -61,7 +61,7 @@ public class TransporterPort implements TransporterPortType{
 			}
 			
 			//FIXME getCompanyName ou getter do seu proprio nome
-			else if(price%2==numberTransporter(jv.getCompanyName())%2){
+			else if(price%2==numberTransporter(j.getCompanyName())%2){
 				offer = rand.nextInt(price) + 10;
 			}
 			
@@ -69,9 +69,9 @@ public class TransporterPort implements TransporterPortType{
 				offer = rand.nextInt(100) + price;
 			}
 			
-			jv.setJobPrice(offer);
+			j.setPrice(offer);
 			
-			return jv;
+			return j.createJobView();
 		}
 		else{
 			return null;
@@ -100,14 +100,14 @@ public class TransporterPort implements TransporterPortType{
 		return false;
 	}
 	
-	public JobView getJobByRoute(String origin, String destination){
+	public Job getJobByRoute(String origin, String destination){
 		int min = 100;
-		JobView best =null;
-		for (JobView j : jobs){
-			if(origin==j.getJobOrigin() && destination==j.getJobDestination()){
-				if(j.getJobPrice()<min){
+		Job best =null;
+		for (Job j : jobs){
+			if(origin==j.getOrigin() && destination==j.getDestination()){
+				if(j.getPrice()<min){
 					best=j;
-					min=j.getJobPrice();
+					min=j.getPrice();
 				}
 			}
 		}
@@ -118,8 +118,8 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		// TODO Auto-generated method stub
-		JobView jv = getJobById(id);
-		if(jv == null)
+		Job j = getJobById(id);
+		if(j == null)
 		{
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
@@ -130,19 +130,23 @@ public class TransporterPort implements TransporterPortType{
 			return null;
 		else
 		{
-			jv.setJobState(JobStateView.ACCEPTED);
-			return jv;
+			j.setState(JobStateView.ACCEPTED);
+			return j.createJobView();
 		}
 	}
 
 	@Override
 	public JobView jobStatus(String id) {
-		return getJobById(id);
+		return getJobById(id).createJobView();
 	}
 
 	@Override
 	public List<JobView> listJobs() {
-		return jobs;
+		ArrayList<JobView> jobViews = new ArrayList<JobView>();
+		for (Job j : jobs) {
+			jobViews.add(j.createJobView());
+		}
+		return jobViews;
 	}
 
 	@Override
@@ -150,9 +154,10 @@ public class TransporterPort implements TransporterPortType{
 		jobs.clear();
 	}
 
-	public JobView getJobById(String id){
-		for (JobView j: jobs){
-			if (id==j.getJobIdentifier()){
+	public Job getJobById(String id) {
+		for (Job j: jobs){
+			if (id==j.getIdentifier())
+			{
 				return j;
 			}
 		}

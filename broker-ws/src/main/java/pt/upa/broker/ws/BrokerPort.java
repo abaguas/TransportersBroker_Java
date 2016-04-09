@@ -111,7 +111,7 @@ public class BrokerPort implements BrokerPortType {
 				
 		}
 		
-		return null; //FIXME what should be returned?
+		return null; //FIXME return id
 	}
 
 	@Override

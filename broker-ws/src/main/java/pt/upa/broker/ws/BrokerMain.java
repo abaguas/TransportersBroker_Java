@@ -20,7 +20,7 @@ public class BrokerMain {
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
         try {	
-            endpoint = Endpoint.create(new BrokerPort());
+            endpoint = Endpoint.create(new BrokerPort(uddiURL));
 
             // publish endpoint
             System.out.printf("Starting %s%n", url);

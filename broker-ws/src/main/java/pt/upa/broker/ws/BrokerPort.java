@@ -2,6 +2,7 @@ package pt.upa.broker.ws;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import javax.jws.WebService;
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 
 @WebService(
@@ -34,81 +36,111 @@ import javax.xml.ws.BindingProvider;
 
 public class BrokerPort implements BrokerPortType {
 	
+	private String uddiURL;
+	private String name = "UpaTransporter%";
 	private ArrayList<TransportView> transporterViews = new ArrayList<TransportView>();
 	
-	public String getUrlUDDI () {
-		java.io.InputStream is = this.getClass().getResourceAsStream("my.properties");
-		java.util.Properties p = new Properties();
-		try {
-			p.load(is);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return p.getProperty("uddi.url");
+	public BrokerPort (String uddiURL){
+		this.uddiURL = uddiURL;
 	}
+	
+	public Collection<String> lookUp () throws JAXRException { //FIXME má prática?
+    	String uddiURL = getUddiURL();
+    	String name = getName();
+		System.out.printf("Contacting UDDI at %s%n", uddiURL);
+    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	System.out.printf("Looking for '%s'%n", name);
+        Collection<String> endpointAddress = uddiNaming.list(name);
+        
+        if (endpointAddress == null) {
+            System.out.println("Not found!");
+            return null;
+        } else {
+            return endpointAddress;
+        }
+    }
+	
+	public String lookUp (String name) throws JAXRException { //FIXME má prática?
+		String uddiURL = getUddiURL();
+		System.out.printf("Contacting UDDI at %s%n", uddiURL);
+    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	System.out.printf("Looking for '%s'%n", name);
+        String endpointAddress = uddiNaming.lookup(name);
+        
+        if (endpointAddress == null) {
+            System.out.println("Not found!");
+            return null;
+        } else {
+            return endpointAddress;
+        }
+    }
 	
 	@Override
 	public String ping(String name) {
 		try {
-			TransporterClient tc = new TransporterClient(getUrlUDDI(), name); //completar com UDDIURL
+			String endpointURL = lookUp(name);
+			TransporterClient tc = new TransporterClient(endpointURL); //completar com UDDIURL
 			return tc.ping(name);
-		} catch (TransporterClientException e) {
+		} catch (JAXRException e1) {
 			return "Unreachable";
-		}
+	    } catch (TransporterClientException e2) {
+		    return "Unreachable";
+	    }
 	}
 
 	@Override
 	public String requestTransport(String origin, String destination, int price)
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		
-		TransporterClient tc=null;
-		JobView jv =null;
-		
+		Collection<String> endpoints;
+		ArrayList<JobView> jobViews = new ArrayList<JobView>();
 		try {
-			tc = new TransporterClient(getUrlUDDI(), "UPATransporter1");//FIXME nome do transporter
-		} catch (TransporterClientException e) {
+			endpoints = lookUp();
+			for (String endpoint : endpoints){
+				TransporterClient tc = new TransporterClient(endpoint);
+				jobViews.add(tc.requestJob(origin, destination, price));
+			}
+		
+		} catch (JAXRException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
-		try {
-			jv=tc.requestJob(origin, destination, price);
-			
-			
+			e1.printStackTrace();
+		} catch (TransporterClientException e3){
+			e3.printStackTrace();			
 		} catch (BadLocationFault_Exception e) {
 			UnknownLocationFault ulf = new UnknownLocationFault();
 			ulf.setLocation(e.getFaultInfo().getLocation());
 			throw new UnknownLocationFault_Exception(e.getMessage(), ulf);
-			
 		} catch (BadPriceFault_Exception e) {
 			InvalidPriceFault ipf = new InvalidPriceFault();
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 		}
 		
-		if(jv==null){
+		if(jobViews.isEmpty()){
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
 			utf.setDestination(destination);
 			throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
 		}
 		else{
-			
-			String id = jv.getJobIdentifier();
-			TransportView tv = getTransportById(id); //FIXME Create a new TransportView or get it by ID
-			
-			if(jv.getJobPrice()>tv.getPrice()){
-				UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
-				utpf.setBestPriceFound(price);
-				throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
-			
-			}
-				
+			return chooseJob(jobViews, price);				
 		}
-
-		return null; //FIXME return id	
+	}
+	
+	public String chooseJob (ArrayList<JobView> jobViews, int price){
+		String id = null;
+		
+		for (JobView j : jobViews) {
+			if (j.getJobPrice()<=price){
+				
+			}
+		}
+		if(jv.getJobPrice()>tv.getPrice()){
+			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
+			utpf.setBestPriceFound(price);
+			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
+		
+		}
 
 	}
 
@@ -132,7 +164,7 @@ public class BrokerPort implements BrokerPortType {
 		for(TransportView tv : transporterViews) {
 			transporterViews.remove(tv);
 		try {
-			TransporterClient client = new TransporterClient(getUrlUDDI(), "UPATranporter 1");
+			TransporterClient client = new TransporterClient(getUddiURL(), "UPATranporter 1");
 			client.clearJobs();
 		} catch (TransporterClientException e) {
 			e.printStackTrace();
@@ -150,5 +182,24 @@ public class BrokerPort implements BrokerPortType {
 		return null;
 	}
 	// TODO
+
+	
+	
+	
+	public String getUddiURL() {
+		return uddiURL;
+	}
+
+	public void setUddiURL(String uddiURL) {
+		this.uddiURL = uddiURL;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

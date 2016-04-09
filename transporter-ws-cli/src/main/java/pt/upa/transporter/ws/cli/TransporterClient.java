@@ -16,111 +16,12 @@ import pt.upa.transporter.ws.TransporterPortType;
 import pt.upa.transporter.ws.TransporterService;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
-public class TransporterClient implements TransporterPortType {
+public class TransporterClient implements TransporterPortType {	
 	
-/*
-    // WS service 
-    private TransporterService service = null;
-
-    // WS port (interface) 
-    private TransporterPortType port = null;
-    private BindingProvider bindingProvider = null;
-
-
-    ///** WS endpoint address 
-    // default value is defined by WSDL
-    private String wsURL = null;
-
-    ///** retrieve WS endpoint address 
-    public String getEndpointAddress() {
-        if (wsURL != null) {
-            return wsURL;
-        } else {
-            Map<String, Object> requestContext = bindingProvider.getRequestContext();
-            return (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
-        }
-    }
-
-
-    ///** output option 
-    private boolean verbose = false;
-
-    public boolean isVerbose() {
-        return verbose;
-    }
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
-
-    ///** constructor with provided web service URL 
-    public TransporterClient(String wsURL) throws TransporterClientException {
-        this.wsURL = wsURL;
-        createStub();
-    }
-
-    ///** default constructor uses default endpoint address 
-    public TransporterClient() throws TransporterClientException {
-        createStub();
-    }
-
-
-    ///** Stub creation and configuration 
-    protected void createStub() {
-        if (verbose)
-            System.out.println("Creating stub ...");
-        service = new TransporterService();
-        port = service.getTransporterPort();
-        bindingProvider = (BindingProvider) port;
-
-        if (wsURL != null) {
-            if (verbose)
-                System.out.println("Setting endpoint address ...");
-            Map<String, Object> requestContext = bindingProvider.getRequestContext();
-            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, wsURL);
-        }
-    }
-*/	
-	
-	private String endpointURL;
 	private TransporterPortType port;
 
-    public TransporterClient(String uddiURL, String name) throws TransporterClientException {
-        try {
-			endpointURL = lookUp(uddiURL, name);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public TransporterClient(String endpointURL) throws TransporterClientException {
         createStub(endpointURL);
-    }
-    
-    public String lookUp (String uddiURL, String name) throws JAXRException { //FIXME má prática?
-    	System.out.printf("Contacting UDDI at %s%n", uddiURL);
-    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
-    	System.out.printf("Looking for '%s'%n", name);
-        String endpointAddress = uddiNaming.lookup(name);
-        
-        if (endpointAddress == null) {
-            System.out.println("Not found!");
-            return null;
-        } else {
-            return endpointAddress;
-        }
-    }
-    
-    public Collection<String> list(String uddiURL, String name) throws JAXRException { //UpaTransporter%
-    	System.out.printf("Contacting UDDI at %s%n", uddiURL);
-    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
-    	System.out.printf("Looking for '%s'%n", name);
-        Collection<String> endpointAddress = uddiNaming.list(name);
-        
-        if (endpointAddress == null) {
-            System.out.println("Not found!");
-            return null;
-        } else {
-            return endpointAddress;
-        }
     }
     
     public void createStub(String endpointURL) {
@@ -135,6 +36,7 @@ public class TransporterClient implements TransporterPortType {
 	    
 	    this.port = port;
     }
+    
     
 	@Override
 	public String ping(String name) {

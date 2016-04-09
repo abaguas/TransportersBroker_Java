@@ -4,12 +4,12 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
- *  Unit Test example
+ *  Unit ClearJobsTest
  *  
  *  Invoked by Maven in the "test" life-cycle phase
  *  If necessary, should invoke "mock" remote servers 
  */
-public class ExampleTest {
+public class ClearJobsTest {
 
     // static members
 

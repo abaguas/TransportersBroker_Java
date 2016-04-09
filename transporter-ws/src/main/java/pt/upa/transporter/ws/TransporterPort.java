@@ -17,13 +17,21 @@ import javax.jws.WebService;
 )
 public class TransporterPort implements TransporterPortType{
 
+
 	private ArrayList<Job> jobs = new ArrayList<Job>();
+
+	private String name;
+
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
 			Arrays.asList("Setúbal", "Évora", "Portalegre", "Beja", "Faro"));
 	private ArrayList<String> regiaoCentro = new ArrayList<String>(
 			Arrays.asList("Lisboa", "Leiria", "Santarém", "Castelo Branco", "Coimbra", "Aveiro", "Viseu", "Guarda"));
 	private ArrayList<String> regiaoNorte = new ArrayList<String>(
 			Arrays.asList("Porto", "Braga", "Viana do Castelo", "Vila Real", "Bragança"));
+	
+	public TransporterPort (String name){
+		this.name = name;
+	}
 	
 	@Override
 	public String ping(String name) {

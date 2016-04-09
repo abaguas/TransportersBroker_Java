@@ -94,7 +94,7 @@ public class BrokerPort implements BrokerPortType {
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
-		Collection<String> endpoints;
+		Collection<String> endpoints = null;
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
 
 		try {
@@ -103,7 +103,6 @@ public class BrokerPort implements BrokerPortType {
 				TransporterClient tc = new TransporterClient(endpoint);
 				jobViews.add(tc.requestJob(origin, destination, price));
 			}
-		
 		} catch (JAXRException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -121,7 +120,7 @@ public class BrokerPort implements BrokerPortType {
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 		}
 		
-		if(jobViews.isEmpty()){
+		if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
 			utf.setDestination(destination);
@@ -142,24 +141,24 @@ public class BrokerPort implements BrokerPortType {
 				price = j.getJobPrice();
 			}
 		}
-		
 		if (jv == null) {
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
-		
         transports.add(new Transport(jv, getId()));
 		setId(getId()+1);			
 	}
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
+		for(Transport t : transports) {
+			if(t.getIdentifier().equals(id)) {
+				return t.createTransportView();
+			}
+		}
 		UnknownTransportFault fault = new UnknownTransportFault();
 		fault.setId(id);
-		for(Transport t : transports)
-			if(t.getIdentifier().equals(id))
-				return t.createTransportView();
 		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 
@@ -174,18 +173,28 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public void clearTransports() { //FIXME se cliente falhar, apagar o transporterViews deve falhar tambem?
-		for(Transport t : transports) {
-			transports.remove(t);
+		removeTransports();
+		Collection<String> endpoints = null;
 		try {
-			TransporterClient client = new TransporterClient(getUddiURL(), "UPATranporter 1");
-			client.clearJobs();
+			endpoints = lookUp();
+			for (String endpoint : endpoints){
+				TransporterClient tc = new TransporterClient(endpoint);
+				tc.clearJobs();
+			}
 		} catch (TransporterClientException e) {
+			e.printStackTrace();  //FIXME retirar?
+		} catch (JAXRException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} //FIXME
-
 		}
 	}
 
+    public void removeTransports() {
+    	for (Transport t : transports) {
+    		transports.remove(t);
+    	}
+    }
+    
 	public Transport getTransportById(String id){
 		for (Transport t: transports){
 			if (id==t.getIdentifier()){
@@ -194,10 +203,6 @@ public class BrokerPort implements BrokerPortType {
 		}
 		return null;
 	}
-	// TODO
-
-	
-	
 	
 	public String getUddiURL() {
 		return uddiURL;

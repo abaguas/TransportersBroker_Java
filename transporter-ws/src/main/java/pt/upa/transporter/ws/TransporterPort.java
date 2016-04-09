@@ -76,6 +76,7 @@ public class TransporterPort implements TransporterPortType{
 			}
 			
 			j.setPrice(offer);
+			j.setCompanyName(getName());
 			
 			return j.createJobView();
 		}
@@ -168,6 +169,22 @@ public class TransporterPort implements TransporterPortType{
 			}
 		}
 		return null;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ArrayList<Job> getJobs() {
+		return jobs;
+	}
+
+	public void addJob(Job job) {
+		this.jobs.add(job);
 	}
 
 }

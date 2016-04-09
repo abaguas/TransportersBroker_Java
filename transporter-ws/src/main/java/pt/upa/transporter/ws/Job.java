@@ -8,12 +8,12 @@ public class Job {
 	private int price;
 	private JobStateView state;
 	
-	public Job(String companyName, String identifier, String origin, String destination, int price) {
-		this.companyName = companyName;
+	public Job(String identifier, String origin, String destination) {
+		this.companyName = "";
 		this.identifier = identifier;
 		this.origin = origin;
 		this.destination = destination;
-		this.price = price;
+		this.price = -1;
 		state = JobStateView.PROPOSED;
 	}
 	

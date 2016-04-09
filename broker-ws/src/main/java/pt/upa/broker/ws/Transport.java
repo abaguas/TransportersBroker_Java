@@ -1,33 +1,36 @@
-package pt.upa.transporter.ws;
+package pt.upa.broker.ws;
 
-public class Job {
+import pt.upa.broker.ws.TransportStateView;
+import pt.upa.broker.ws.TransportView;
+
+public class Transport {
+	
 	private String companyName;
 	private String identifier;
 	private String origin;
 	private String destination;
 	private int price;
-	private JobStateView state;
-	
-	public Job(String companyName, String identifier, String origin, String destination, int price) {
+	private TransportStateView state;
+
+	public Transport(jobView jv, int id) {
 		this.companyName = companyName;
 		this.identifier = identifier;
 		this.origin = origin;
 		this.destination = destination;
 		this.price = price;
-		state = JobStateView.PROPOSED;
+		state = TransportStateView.REQUESTED;
 	}
 	
-	public JobView createJobView() {
-		JobView jv = new JobView();
-		jv.setCompanyName(companyName);
-		jv.setJobIdentifier(identifier);
-		jv.setJobOrigin(origin);
-		jv.setJobDestination(destination);
-		jv.setJobPrice(price);
-		jv.setJobState(state);
-		return jv;
+	public TransportView createTransportView() {
+		TransportView tv = new TransportView();
+		tv.setTransporterCompany(companyName);
+		tv.setId(identifier);
+		tv.setOrigin(origin);
+		tv.setDestination(destination);
+		tv.setPrice(price);
+		tv.setState(state);
+		return tv;
 	}
-
 
 	public String getCompanyName() {
 		return companyName;
@@ -69,14 +72,11 @@ public class Job {
 		this.price = price;
 	}
 
-	public JobStateView getState() {
+	public TransportStateView getState() {
 		return state;
 	}
 
-	public void setState(JobStateView state) {
+	public void setState(TransportStateView state) {
 		this.state = state;
 	}
-	
-	
-	
 }

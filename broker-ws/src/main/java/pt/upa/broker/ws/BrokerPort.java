@@ -53,7 +53,7 @@ public class BrokerPort implements BrokerPortType {
     	System.out.printf("Looking for '%s'%n", name);
         Collection<String> endpointAddress = uddiNaming.list(name);
         
-        if (endpointAddress == null) {
+        if (endpointAddress.isEmpty()) {
             System.out.println("Not found!");
             return null;
         } else {

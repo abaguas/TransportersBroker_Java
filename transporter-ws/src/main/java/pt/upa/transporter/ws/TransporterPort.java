@@ -36,7 +36,7 @@ public class TransporterPort implements TransporterPortType{
 	
 	@Override
 	public String ping(String name) {
-		return name;
+		return this.name;
 	}
 	
 	@Override
@@ -65,13 +65,15 @@ public class TransporterPort implements TransporterPortType{
 			Random rand = new Random();
 			int offer;
 			
-			if(price<=10){
-				offer = rand.nextInt(price);
+			if (price==0){
+				return null;
+			}
+			else if(price<=10){
+				offer = rand.nextInt(price-1) + 1;
 			}
 			
-			//FIXME getCompanyName ou getter do seu proprio nome
-			else if(price%2==numberTransporter(j.getCompanyName())%2){
-				offer = rand.nextInt(price); 
+			else if(price%2==numberTransporter(getName())%2){
+				offer = rand.nextInt(price-1) + 1; 
 			}
 			
 			else{
@@ -80,6 +82,7 @@ public class TransporterPort implements TransporterPortType{
 			
 			j.setPrice(offer);
 			j.setCompanyName(getName());
+			requestedJobs.add(j);
 			
 			return j.createJobView();
 		}

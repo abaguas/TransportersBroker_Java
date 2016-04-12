@@ -10,7 +10,7 @@ public class Job {
 	private int price;
 	private String state;
 	
-	public Job(String identifier, String origin, String destination, String state) {
+	public Job(String identifier, String origin, String destination) {
 		this.companyName = "";
 		this.identifier = identifier;
 		this.origin = origin;

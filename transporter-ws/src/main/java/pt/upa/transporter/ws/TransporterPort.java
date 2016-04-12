@@ -124,22 +124,24 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
-		// TODO Auto-generated method stub
+		
 		Job j = getJobById(id);
-		if(j == null)
-		{
+		
+		if(j == null){
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
 			throw new BadJobFault_Exception("invalid ID", fault);
 		}
 			
-		if(!accept)
-			return null;
-		else
-		{
-			j.setState(JobStateView.ACCEPTED);
-			return j.createJobView();
+		if(!accept){
+			j.setState("REJECTED");
 		}
+		
+		else{
+			j.setState("ACCEPTED");
+		}
+		
+		return j.createJobView();
 	}
 
 	@Override

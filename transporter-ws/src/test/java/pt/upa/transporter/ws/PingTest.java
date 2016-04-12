@@ -13,18 +13,18 @@ import static org.junit.Assert.*;
 public class PingTest extends AbstractTransporterTest {
 
     // tests
-
-    @Test
-    public void test() {
-
-        // assertEquals(expected, actual);
-        // if the assert fails, the test fails
-    }
-
 	@Override
 	protected void populate() {
-		// TODO Auto-generated method stub
-		
+		port = new TransporterPort("UpaTransporter1");
+	
 	}
+	
+    @Test
+    public void test() {
+    	String ping = port.ping("HelloWorld");
+    	assertEquals(ping, "UpaTransporter1");
+    }
+
+	
 
 }

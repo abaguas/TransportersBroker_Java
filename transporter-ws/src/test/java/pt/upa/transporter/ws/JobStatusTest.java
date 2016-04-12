@@ -29,6 +29,7 @@ public class JobStatusTest extends AbstractTransporterTest {
 		job.setPrice(40);
 		job.setCompanyName("UpaTransporter1");
 		
+		t1.addJob(job);
 		t1.addRequestedJob(job);		
 	}
 	

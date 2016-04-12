@@ -37,7 +37,6 @@ public class ClearJobsTest extends AbstractTransporterTest {
     	ArrayList<Job> jobs = t1.getJobs();
 
     	assertNull("jobs not deleted", jobs);
-
     }
 
 

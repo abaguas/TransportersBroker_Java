@@ -1,7 +1,6 @@
 package pt.upa.transporter.ws;
 
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *  Unit AbstractTransporterTest

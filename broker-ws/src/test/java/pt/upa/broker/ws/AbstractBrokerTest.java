@@ -1,29 +1,30 @@
 package pt.upa.broker.ws;
 
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
- *  Unit Test example
+ *  Unit AbstractTransporterTest
  *  
  *  Invoked by Maven in the "test" life-cycle phase
  *  If necessary, should invoke "mock" remote servers 
  */
-public class ExampleTest {
+public abstract class AbstractBrokerTest {
 
     // static members
-
+	protected static BrokerPort port;
 
     // one-time initialization and clean-up
 
+	protected abstract void populate();
+	
     @BeforeClass
     public static void oneTimeSetUp() {
-
+    	port = new BrokerPort("UpaTransporter1");
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-
+    	port = null;
     }
 
 
@@ -34,6 +35,7 @@ public class ExampleTest {
 
     @Before
     public void setUp() {
+    	populate();	
     }
 
     @After

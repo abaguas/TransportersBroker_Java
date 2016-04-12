@@ -3,11 +3,13 @@ package pt.upa.broker.ws;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.BadLocationFault_Exception;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
+import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
@@ -30,7 +32,15 @@ public class BrokerPort implements BrokerPortType {
 	private int id = 1;
 	private String uddiURL;
 	private String name = "UpaTransporter%";
-	private ArrayList<Transport> transports = new ArrayList<Transport>();
+	private Map<Transport, TransporterClient> transports = new HashMap<Transport, TransporterClient>();
+	//FIXME
+	//FIXME
+	//FIXME
+	//FIXME a correspondencia no mapa deve ser de transporte com endpoint e nao com transporterclient
+	//FIXME
+	//FIXME
+	//FIXME
+	//FIXME
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
@@ -143,7 +153,7 @@ public class BrokerPort implements BrokerPortType {
 		t.setCompanyName(budgetedJob.getCompanyName());
 		t.setPrice(budgetedJob.getJobPrice());
 		t.setState("BUDGETED");
-        transports.add(t);
+        transports.put(t, jobViews.get(budgetedJob));
         
         decideJob(jvs, jobViews, budgetedJob, t);
         
@@ -175,57 +185,57 @@ public class BrokerPort implements BrokerPortType {
 		}
 	}
 
-	//FIXME atualizar o job status
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		for(Transport t : transports) {
-			if(t.getIdentifier().equals(id)) {
-				return t.createTransportView();
-			}
-		}
-		UnknownTransportFault fault = new UnknownTransportFault();
-		fault.setId(id);
-		throw new UnknownTransportFault_Exception("Unknown id", fault);
+		Transport transport = getTransportById(id);
+		TransporterClient tc = transports.get(transport);
+		
+		transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
+
+		return transport.createTransportView();
+		
 	}
 
 	@Override
 	public ArrayList<TransportView> listTransports() {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
-		for (Transport t : transports) {
-			transportViews.add(t.createTransportView());
-		}
+		Collection<Transport> transps = transports.keySet();
+		
+		
+		for (Iterator<Transport> iterator = transps.iterator(); iterator.hasNext();) {
+	        Transport transport = (Transport) iterator.next();
+	        try {
+				viewTransport(transport.getIdentifier());
+				transportViews.add(transport.createTransportView());
+			} catch (UnknownTransportFault_Exception e) {
+				System.out.println("Cosmic ray exception");
+				//never happens because the transporter id came from the transports map
+			}
+	    }
 		return transportViews;
 	}
 
 	@Override
-	public void clearTransports() { //FIXME se cliente falhar, apagar o transporterViews deve falhar tambem?
-		removeTransports();
-		Collection<String> endpoints = null;
-		try {
-			endpoints = list();
-			for (String endpoint : endpoints){
-				TransporterClient tc = new TransporterClient(endpoint);
-				tc.clearJobs();
-			}
-		} catch (JAXRException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void clearTransports() {
+		Collection<TransporterClient> clients = transports.values();
+		
+		for (TransporterClient tc: clients){
+			tc.clearJobs();
 		}
+		
+		transports.clear();
 	}
-
-    public void removeTransports() {
-    	for (Transport t : transports) {
-    		transports.remove(t);
-    	}
-    }
     
-	public Transport getTransportById(String id){
-		for (Transport t: transports){
+	public Transport getTransportById(String id) throws UnknownTransportFault_Exception{
+		Collection<Transport> transps = transports.keySet();
+		for (Transport t: transps){
 			if (id==t.getIdentifier()){
 				return t;
 			}
 		}
-		return null;
+		UnknownTransportFault fault = new UnknownTransportFault();
+		fault.setId(id);
+		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 	
 	public int idFactory(){
@@ -233,6 +243,35 @@ public class BrokerPort implements BrokerPortType {
 		setId(id+1);
 		
 		return id;
+	}
+	
+	public String viewToState(JobStateView view){
+		if (view.equals(TransportStateView.REQUESTED)) {
+			return "REQUESTED";
+		}
+		else if (view.equals(TransportStateView.BUDGETED)) {
+			return "BUDGETED";
+		}
+		else if (view.equals(TransportStateView.BOOKED)) {
+			return "BOOKED";
+		}
+		else if (view.equals(TransportStateView.FAILED)) {
+			return "FAILED";
+		}
+		else if (view.equals(TransportStateView.HEADING)) {
+			return "HEADING";
+		}
+		else if (view.equals(TransportStateView.ONGOING)) {
+			return "ONGOING";
+		}
+		else if (view.equals(TransportStateView.COMPLETED)) {
+			return "COMPLETED";
+		}
+		else{
+			return null; //FIXME throw exception? isto é do wsdl e nunca acontece
+		}
+		
+		
 	}
 	
 	public String getUddiURL() {

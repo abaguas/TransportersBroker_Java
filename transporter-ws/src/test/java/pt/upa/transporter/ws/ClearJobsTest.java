@@ -43,6 +43,7 @@ public class ClearJobsTest extends AbstractTransporterTest {
     	assertEquals("jobs not deleted", 0, jobs.size());
     	assertEquals("requestedJobs not deleted", 0, requestedJobs.size());
 
+
     }
 
 

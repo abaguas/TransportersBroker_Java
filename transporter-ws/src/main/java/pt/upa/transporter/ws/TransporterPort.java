@@ -82,7 +82,7 @@ public class TransporterPort implements TransporterPortType{
 			
 			j.setPrice(offer);
 			j.setCompanyName(getName());
-			requestedJobs.add(j);
+			addRequestedJob(j);
 			
 			return j.createJobView();
 		}
@@ -242,6 +242,10 @@ public class TransporterPort implements TransporterPortType{
 	
 	public void ongoingToCompleted(Job j){
 		j.setState("COMPLETED");
+	}
+
+	public void addRequestedJob(Job job) {
+		requestedJobs.add(job);
 	}
 
 

@@ -13,25 +13,13 @@ public class Transport {
 	private String destination;
 	private int price;
 	private String state;
-	
-	//FIXME nao podemos ter uma transport state view, tem de ser um state
 
-	public Transport(int id, String origin, String destination, String state) {
+	public Transport(int id, String origin, String destination) {
 		identifier = Integer.toString(id);
 		this.origin = origin;
 		this.destination = destination;
-		this.state = state;
+		this.state = "REQUESTED";
 	}
-	
-	//DEPRECATED
-	/*public Transport(JobView jv, String id, int price) {
-		this.companyName = jv.getCompanyName();
-		this.identifier = id;
-		this.origin = jv.getJobOrigin();
-		this.destination = jv.getJobDestination();
-		this.price = price;
-		state = TransportStateView.REQUESTED;
-	}*/
 	
 	public TransportView createTransportView() {
 		TransportView tv = new TransportView();

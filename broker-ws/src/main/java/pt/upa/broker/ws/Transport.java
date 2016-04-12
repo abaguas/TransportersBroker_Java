@@ -1,5 +1,7 @@
 package pt.upa.broker.ws;
 
+import java.util.Iterator;
+
 import pt.upa.broker.exception.InvalidStateException;
 import pt.upa.broker.ws.TransportStateView;
 import pt.upa.broker.ws.TransportView;
@@ -107,4 +109,6 @@ public class Transport {
 	public void setState(String state) {
 		this.state = state;
 	}
+
+	
 }

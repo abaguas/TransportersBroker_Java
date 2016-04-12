@@ -10,37 +10,7 @@ import static org.junit.Assert.*;
  *  If necessary, should invoke "mock" remote servers 
  */
 
-public class PingTest {
-
-    // static members
-
-
-    // one-time initialization and clean-up
-
-    @BeforeClass
-    public static void oneTimeSetUp() {
-
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-
-    }
-
-
-    // members
-
-
-    // initialization and clean-up for each test
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
+public class PingTest extends AbstractTransporterTest {
 
     // tests
 
@@ -50,5 +20,11 @@ public class PingTest {
         // assertEquals(expected, actual);
         // if the assert fails, the test fails
     }
+
+	@Override
+	protected void populate() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

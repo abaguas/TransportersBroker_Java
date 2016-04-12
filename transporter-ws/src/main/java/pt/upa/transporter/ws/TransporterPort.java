@@ -129,7 +129,8 @@ public class TransporterPort implements TransporterPortType{
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		Random rand = new Random();
 		int delay;
-		Job j = getJobById(id);
+		//Job j = getJobById(id);
+		Job j = getRequestedJobById(id);
 		
 		if(j == null){
 			BadJobFault fault = new BadJobFault();
@@ -175,8 +176,18 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public void clearJobs() {
 		jobs.clear();
+		requestedJobs.clear();
 	}
 
+	public List<JobView> listRequestedJobs() {
+		ArrayList<JobView> jobViews = new ArrayList<JobView>();
+		for (Job j : requestedJobs) {
+			jobViews.add(j.createJobView());
+		}
+		return jobViews;
+	}
+	
+	
 	public Job getJobById(String id) {
 		for (Job j: jobs){
 			if (id==j.getIdentifier())
@@ -186,6 +197,17 @@ public class TransporterPort implements TransporterPortType{
 		}
 		return null;
 	}
+	
+	public Job getRequestedJobById(String id) {
+		for (Job j: requestedJobs){
+			if (id==j.getIdentifier())
+			{
+				return j;
+			}
+		}
+		return null;
+	}
+	
 
 	public String getName() {
 		return name;
@@ -198,9 +220,17 @@ public class TransporterPort implements TransporterPortType{
 	public ArrayList<Job> getJobs() {
 		return jobs;
 	}
+	
+	public ArrayList<Job> getRequestedJobs() {
+		return requestedJobs;
+	}
 
 	public void addJob(Job job) {
 		this.jobs.add(job);
+	}
+	
+	public void addRequestedJob(Job job) {
+		this.requestedJobs.add(job);
 	}
 	
 	public void acceptedToHeading(Job j){

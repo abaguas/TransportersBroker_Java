@@ -28,15 +28,20 @@ public class ClearJobsTest extends AbstractTransporterTest {
 		j2.setPrice(75);
 		t1.addJob(j1);
 		t1.addJob(j2);
+		t1.addRequestedJob(j2); // so j2 é que foi requested
 	}
 	
     // tests
     @Test
-    public void test() {
+    public void success() {
     	t1.clearJobs();
     	ArrayList<Job> jobs = t1.getJobs();
+    	ArrayList<Job> requestedJobs = t1.getRequestedJobs();
 
-    	assertNull("jobs not deleted", jobs);
+    	assertNotNull("structure deleted", jobs);
+    	assertNotNull("structure deleted", requestedJobs);
+    	assertEquals("jobs not deleted", 0, jobs.size());
+    	assertEquals("requestedJobs not deleted", 0, requestedJobs.size());
 
     }
 

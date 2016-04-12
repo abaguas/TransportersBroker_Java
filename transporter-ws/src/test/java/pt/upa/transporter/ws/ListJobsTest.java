@@ -28,17 +28,8 @@ public class ListJobsTest extends AbstractTransporterTest {
 		j2.setPrice(75);
 		t1.addJob(j1);
 		t1.addJob(j2);
-		
-//		t2 = new TransporterPort("UpaTransporter2");
-//		j3 = new Job("3", "Lisboa", "Porto");
-//		j4 = new Job("4", "Lisboa", "Braga");
-//		j3.setCompanyName("UpaTransporter2");
-//		j4.setCompanyName("UpaTransporter2");
-//		j3.setPrice(80);
-//		j4.setPrice(90);
-//		t2.addJob(j3);
-//		t2.addJob(j4);		
-
+		t1.addRequestedJob(j1);
+		t1.addRequestedJob(j2);
 	}
 	
 	
@@ -46,9 +37,9 @@ public class ListJobsTest extends AbstractTransporterTest {
      // tests
     @Test
     public void succesTest() {
-    	ArrayList<JobView> jv1 = (ArrayList<JobView>) t1.listJobs();
-    	//ArrayList<JobView> jv2 = (ArrayList<JobView>) t2.listJobs();
-    	
+  
+    	ArrayList<JobView> jv1 = (ArrayList<JobView>) t1.listRequestedJobs();
+    		
     	assertNotNull("jobViews was not created", jv1);
     	assertEquals("incorrect number of jobs", 2, jv1.size());
     	assertEquals("first job not correct", j1, jv1.get(1));

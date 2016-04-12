@@ -61,21 +61,21 @@ public class TransporterPort implements TransporterPortType{
 		
 		Job j = getJobByRoute(origin, destination);
 		
-		if(price<100 && operate(origin,destination, j.getCompanyName())){
+		if(price<=100 && operate(origin,destination, j.getCompanyName())){
 			Random rand = new Random();
 			int offer;
 			
 			if(price<=10){
-				offer = rand.nextInt(9) + 0;
+				offer = rand.nextInt(price);
 			}
 			
 			//FIXME getCompanyName ou getter do seu proprio nome
 			else if(price%2==numberTransporter(j.getCompanyName())%2){
-				offer = rand.nextInt(price) + 10; //FIXME limits ok?
+				offer = rand.nextInt(price); 
 			}
 			
 			else{
-				offer = rand.nextInt(100) + price; //FIXME limits ok?
+				offer = rand.nextInt(100) + price; 
 			}
 			
 			j.setPrice(offer);
@@ -142,11 +142,11 @@ public class TransporterPort implements TransporterPortType{
 		}
 		
 		else{
-			delay = rand.nextInt(4000) + 1000;
+			delay = rand.nextInt(4000) + 1000; //FIXME milliseconds?
 			
 			j.setState("ACCEPTED");
 		    
-			Timer timer = new Timer(delay, new ActionListener() { //FIXME milliseconds?
+			Timer timer = new Timer(delay, new ActionListener() { 
 		        @Override
 		        public void actionPerformed(ActionEvent ae) {
 		           acceptedToHeading(j);

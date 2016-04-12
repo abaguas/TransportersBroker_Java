@@ -1,5 +1,6 @@
 package pt.upa.broker.ws;
 
+import pt.upa.broker.exception.InvalidStateException;
 import pt.upa.broker.ws.TransportStateView;
 import pt.upa.broker.ws.TransportView;
 import pt.upa.transporter.ws.JobView;
@@ -11,16 +12,26 @@ public class Transport {
 	private String origin;
 	private String destination;
 	private int price;
-	private TransportStateView state;
+	private String state;
+	
+	//FIXME nao podemos ter uma transport state view, tem de ser um state
 
-	public Transport(JobView jv, String id, int price) {
+	public Transport(int id, String origin, String destination, String state) {
+		identifier = Integer.toString(id);
+		this.origin = origin;
+		this.destination = destination;
+		this.state = state;
+	}
+	
+	//DEPRECATED
+	/*public Transport(JobView jv, String id, int price) {
 		this.companyName = jv.getCompanyName();
 		this.identifier = id;
 		this.origin = jv.getJobOrigin();
 		this.destination = jv.getJobDestination();
 		this.price = price;
 		state = TransportStateView.REQUESTED;
-	}
+	}*/
 	
 	public TransportView createTransportView() {
 		TransportView tv = new TransportView();
@@ -29,8 +40,36 @@ public class Transport {
 		tv.setOrigin(origin);
 		tv.setDestination(destination);
 		tv.setPrice(price);
-		tv.setState(state);
+		tv.setState(stateToView());
 		return tv;
+	}
+	
+	public TransportStateView stateToView(){
+		if (state.equals("REQUEST")) {
+			return TransportStateView.REQUESTED;
+		}
+		else if (state.equals("BUDGETED")) {
+			return TransportStateView.BUDGETED;
+		}
+		else if (state.equals("BOOKED")) {
+			return TransportStateView.BOOKED;
+		}
+		else if (state.equals("FAILED")) {
+			return TransportStateView.FAILED;
+		}
+		else if (state.equals("HEADING")) {
+			return TransportStateView.HEADING;
+		}
+		else if (state.equals("ONGOING")) {
+			return TransportStateView.ONGOING;
+		}
+		else if (state.equals("COMPLETED")) {
+			return TransportStateView.COMPLETED;
+		}
+		else {
+			throw new InvalidStateException(state);
+		}
+		
 	}
 
 	public String getCompanyName() {
@@ -73,11 +112,11 @@ public class Transport {
 		this.price = price;
 	}
 
-	public TransportStateView getState() {
+	public String getState() {
 		return state;
 	}
 
-	public void setState(TransportStateView state) {
+	public void setState(String state) {
 		this.state = state;
 	}
 }

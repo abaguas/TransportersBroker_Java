@@ -13,7 +13,6 @@ import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.TransporterPortType;
 import pt.upa.transporter.ws.cli.TransporterClient;
-import pt.upa.transporter.ws.cli.TransporterClientException;
 
 import java.util.Properties;
 
@@ -40,12 +39,13 @@ public class BrokerPort implements BrokerPortType {
 	private String uddiURL;
 	private String name = "UpaTransporter%";
 	private ArrayList<Transport> transports = new ArrayList<Transport>();
+	private ArrayList<TransporterClient> transporterClients = new ArrayList<TransporterClient>();
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
 	}
 	
-	public Collection<String> lookUp () throws JAXRException { //FIXME má prática?
+	public Collection<String> list () throws JAXRException { //FIXME má prática?
     	String uddiURL = getUddiURL();
     	String name = getName();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
@@ -84,9 +84,7 @@ public class BrokerPort implements BrokerPortType {
 			return tc.ping(name);
 		} catch (JAXRException e1) {
 			return "Unreachable";
-	    } catch (TransporterClientException e2) {
-		    return "Unreachable";
-	    }
+		}
 	}
 
 	@Override
@@ -96,44 +94,45 @@ public class BrokerPort implements BrokerPortType {
 
 		Collection<String> endpoints = null;
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-
+		Transport t = new Transport(idFactory(), origin, destination, "REQUESTED"); 
+		
 		try {
-			endpoints = lookUp();
+			endpoints = list();
 			for (String endpoint : endpoints){
 				TransporterClient tc = new TransporterClient(endpoint);
+				transporterClients.add(tc); //adiciona o tc ao array para mais tarde permitir concorrencia
 				jobViews.add(tc.requestJob(origin, destination, price));
 			}
 		} catch (JAXRException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (TransporterClientException e3){
-			e3.printStackTrace();			
-		
+			e1.printStackTrace();			
 		} catch (BadLocationFault_Exception e) {
+			t.setState("FAILED");
 			UnknownLocationFault ulf = new UnknownLocationFault();
 			ulf.setLocation(e.getFaultInfo().getLocation());
 			throw new UnknownLocationFault_Exception(e.getMessage(), ulf);
 		
 		} catch (BadPriceFault_Exception e) {
+			t.setState("FAILED");
 			InvalidPriceFault ipf = new InvalidPriceFault();
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 		}
 		
 		if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
+			t.setState("FAILED");
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
 			utf.setDestination(destination);
 			throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
 		}
 		else{
-			return chooseJob(jobViews, price);				
+			return chooseJob(jobViews, price, t);				
 		}
 	}
 	
-	public String chooseJob (ArrayList<JobView> jobViews, int price) throws UnavailableTransportPriceFault_Exception{
+	public String chooseJob (ArrayList<JobView> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{
 		JobView jv = null;
-		Transport t = null;
 		
 		for (JobView j : jobViews) {
 			if (j.getJobPrice()<=price){
@@ -143,14 +142,18 @@ public class BrokerPort implements BrokerPortType {
 		}
 		
 		if (jv == null) {
+			t.setState("FAILED");
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
 		
-		t = new Transport(jv, Integer.toString(getId()) ,price);
+		
+		t.setCompanyName(jv.getCompanyName());
+		t.setPrice(jv.getJobPrice());
+		t.setState("BOOKED");
         transports.add(t);
-		setId(getId()+1);
+		
 		
 		return t.getIdentifier();
 	}
@@ -181,13 +184,12 @@ public class BrokerPort implements BrokerPortType {
 		removeTransports();
 		Collection<String> endpoints = null;
 		try {
-			endpoints = lookUp();
+			endpoints = list();
 			for (String endpoint : endpoints){
 				TransporterClient tc = new TransporterClient(endpoint);
+				transporterClients.add(tc); //adiciona o tc ao array para mais tarde permitir concorrencia
 				tc.clearJobs();
 			}
-		} catch (TransporterClientException e) {
-			e.printStackTrace();  //FIXME retirar?
 		} catch (JAXRException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -207,6 +209,13 @@ public class BrokerPort implements BrokerPortType {
 			}
 		}
 		return null;
+	}
+	
+	public int idFactory(){
+		int id = getId();
+		setId(id+1);
+		
+		return id;
 	}
 	
 	public String getUddiURL() {

@@ -17,8 +17,8 @@ import javax.jws.WebService;
 )
 public class TransporterPort implements TransporterPortType{
 
-
 	private ArrayList<Job> jobs = new ArrayList<Job>();
+	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
 	private String name;
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
 			Arrays.asList("Setúbal", "Évora", "Portalegre", "Beja", "Faro"));

@@ -1,28 +1,20 @@
 package pt.upa.broker.ws;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
-import pt.upa.transporter.ws.BadLocationFault;
+import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.BadLocationFault_Exception;
-import pt.upa.transporter.ws.BadPriceFault;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobView;
-import pt.upa.transporter.ws.TransporterPortType;
 import pt.upa.transporter.ws.cli.TransporterClient;
-
-import java.util.Properties;
-
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
-import javax.xml.ws.BindingProvider;
 
 @WebService(
 	    endpointInterface="pt.upa.broker.ws.BrokerPortType",
@@ -39,7 +31,6 @@ public class BrokerPort implements BrokerPortType {
 	private String uddiURL;
 	private String name = "UpaTransporter%";
 	private ArrayList<Transport> transports = new ArrayList<Transport>();
-	private ArrayList<TransporterClient> transporterClients = new ArrayList<TransporterClient>();
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
@@ -93,15 +84,25 @@ public class BrokerPort implements BrokerPortType {
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
 		Collection<String> endpoints = null;
-		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		Transport t = new Transport(idFactory(), origin, destination, "REQUESTED"); 
+		Map<JobView, TransporterClient> jobViews = new HashMap<JobView, TransporterClient>();
+		Transport t = new Transport(idFactory(), origin, destination); 
+		TransporterClient tc = null;
 		
 		try {
 			endpoints = list();
 			for (String endpoint : endpoints){
-				TransporterClient tc = new TransporterClient(endpoint);
-				transporterClients.add(tc); //adiciona o tc ao array para mais tarde permitir concorrencia
-				jobViews.add(tc.requestJob(origin, destination, price));
+				tc = new TransporterClient(endpoint);
+				jobViews.put(tc.requestJob(origin, destination, price), tc);
+			}
+			if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
+				t.setState("FAILED");
+				UnavailableTransportFault utf = new UnavailableTransportFault();
+				utf.setOrigin(origin);
+				utf.setDestination(destination);
+				throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
+			}
+			else{
+				return chooseJob(jobViews, price, t);
 			}
 		} catch (JAXRException e1) {
 			// TODO Auto-generated catch block
@@ -118,46 +119,63 @@ public class BrokerPort implements BrokerPortType {
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 		}
-		
-		if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
-			t.setState("FAILED");
-			UnavailableTransportFault utf = new UnavailableTransportFault();
-			utf.setOrigin(origin);
-			utf.setDestination(destination);
-			throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
-		}
-		else{
-			return chooseJob(jobViews, price, t);				
-		}
+		return null; // Never gets here
 	}
 	
-	public String chooseJob (ArrayList<JobView> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{
-		JobView jv = null;
+	public String chooseJob (Map<JobView, TransporterClient> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{
+		Collection<JobView> jvs = jobViews.keySet();
+		JobView budgetedJob = null;
 		
-		for (JobView j : jobViews) {
+		for (JobView j : jvs) {
 			if (j.getJobPrice()<=price){
-				jv =j;
+				budgetedJob = j;
 				price = j.getJobPrice();
 			}
 		}
 		
-		if (jv == null) {
+		if (budgetedJob == null) {
 			t.setState("FAILED");
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
 		
-		
-		t.setCompanyName(jv.getCompanyName());
-		t.setPrice(jv.getJobPrice());
-		t.setState("BOOKED");
+		t.setCompanyName(budgetedJob.getCompanyName());
+		t.setPrice(budgetedJob.getJobPrice());
+		t.setState("BUDGETED");
         transports.add(t);
+        
+        decideJob(jvs, jobViews, budgetedJob, t);
+        
+        return t.getIdentifier();
+	}
+	
+	public void decideJob(Collection<JobView> jvs, Map<JobView, TransporterClient> jobViews, JobView budgetedJob, Transport t){
+		TransporterClient tc = null;
 		
-		
-		return t.getIdentifier();
+		for (JobView j: jvs) {
+			tc = jobViews.get(j);
+			if (j.equals(budgetedJob)){
+				try {
+					tc.decideJob(t.getIdentifier(), true);
+					t.setState("BOOKED");
+				} catch (BadJobFault_Exception e) {
+					t.setState("FAILED");
+				}
+			}
+			else {
+				try {
+					tc.decideJob(t.getIdentifier(), false);
+					t.setState("FAILED");
+				} catch (BadJobFault_Exception e) {
+					t.setState("FAILED");
+				}
+			}
+			
+		}
 	}
 
+	//FIXME atualizar o job status
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		for(Transport t : transports) {
@@ -187,7 +205,6 @@ public class BrokerPort implements BrokerPortType {
 			endpoints = list();
 			for (String endpoint : endpoints){
 				TransporterClient tc = new TransporterClient(endpoint);
-				transporterClients.add(tc); //adiciona o tc ao array para mais tarde permitir concorrencia
 				tc.clearJobs();
 			}
 		} catch (JAXRException e) {

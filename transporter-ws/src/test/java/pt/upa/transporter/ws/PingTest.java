@@ -22,7 +22,8 @@ public class PingTest extends AbstractTransporterTest {
     @Test
     public void test() {
     	String ping = port.ping("HelloWorld");
-    	assertEquals(ping, "UpaTransporter1");
+    	assertNotNull("Ping is null", ping);
+    	assertEquals("Ping made with success", ping, "UpaTransporter1");
     }
 
 	

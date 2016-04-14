@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 
 public class PingTest extends AbstractTransporterTest {
 
-    // tests
 	@Override
 	protected void populate() {
 		port = new TransporterPort("UpaTransporter1");
@@ -23,7 +22,7 @@ public class PingTest extends AbstractTransporterTest {
     public void test() {
     	String ping = port.ping("HelloWorld");
     	assertNotNull("Ping is null", ping);
-    	assertEquals("Ping made with success", ping, "UpaTransporter1");
+    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
     }
 
 	

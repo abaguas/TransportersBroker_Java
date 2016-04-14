@@ -1,20 +1,29 @@
 package pt.upa.broker.ws;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
+
+import pt.upa.transporter.ws.BadLocationFault_Exception;
+import pt.upa.transporter.ws.BadPriceFault_Exception;
+import pt.upa.transporter.ws.JobView;
 
 public class RequestTransportTest extends AbstractBrokerTest {
 
 	@Override
 	protected void populate() {
-		// TODO Auto-generated method stub
-
+		port = new BrokerPort(""); //FIXME
 	}
 
 	@Test
-    public void test() {
+    public void succcessTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
+	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
-        // assertEquals(expected, actual);
-        // if the assert fails, the test fails
+		String s = port.requestTransport("Lisboa", "Braga", 40);
+
+	    assertEquals("Job with wrong state", s, "PROPOSED");
     }
+	
+	
 
 }

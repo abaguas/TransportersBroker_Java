@@ -1,5 +1,7 @@
 package pt.upa.broker.ws;
 
+import org.junit.Test;
+
 public class ClearTransportsTest extends AbstractBrokerTest {
 
 	@Override
@@ -7,5 +9,12 @@ public class ClearTransportsTest extends AbstractBrokerTest {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Test
+    public void test() {
+
+        // assertEquals(expected, actual);
+        // if the assert fails, the test fails
+    }
 
 }

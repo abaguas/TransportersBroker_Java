@@ -4,13 +4,9 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 public class PingIT extends AbstractIT {
-/*
- * (non-Javadoc)
- * THIS TEST ONLY CHECKS CONNECTIVITY
- */
+
 	@Override
-	protected void populate() {
-		
+	protected void populate() {		
 	}
 	
 	@Test

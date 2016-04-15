@@ -11,7 +11,8 @@ import org.junit.*;
 public abstract class AbstractTransporterTest {
 
     // static members
-	protected static TransporterPort port;
+	protected static TransporterPort port1;
+	protected static TransporterPort port2;
 
     // one-time initialization and clean-up
 
@@ -19,12 +20,14 @@ public abstract class AbstractTransporterTest {
 	
     @BeforeClass
     public static void oneTimeSetUp() {
-    	port = new TransporterPort("UpaTransporter1");
+    	port1 = new TransporterPort("UpaTransporter1");
+    	port2 = new TransporterPort("UpaTransporter2");
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-    	port = null;
+    	port1 = null;
+    	port2 = null;
     }
 
 

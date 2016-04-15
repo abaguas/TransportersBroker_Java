@@ -94,7 +94,9 @@ public class BrokerPort implements BrokerPortType {
 			endpoints = list();
 			for (String endpoint : endpoints){
 				tc = new TransporterClient(endpoint);
-				jobViews.put(tc.requestJob(origin, destination, price), endpoint);
+				JobView jv = tc.requestJob(origin, destination, price);
+				jobViews.put(jv, endpoint);
+				t.setIdentifier(jv.getJobIdentifier() + t.getIdentifier());
 			}
 			if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
 				t.setState("FAILED");

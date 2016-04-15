@@ -20,8 +20,8 @@ public class ClearJobsTest extends AbstractTransporterTest {
 	@Override
 	protected void populate() {
 		t1 = new TransporterPort("UpaTransporterPort1");
-		Job j1 = new Job("20", "Lisboa", "Setúbal"); //id=20
-		Job j2 = new Job("25", "Lisboa", "Faro");
+		Job j1 = new Job("Lisboa", "Setúbal"); //id=20
+		Job j2 = new Job("Lisboa", "Faro");
 		j1.setCompanyName("UpaTransporter1");
 		j2.setCompanyName("UpaTransporter1");
 		j1.setPrice(15);
@@ -35,7 +35,7 @@ public class ClearJobsTest extends AbstractTransporterTest {
     @Test
     public void success() {
     	t1.clearJobs();
-    	ArrayList<Job> jobs = t1.getJobs();
+    	ArrayList<Job> jobs = t1.getAvailableJobs();
     	ArrayList<Job> requestedJobs = t1.getRequestedJobs();
 
     	assertNotNull("structure deleted", jobs);

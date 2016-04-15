@@ -1,7 +1,9 @@
 package pt.upa.transporter.ws;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.Endpoint;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
@@ -25,7 +27,7 @@ public class TransporterMain {
 		TransporterPort tp = new TransporterPort(name);
 		
 		
-		ArrayList<Job> jobs = jobsFactory(tp);
+		jobsFactory(tp);
 		
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
@@ -47,10 +49,13 @@ public class TransporterMain {
             System.out.println("Press enter to shutdown");
             System.in.read();
 
-        } catch (Exception e) {
-			System.out.printf("Caught exception: %s%n", e);
-			e.printStackTrace();
-
+        } catch (JAXRException jaxre) {
+			System.out.printf("Caught exception in registry: %s%n", jaxre);
+			jaxre.printStackTrace();
+        } catch (IOException ioe) {
+        	System.out.printf("Could not read input: %s%n", ioe);
+        	ioe.printStackTrace();
+        	
 		} finally {
 			try {
 				if (endpoint != null) {
@@ -74,10 +79,34 @@ public class TransporterMain {
 
     }
 
-    public static ArrayList<Job> jobsFactory(TransporterPort tp){
-    	ArrayList<Job> jobs = new ArrayList<Job>();
-		tp.addJob(
-		return jobs;
+    public static void jobsFactory(TransporterPort tp){
+    	String number = tp.getName().substring(tp.getName().length()-1);
+		int num = Integer.parseInt(number);
+    	
+		if(num%2==0){ //operates North and Center
+	    	Job j1 = new Job("Porto", "Lisboa");
+	    	Job j2 = new Job("Lisboa", "Braga");
+	    	Job j3 = new Job("Santarém", "Vila Real");
+	    	Job j4 = new Job("Bragança", "Coimbra");
+	    	Job j5 = new Job("Viana do Castelo", "Viseu");
+	    	tp.addAvailableJob(j1);
+			tp.addAvailableJob(j2);
+			tp.addAvailableJob(j3);
+			tp.addAvailableJob(j4);
+			tp.addAvailableJob(j5);
+    	}
+		else{ //operates South and Center
+			Job j1 = new Job("Lisboa", "Faro");
+	    	Job j2 = new Job("Setúbal", "Aveiro");
+	    	Job j3 = new Job("Guarda", "Beja");
+	    	Job j4 = new Job("Évora", "Leiria");
+	    	Job j5 = new Job("Portalegre", "Lisboa");
+	    	tp.addAvailableJob(j1);
+			tp.addAvailableJob(j2);
+			tp.addAvailableJob(j3);
+			tp.addAvailableJob(j4);
+			tp.addAvailableJob(j5);
+		}		
     }
 
 

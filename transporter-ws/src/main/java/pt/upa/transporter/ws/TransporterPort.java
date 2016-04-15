@@ -24,6 +24,7 @@ import pt.upa.transporter.exception.NoJobsAvailableException;
 )
 public class TransporterPort implements TransporterPortType{
 
+	private String id = "00000";
 	private ArrayList<Job> availableJobs = new ArrayList<Job>();
 	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
 	private String name;
@@ -65,21 +66,23 @@ public class TransporterPort implements TransporterPortType{
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
-		System.out.println("antes do operate");
+
 		try {
 		  operate(origin, destination, getName());
 		} catch (DoesNotOperateException dnoe){
 			return null;
 		}
-		System.out.println("antes do get");
+		
 		try {
 		  j = getJobByRoute(origin, destination);
 		} catch (NoJobsAvailableException njae){
 			return null;
 		}
-		System.out.println("antes do random");
+		
 		Random rand = new Random();
+		
 		int offer;
+		
 		if (price==0){
 			return null;
 		}
@@ -95,6 +98,7 @@ public class TransporterPort implements TransporterPortType{
 		Job newJob = new Job(j);
 		newJob.setPrice(offer);
 		newJob.setCompanyName(getName());
+		newJob.setIdentifier(idFactory());
 		addRequestedJob(newJob);
 			
 		return newJob.createJobView();
@@ -135,8 +139,10 @@ public class TransporterPort implements TransporterPortType{
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		Random rand = new Random();
 		int delay;
-		//Job j = getJobById(id);
-		Job j = getRequestedJobById(id);
+		
+		Job j = getRequestedJobById(id.substring(0,5));
+		
+		j.setIdentifier(id);
 		
 		if(j == null){
 			BadJobFault fault = new BadJobFault();
@@ -220,6 +226,16 @@ public class TransporterPort implements TransporterPortType{
 		return null;
 	}
 	
+	public String idFactory(){
+		String id = getId();
+		int i = Integer.parseInt(id);
+		i++; 
+		
+		setId(String.format("%010d", i));
+		
+		return id;
+	}
+	
 
 	public String getName() {
 		return name;
@@ -285,6 +301,14 @@ public class TransporterPort implements TransporterPortType{
 	
 	public void ongoingToCompleted(Job j){
 		j.setState("COMPLETED");
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 

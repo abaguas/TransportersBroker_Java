@@ -116,5 +116,7 @@ Integracao do Broker: semelhante
 
 Todos as nossas classes têm como ficheiro principal o ...Main.java. A Application não é utilzada.
 
+Necessário fazer install da transportadora cliente para usar o broker servidor
+
 -------------------------------------------------------------------------------
 **FIM**

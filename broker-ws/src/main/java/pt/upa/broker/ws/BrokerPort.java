@@ -32,15 +32,7 @@ public class BrokerPort implements BrokerPortType {
 	private int id = 1;
 	private String uddiURL;
 	private String name = "UpaTransporter%";
-	private Map<Transport, TransporterClient> transports = new HashMap<Transport, TransporterClient>();
-	//FIXME
-	//FIXME
-	//FIXME
-	//FIXME a correspondencia no mapa deve ser de transporte com endpoint e nao com transporterclient
-	//FIXME
-	//FIXME
-	//FIXME
-	//FIXME
+	private Map<Transport, String> transports = new HashMap<Transport, String>();
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
@@ -81,7 +73,7 @@ public class BrokerPort implements BrokerPortType {
 	public String ping(String name) {
 		try {
 			String endpointURL = lookUp(name);
-			TransporterClient tc = new TransporterClient(endpointURL); //completar com UDDIURL
+			TransporterClient tc = new TransporterClient(endpointURL);
 			return tc.ping(name);
 		} catch (JAXRException e1) {
 			return "Unreachable";
@@ -94,7 +86,7 @@ public class BrokerPort implements BrokerPortType {
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
 		Collection<String> endpoints = null;
-		Map<JobView, TransporterClient> jobViews = new HashMap<JobView, TransporterClient>();
+		Map<JobView, String> jobViews = new HashMap<JobView, String>();
 		Transport t = new Transport(idFactory(), origin, destination); 
 		TransporterClient tc = null;
 		
@@ -102,7 +94,7 @@ public class BrokerPort implements BrokerPortType {
 			endpoints = list();
 			for (String endpoint : endpoints){
 				tc = new TransporterClient(endpoint);
-				jobViews.put(tc.requestJob(origin, destination, price), tc);
+				jobViews.put(tc.requestJob(origin, destination, price), endpoint);
 			}
 			if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
 				t.setState("FAILED");
@@ -132,7 +124,7 @@ public class BrokerPort implements BrokerPortType {
 		return null; // Never gets here
 	}
 	
-	public String chooseJob (Map<JobView, TransporterClient> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{
+	public String chooseJob (Map<JobView, String> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{
 		Collection<JobView> jvs = jobViews.keySet();
 		JobView budgetedJob = null;
 		
@@ -160,11 +152,11 @@ public class BrokerPort implements BrokerPortType {
         return t.getIdentifier();
 	}
 	
-	public void decideJob(Collection<JobView> jvs, Map<JobView, TransporterClient> jobViews, JobView budgetedJob, Transport t){
+	public void decideJob(Collection<JobView> jvs, Map<JobView, String> jobViews, JobView budgetedJob, Transport t){
 		TransporterClient tc = null;
 		
 		for (JobView j: jvs) {
-			tc = jobViews.get(j);
+			tc = new TransporterClient(jobViews.get(j));
 			if (j.equals(budgetedJob)){
 				try {
 					tc.decideJob(t.getIdentifier(), true);
@@ -188,7 +180,7 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		Transport transport = getTransportById(id);
-		TransporterClient tc = transports.get(transport);
+		TransporterClient tc = new TransporterClient(transports.get(transport));
 		
 		transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
 
@@ -217,9 +209,11 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public void clearTransports() {
-		Collection<TransporterClient> clients = transports.values();
+		TransporterClient tc = null;
+		Collection<String> clientEndpoints = transports.values();
 		
-		for (TransporterClient tc: clients){
+		for (String endpoint: clientEndpoints){
+			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
 		

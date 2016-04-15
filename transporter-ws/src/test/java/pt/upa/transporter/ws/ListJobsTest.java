@@ -29,6 +29,7 @@ public class ListJobsTest extends AbstractTransporterTest {
     		
     	assertNotNull("jobViews was not created", jobViews);
     	assertEquals("incorrect number of jobs", 2, jobViews.size());
+
     	assertEquals("first job not correct", jv1, jobViews.get(0));
     	assertEquals("second job not correct", jv2, jobViews.get(1));
     	
@@ -41,6 +42,7 @@ public class ListJobsTest extends AbstractTransporterTest {
     	assertEquals("incorrect origin", "Lisboa", jv2.getJobOrigin());
     	assertEquals("incorrect destination", "Faro", jv2.getJobDestination());
     	assertEquals("incorrect state", "PROPOSED", jv2.getJobState());
+
     }  
 
 }

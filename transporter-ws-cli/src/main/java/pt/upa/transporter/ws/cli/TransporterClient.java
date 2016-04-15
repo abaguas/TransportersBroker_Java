@@ -20,7 +20,7 @@ public class TransporterClient implements TransporterPortType {
 	
 	private TransporterPortType port;
 
-    public TransporterClient(String endpointURL) {
+    public TransporterClient(String endpointURL) throws TransporterClientException {
         createStub(endpointURL);
     }
     

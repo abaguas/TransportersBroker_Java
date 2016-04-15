@@ -38,21 +38,21 @@ public class JobStatusTest extends AbstractTransporterTest {
 	@Test
     public void acceptedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
 		JobView jv = port2.requestJob("Porto", "Guarda", 40);
-		port2.decideJob(jv.getJobIdentifier(), true);
-		JobView jview = port2.jobStatus(jv.getJobIdentifier());
+		JobView j = port2.decideJob(jv.getJobIdentifier(), true);
+		JobView jview = port2.jobStatus(j.getJobIdentifier());
 		
     	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.ACCEPTED, jv.getJobState());
+    	assertEquals("incorrect state", JobStateView.ACCEPTED, jview.getJobState());
     }
 	
 	@Test
     public void rejectedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
 		JobView jv = port2.requestJob("Porto", "Guarda", 40);
-		port2.decideJob(jv.getJobIdentifier(), false);
-		JobView jview = port2.jobStatus(jv.getJobIdentifier());
+		JobView j = port2.decideJob(jv.getJobIdentifier(), false);
+		JobView jview = port2.jobStatus(j.getJobIdentifier());
 		
     	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.REJECTED, jv.getJobState());
+    	assertEquals("incorrect state", JobStateView.REJECTED, jview.getJobState());
     }
 	
 	@Test

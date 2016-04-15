@@ -157,12 +157,6 @@ public class RequestJobTest extends AbstractTransporterTest  {
     	JobView jv = port2.requestJob("Lisboa", "Montijo", 40);
     }
 
-
-    @Test //Testing origin-destination exchange
-    public void originDestinationExchange() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = port2.requestJob("Braga", "Lisboa", 40);
-        assertNull("There are no jobs for this route", jv); 
-    }
     
     @Test (expected = BadLocationFault_Exception.class) //Testing empty origin-destination
     public void emptyOriginDestination() throws BadLocationFault_Exception, BadPriceFault_Exception {

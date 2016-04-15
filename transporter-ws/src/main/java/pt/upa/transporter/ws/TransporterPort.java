@@ -93,7 +93,9 @@ public class TransporterPort implements TransporterPortType{
 		}
 		
 		Job newJob = new Job(getName(), idFactory(), origin, destination, offer); 
-			
+		
+		addJob(newJob);
+		
 		return newJob.createJobView();
 	}
 	
@@ -123,6 +125,11 @@ public class TransporterPort implements TransporterPortType{
 		int delay;
 		
 		final Job j;
+		if (id.length()<11){
+			BadJobFault fault = new BadJobFault();
+			fault.setId(id);
+			throw new BadJobFault_Exception("invalid ID", fault);
+		}
 		
 		try{
 			j = getJobById(id.substring(0,10));

@@ -39,7 +39,8 @@ public class DecideJobTest extends AbstractTransporterTest {
     @Test//invalid state
     public void stateNotProposed() throws BadJobFault_Exception, BadLocationFault_Exception, BadPriceFault_Exception  {
     	JobView jv = port1.requestJob("Lisboa", "Faro", 40);
-    	jv.setJobState(JobStateView.ACCEPTED);
+    	Job j = port1.getJobById(jv.getJobIdentifier());
+    	j.setState("ACCEPTED");
     	JobView jview  = port1.decideJob(jv.getJobIdentifier(), false);
     	
     	assertNull("cant accept already accepted", jview);

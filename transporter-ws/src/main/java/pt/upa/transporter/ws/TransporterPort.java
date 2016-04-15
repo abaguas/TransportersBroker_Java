@@ -24,7 +24,7 @@ import pt.upa.transporter.exception.NoJobsAvailableException;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private ArrayList<Job> availableJobs = new ArrayList<Job>();
+	private ArrayList<Job> jobs = new ArrayList<Job>();
 	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
 	private String name;
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
@@ -181,7 +181,7 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public List<JobView> listJobs() {
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		for (Job j : availableJobs) {
+		for (Job j : jobs) {
 			jobViews.add(j.createJobView());
 		}
 		return jobViews;
@@ -189,7 +189,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public void clearJobs() {
-		availableJobs.clear();
+		jobs.clear();
 		requestedJobs.clear();
 	}
 
@@ -203,7 +203,7 @@ public class TransporterPort implements TransporterPortType{
 	
 	
 	public Job getJobById(String id) throws InvalidIdentifierException {
-		for (Job j: availableJobs){
+		for (Job j: jobs){
 			if (id == j.getIdentifier()) {
 				return j;
 			}
@@ -231,7 +231,7 @@ public class TransporterPort implements TransporterPortType{
 	}
 
 	public ArrayList<Job> getJobs() {
-		return availableJobs;
+		return jobs;
 	}
 	
 	public ArrayList<Job> getRequestedJobs() {
@@ -243,11 +243,11 @@ public class TransporterPort implements TransporterPortType{
 	}
 	
 	public void addAvailableJob(Job job) {
-		this.availableJobs.add(job);
+		this.jobs.add(job);
 	}
 	
 	public void removeAvailableJob(Job job) {
-		this.availableJobs.remove(job);
+		this.jobs.remove(job);
 	}
 	
 	public void acceptedToHeading(Job j){

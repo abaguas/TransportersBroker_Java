@@ -1,5 +1,7 @@
 package pt.upa.transporter.ws;
 
+import java.util.ArrayList;
+
 import javax.xml.ws.Endpoint;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
@@ -19,10 +21,16 @@ public class TransporterMain {
 		String name = args[1];
 		String url = args[2];
 
+		
+		TransporterPort tp = new TransporterPort(name);
+		
+		
+		ArrayList<Job> jobs = jobsFactory(tp);
+		
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
         try {	
-            endpoint = Endpoint.create(new TransporterPort(name));
+            endpoint = Endpoint.create(tp);
 
             // publish endpoint
             System.out.printf("Starting %s%n", url);
@@ -65,5 +73,12 @@ public class TransporterMain {
 		}
 
     }
+
+    public static ArrayList<Job> jobsFactory(TransporterPort tp){
+    	ArrayList<Job> jobs = new ArrayList<Job>();
+		tp.addJob(
+		return jobs;
+    }
+
 
 }

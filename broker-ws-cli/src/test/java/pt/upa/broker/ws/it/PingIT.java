@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-public class ApplicationIT extends AbstractIT {
+public class PingIT extends AbstractIT {
 	
 
 	@Test
     public void oddPingTest() {
-    	String ping = client.ping("HelloWorld");
+    	String ping = client.ping("UpaTransporter1");
     	assertNotNull("Ping is null", ping);
     	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
     }

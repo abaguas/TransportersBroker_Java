@@ -109,7 +109,9 @@ mvn clean install
 -------------------------------------------------------------------------------
 instrucoes para o projeto
 
-para correr a transportadora cliente usar o procedimento semelhante as servidoras, usar a opcao -D (e.g. mvn -Dws.i=2) ao fazer  exec:java para definir a que transportadora servidora ela se deve ligar
+Correr transportadora cliente: usar procedimento semelhante as servidoras, usar a opcao -D (e.g. mvn -Dws.i=2 exec:java) a que transportadora servidora ela se deve ligar
+
+Integracao transportadora: encontra-se em src/main/resources um ficheiro test.properties com o endereço do servidor UDDI e os nomes das transportadoras servidoras que serao conectadas. Adicionar mais entradas no caso de serem prentendidas mais tranportadoras. De seguida, em src/test/java/pt.upa.transporter.ws.it/AbstractIT.java chamar a funcao "properties.getPropValues(String,String)" com os campos pretendidos.
 
 -------------------------------------------------------------------------------
 **FIM**

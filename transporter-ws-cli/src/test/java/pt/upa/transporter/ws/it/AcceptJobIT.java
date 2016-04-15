@@ -1,17 +1,17 @@
 package pt.upa.transporter.ws.it;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class PingIT extends AbstractIT {
-/*
- * (non-Javadoc)
- * THIS TEST ONLY CHECKS CONNECTIVITY
- */
+import org.junit.Test;
+
+public class AcceptJobIT extends AbstractIT {
+
 	@Override
 	protected void populate() {
-		
+		// TODO Auto-generated method stub
 	}
+	
 	
 	@Test
     public void oddPingTest() {
@@ -25,5 +25,4 @@ public class PingIT extends AbstractIT {
     	assertNotNull("Ping is null", ping);
     	assertEquals("Unsuccessful ping", ping, "UpaTransporter4");
     }
-
 }

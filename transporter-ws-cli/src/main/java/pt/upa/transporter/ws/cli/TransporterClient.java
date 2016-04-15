@@ -41,7 +41,7 @@ public class TransporterClient implements TransporterPortType {
 	@Override
 	public String ping(String name) {
 		return port.ping(name);
-	}//é preciso apanhar aqui uma exceçao?
+	}
 
 	@Override
 	public JobView requestJob(String origin, String destination, int price)

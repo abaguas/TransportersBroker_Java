@@ -18,8 +18,8 @@ public class RequestJobTest extends AbstractTransporterTest  {
 		Job j1 = new Job("1", "Lisboa", "Braga");
 		Job j2 = new Job("2", "Lisboa", "Porto");
 
-		tp.getJobs().add(j1);
-		tp.getJobs().add(j2);
+		tp.getAvailableJobs().add(j1);
+		tp.getAvailableJobs().add(j2);
 
 	}
 	

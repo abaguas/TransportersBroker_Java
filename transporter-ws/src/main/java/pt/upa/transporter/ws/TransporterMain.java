@@ -84,11 +84,13 @@ public class TransporterMain {
 		int num = Integer.parseInt(number);
     	
 		if(num%2==0){ //operates North and Center
+
 	    	Job j1 = new Job("Porto", "Lisboa");
 	    	Job j2 = new Job("Lisboa", "Braga");
 	    	Job j3 = new Job("Santarém", "Vila Real");
 	    	Job j4 = new Job("Bragança", "Coimbra");
 	    	Job j5 = new Job("Viana do Castelo", "Viseu");
+
 	    	tp.addAvailableJob(j1);
 			tp.addAvailableJob(j2);
 			tp.addAvailableJob(j3);
@@ -96,11 +98,13 @@ public class TransporterMain {
 			tp.addAvailableJob(j5);
     	}
 		else{ //operates South and Center
+
 			Job j1 = new Job("Lisboa", "Faro");
 	    	Job j2 = new Job("Setúbal", "Aveiro");
 	    	Job j3 = new Job("Guarda", "Beja");
 	    	Job j4 = new Job("Évora", "Leiria");
 	    	Job j5 = new Job("Portalegre", "Lisboa");
+
 	    	tp.addAvailableJob(j1);
 			tp.addAvailableJob(j2);
 			tp.addAvailableJob(j3);

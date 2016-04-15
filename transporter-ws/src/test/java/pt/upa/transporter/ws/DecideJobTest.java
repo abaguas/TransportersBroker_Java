@@ -16,14 +16,14 @@ public class DecideJobTest extends AbstractTransporterTest {
 	@Override
 	protected void populate() {
 		t1 = new TransporterPort("UpaTransporterPort1");
-		Job j1 = new Job("20", "Lisboa", "Setúbal"); //id=20
-		Job j2 = new Job("25", "Lisboa", "Faro");
+		Job j1 = new Job("Lisboa", "Setúbal"); //id=20
+		Job j2 = new Job("Lisboa", "Faro");
 		j1.setCompanyName("UpaTransporter1");
 		j2.setCompanyName("UpaTransporter1");
 		j1.setPrice(15);
 		j2.setPrice(75);
-		t1.getJobs().add(j1);
-		t1.getJobs().add(j2);
+		t1.getAvailableJobs().add(j1);
+		t1.getAvailableJobs().add(j2);
 		t1.getRequestedJobs().add(j1);
 		t1.getRequestedJobs().add(j2);
 		

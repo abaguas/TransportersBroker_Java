@@ -15,11 +15,11 @@ public class RequestJobTest extends AbstractTransporterTest  {
 	@Override
 	protected void populate() {
 		tp = new TransporterPort("UpaTransporter2");
-		Job j1 = new Job("1", "Lisboa", "Braga");
-		Job j2 = new Job("2", "Lisboa", "Porto");
+		Job j1 = new Job("Lisboa", "Braga");
+		Job j2 = new Job("Lisboa", "Porto");
 
-		tp.getJobs().add(j1);
-		tp.getJobs().add(j2);
+		tp.getAvailableJobs().add(j1);
+		tp.getAvailableJobs().add(j2);
 
 	}
 	

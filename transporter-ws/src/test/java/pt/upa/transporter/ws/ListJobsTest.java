@@ -20,8 +20,8 @@ public class ListJobsTest extends AbstractTransporterTest {
 	protected void populate() {
 		t1 = new TransporterPort("UpaTransporter1");
 
-		j1 = new Job("1", "Lisboa", "Setúbal");
-		j2 = new Job("2", "Lisboa", "Faro");
+		j1 = new Job("Lisboa", "Setúbal");
+		j2 = new Job("Lisboa", "Faro");
 		j1.setCompanyName("UpaTransporter1");
 		j2.setCompanyName("UpaTransporter1");
 		j1.setPrice(15);

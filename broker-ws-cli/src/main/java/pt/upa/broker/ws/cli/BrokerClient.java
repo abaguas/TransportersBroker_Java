@@ -24,9 +24,7 @@ public class BrokerClient implements BrokerPortType{
 	private String endpointURL;
 	private BrokerPortType port;
 
-	//FIXME broker cliente tambem deve ligar-se ao broker server atraves de UDDI
-	//R: Sim
-    public BrokerClient(String uddiURL, String name) throws BrokerClientException {
+    public BrokerClient(String uddiURL, String name) {
         try {
 			endpointURL = lookUp(uddiURL, name);
 		} catch (Exception e) {

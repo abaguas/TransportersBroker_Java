@@ -25,7 +25,7 @@ public class JobStatusTest extends AbstractTransporterTest {
 	protected void populate() {
 		t1 = new TransporterPort("UpaTransporter1");
 
-		Job job = new Job("598", "Faro", "Beja");
+		Job job = new Job("Faro", "Beja");
 		job.setPrice(40);
 		job.setCompanyName("UpaTransporter1");
 		

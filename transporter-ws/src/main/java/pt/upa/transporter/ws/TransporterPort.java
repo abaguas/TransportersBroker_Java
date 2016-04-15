@@ -24,7 +24,8 @@ import pt.upa.transporter.exception.NoJobsAvailableException;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private ArrayList<Job> jobs = new ArrayList<Job>();
+	private String id = "00000";
+	private ArrayList<Job> availableJobs = new ArrayList<Job>();
 	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
 	private String name;
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
@@ -65,21 +66,23 @@ public class TransporterPort implements TransporterPortType{
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
-		System.out.println("antes do operate");
+
 		try {
 		  operate(origin, destination, getName());
 		} catch (DoesNotOperateException dnoe){
 			return null;
 		}
-		System.out.println("antes do get");
+		
 		try {
 		  j = getJobByRoute(origin, destination);
 		} catch (NoJobsAvailableException njae){
 			return null;
 		}
-		System.out.println("antes do random");
+		
 		Random rand = new Random();
+		
 		int offer;
+		
 		if (price==0){
 			return null;
 		}
@@ -92,13 +95,13 @@ public class TransporterPort implements TransporterPortType{
 		else{
 			offer = rand.nextInt(100) + price; 
 		}
-		
-		j.setPrice(offer);
-		j.setCompanyName(getName());
-		removeAvailableJob(j);
-		addRequestedJob(j);
+		Job newJob = new Job(j);
+		newJob.setPrice(offer);
+		newJob.setCompanyName(getName());
+		newJob.setIdentifier(idFactory());
+		addRequestedJob(newJob);
 			
-		return j.createJobView();
+		return newJob.createJobView();
 	}
 	
 	public int numberTransporter(String name){
@@ -122,7 +125,7 @@ public class TransporterPort implements TransporterPortType{
 	}
 	
 	public Job getJobByRoute(String origin, String destination) throws NoJobsAvailableException{
-		 ArrayList<Job> jbs = getJobs();
+		 ArrayList<Job> jbs = getAvailableJobs();
 		for (Job j : jbs){
 			if ((j.getOrigin().equals(origin)) && (j.getDestination().equals(destination))){
 				return j;
@@ -136,8 +139,10 @@ public class TransporterPort implements TransporterPortType{
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		Random rand = new Random();
 		int delay;
-		//Job j = getJobById(id);
-		Job j = getRequestedJobById(id);
+		
+		Job j = getRequestedJobById(id.substring(0,5));
+		
+		j.setIdentifier(id);
 		
 		if(j == null){
 			BadJobFault fault = new BadJobFault();
@@ -181,7 +186,7 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public List<JobView> listJobs() {
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		for (Job j : jobs) {
+		for (Job j : requestedJobs) {
 			jobViews.add(j.createJobView());
 		}
 		return jobViews;
@@ -189,7 +194,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public void clearJobs() {
-		jobs.clear();
+		availableJobs.clear();
 		requestedJobs.clear();
 	}
 
@@ -203,7 +208,7 @@ public class TransporterPort implements TransporterPortType{
 	
 	
 	public Job getJobById(String id) throws InvalidIdentifierException {
-		for (Job j: jobs){
+		for (Job j: requestedJobs){
 			if (id == j.getIdentifier()) {
 				return j;
 			}
@@ -221,6 +226,16 @@ public class TransporterPort implements TransporterPortType{
 		return null;
 	}
 	
+	public String idFactory(){
+		String id = getId();
+		int i = Integer.parseInt(id);
+		i++; 
+		
+		setId(String.format("%010d", i));
+		
+		return id;
+	}
+	
 
 	public String getName() {
 		return name;
@@ -230,8 +245,8 @@ public class TransporterPort implements TransporterPortType{
 		this.name = name;
 	}
 
-	public ArrayList<Job> getJobs() {
-		return jobs;
+	public ArrayList<Job> getAvailableJobs() {
+		return availableJobs;
 	}
 	
 	public ArrayList<Job> getRequestedJobs() {
@@ -243,11 +258,11 @@ public class TransporterPort implements TransporterPortType{
 	}
 	
 	public void addAvailableJob(Job job) {
-		this.jobs.add(job);
+		this.availableJobs.add(job);
 	}
 	
 	public void removeAvailableJob(Job job) {
-		this.jobs.remove(job);
+		this.availableJobs.remove(job);
 	}
 	
 	public void acceptedToHeading(Job j){
@@ -286,6 +301,14 @@ public class TransporterPort implements TransporterPortType{
 	
 	public void ongoingToCompleted(Job j){
 		j.setState("COMPLETED");
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 

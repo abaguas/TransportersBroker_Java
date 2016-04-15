@@ -19,6 +19,15 @@ public class Job {
 		this.state="PROPOSED";
 	}
 	
+	public Job(Job job) {
+		this.companyName = "";
+		this.identifier = job.getIdentifier();
+		this.origin = job.getOrigin();
+		this.destination = job.getDestination();
+		this.price = -1;
+		this.state="PROPOSED";
+	}
+	
 	public JobView createJobView() {
 		JobView jv = new JobView();
 		jv.setCompanyName(companyName);

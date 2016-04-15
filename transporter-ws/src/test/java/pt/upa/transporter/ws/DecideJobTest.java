@@ -53,7 +53,5 @@ public class DecideJobTest extends AbstractTransporterTest {
     public void decideInvalidID() throws BadJobFault_Exception  {
     	JobView jv  = t1.decideJob("30", true);
     }
-
-    
     
 }

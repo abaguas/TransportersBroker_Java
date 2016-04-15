@@ -25,6 +25,4 @@ public class PingTest extends AbstractTransporterTest {
     	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
     }
 
-	
-
 }

@@ -10,6 +10,10 @@ import java.util.Random;
 import javax.jws.WebService;
 import javax.swing.Timer;
 
+import pt.upa.transporter.exception.DoesNotOperateException;
+import pt.upa.transporter.exception.InvalidIdentifierException;
+import pt.upa.transporter.exception.NoJobsAvailableException;
+
 @WebService(
 	endpointInterface="pt.upa.transporter.ws.TransporterPortType",
 	wsdlLocation="transporter.1_0.wsdl",
@@ -20,7 +24,7 @@ import javax.swing.Timer;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private ArrayList<Job> jobs = new ArrayList<Job>();
+	private ArrayList<Job> availableJobs = new ArrayList<Job>();
 	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
 	private String name;
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
@@ -42,11 +46,14 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-	//FIXME O PAR ORIGIN-DESTINATION E UNICO?
+		Job j = null;
 		if(price<0){
 			BadPriceFault bpf = new BadPriceFault();
 			bpf.setPrice(price);
 			throw new BadPriceFault_Exception("The price must be positive", bpf);
+		}
+		if(price>100){
+			return null;
 		}
 		if(!(regiaoNorte.contains(origin) || regiaoCentro.contains(origin) || regiaoSul.contains(origin))){
 			BadLocationFault blf = new BadLocationFault();
@@ -58,73 +65,70 @@ public class TransporterPort implements TransporterPortType{
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
-		
-		Job j = getJobByRoute(origin, destination);
-		
-		if(price<=100 && operate(origin,destination, j.getCompanyName())){
-			Random rand = new Random();
-			int offer;
-			
-			if (price==0){
-				return null;
-			}
-			else if(price<=10){
-				offer = rand.nextInt(price-1) + 1;
-			}
-			
-			else if(price%2==numberTransporter(getName())%2){
-				offer = rand.nextInt(price-1) + 1; 
-			}
-			
-			else{
-				offer = rand.nextInt(100) + price; 
-			}
-			
-			j.setPrice(offer);
-			j.setCompanyName(getName());
-			addRequestedJob(j);
-			
-			return j.createJobView();
-		}
-		else{
+		System.out.println("antes do operate");
+		try {
+		  operate(origin, destination, getName());
+		} catch (DoesNotOperateException dnoe){
 			return null;
 		}
+		System.out.println("antes do get");
+		try {
+		  j = getJobByRoute(origin, destination);
+		} catch (NoJobsAvailableException njae){
+			return null;
+		}
+		System.out.println("antes do random");
+		Random rand = new Random();
+		int offer;
+		if (price==0){
+			return null;
+		}
+		else if(price<=10){
+			offer = rand.nextInt(price);
+		}
+		else if(price%2==numberTransporter(getName())%2){
+			offer = rand.nextInt(price); 
+		}
+		else{
+			offer = rand.nextInt(100) + price; 
+		}
+		
+		j.setPrice(offer);
+		j.setCompanyName(getName());
+		removeAvailableJob(j);
+		addRequestedJob(j);
+			
+		return j.createJobView();
 	}
 	
 	public int numberTransporter(String name){
-		String number = name.substring(name.length() - 1);
+		String number = name.substring(name.length()-1);
 		return Integer.parseInt(number);
 	}
 
-	public boolean operate(String origin, String destination, String name){
+	public void operate(String origin, String destination, String name) throws DoesNotOperateException {
 		if ((regiaoNorte.contains(origin) || regiaoCentro.contains(origin)) && 
 			((regiaoNorte.contains(destination) || regiaoCentro.contains(destination)))){
-			if (numberTransporter(name)%2==0){
-				return true;
+			if (numberTransporter(name)%2!=0){
+				throw new DoesNotOperateException(name, origin, destination);
 			}
-			else return false;
 		}
 		else if ((regiaoSul.contains(origin) || regiaoCentro.contains(origin)) && 
 			((regiaoSul.contains(destination) || regiaoCentro.contains(destination)))){
-			if (numberTransporter(name)%2==1){
-				return true;
+			if (numberTransporter(name)%2!=1){
+				throw new DoesNotOperateException(name, origin, destination);
 			}
 		}
-		return false;
 	}
 	
-	public Job getJobByRoute(String origin, String destination){
-		int min = 100;
-		Job best =null;
-		for (Job j : jobs){
-			if(origin==j.getOrigin() && destination==j.getDestination()){
-				if(j.getPrice()<min){
-					best=j;
-					min=j.getPrice();
-				}
+	public Job getJobByRoute(String origin, String destination) throws NoJobsAvailableException{
+		 ArrayList<Job> jbs = getJobs();
+		for (Job j : jbs){
+			if ((j.getOrigin().equals(origin)) && (j.getDestination().equals(destination))){
+				return j;
 			}
 		}
-		return best;
+		throw new NoJobsAvailableException(getName(), origin, destination);
 	}
 	
 
@@ -143,6 +147,8 @@ public class TransporterPort implements TransporterPortType{
 			
 		if(!accept){
 			j.setState("REJECTED");
+			Job job = new Job(j);
+			addAvailableJob(job);
 		}
 		
 		else{
@@ -164,13 +170,18 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public JobView jobStatus(String id) {
-		return getJobById(id).createJobView();
+		try {
+			Job j = getJobById(id);
+			return j.createJobView();
+		}catch (InvalidIdentifierException iie){
+			return null;
+		}
 	}
 
 	@Override
 	public List<JobView> listJobs() {
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		for (Job j : jobs) {
+		for (Job j : availableJobs) {
 			jobViews.add(j.createJobView());
 		}
 		return jobViews;
@@ -178,7 +189,7 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public void clearJobs() {
-		jobs.clear();
+		availableJobs.clear();
 		requestedJobs.clear();
 	}
 
@@ -191,14 +202,13 @@ public class TransporterPort implements TransporterPortType{
 	}
 	
 	
-	public Job getJobById(String id) {
-		for (Job j: jobs){
-			if (id==j.getIdentifier())
-			{
+	public Job getJobById(String id) throws InvalidIdentifierException {
+		for (Job j: availableJobs){
+			if (id == j.getIdentifier()) {
 				return j;
 			}
 		}
-		return null;
+		throw new InvalidIdentifierException(id);
 	}
 	
 	public Job getRequestedJobById(String id) {
@@ -221,19 +231,23 @@ public class TransporterPort implements TransporterPortType{
 	}
 
 	public ArrayList<Job> getJobs() {
-		return jobs;
+		return availableJobs;
 	}
 	
 	public ArrayList<Job> getRequestedJobs() {
 		return requestedJobs;
 	}
-
-	public void addJob(Job job) {
-		this.jobs.add(job);
-	}
 	
 	public void addRequestedJob(Job job) {
 		this.requestedJobs.add(job);
+	}
+	
+	public void addAvailableJob(Job job) {
+		this.availableJobs.add(job);
+	}
+	
+	public void removeAvailableJob(Job job) {
+		this.availableJobs.remove(job);
 	}
 	
 	public void acceptedToHeading(Job j){

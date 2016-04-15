@@ -26,8 +26,8 @@ public class ClearJobsTest extends AbstractTransporterTest {
 		j2.setCompanyName("UpaTransporter1");
 		j1.setPrice(15);
 		j2.setPrice(75);
-		t1.addJob(j1);
-		t1.addJob(j2);
+		t1.addAvailableJob(j1);
+		t1.addAvailableJob(j2);
 		t1.addRequestedJob(j2); // so j2 é que foi requested
 	}
 	

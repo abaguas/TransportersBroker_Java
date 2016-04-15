@@ -29,7 +29,7 @@ public class JobStatusTest extends AbstractTransporterTest {
 		job.setPrice(40);
 		job.setCompanyName("UpaTransporter1");
 		
-		t1.addJob(job);
+		t1.addAvailableJob(job);
 		t1.addRequestedJob(job);		
 	}
 	
@@ -42,11 +42,11 @@ public class JobStatusTest extends AbstractTransporterTest {
     	assertNotNull("jobView does not exist", jv);
     	
     	assertEquals("incorrect company name", "UpaTransporter1", jv.getCompanyName());
-    	assertEquals("incorrect job identifier", "1", jv.getJobIdentifier());    	
+    	assertEquals("incorrect job identifier", "598", jv.getJobIdentifier());    	
     	assertEquals("incorrect origin", "Faro", jv.getJobOrigin());
     	assertEquals("incorrect destination", "Beja", jv.getJobDestination());
     	assertEquals("incorrect price", 40, jv.getJobPrice());
-    	assertEquals("incorrect state", "PROPOSED", jv.getJobState());
+    	assertEquals("incorrect state", JobStateView.PROPOSED, jv.getJobState());
     }
 	
 	@Test

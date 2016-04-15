@@ -25,6 +25,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
 
     private static JobView jv1;
 
+    private static JobView jv2;
     
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -168,7 +169,46 @@ public class BrokerMockTest extends AbstractBrokerTest{
         }
     }
     
-
+//    @Test (expected=WebServiceException.class)
+//    public void testDecideJob(
+//        @Mocked final  TransporterClient tc1,
+//        @Mocked final  UDDINaming uddi)
+//        throws Exception {
+//
+//        
+//        new Expectations() {{
+//        	new UDDINaming("http://localhost:9090");
+//            uddi.lookup("UpaTransporter1");
+//            result = "http://localhost:8081/transporter-ws/endpoint";
+//            new TransporterClient(result.toString());
+//            
+//            
+//            tc1.decideJob("0000000001",true);
+//            
+//            result=jv1;;
+//          
+//            result = new WebServiceException("Error in requestJob");
+//
+//        }};
+//
+//        BrokerPort bp = new BrokerPort("http://localhost:9090"); 
+//
+//        try {
+//            bp.decideJob();
+//        } catch(WebServiceException e) {
+//            // exception is not expected
+//            fail();
+//        }
+//
+//        // second call to mocked server
+//        try {
+//        	bp.decideJob();
+//            fail();
+//        } catch(WebServiceException e) {
+//            // exception is expected
+//            assertEquals("Error in requestJob", e.getMessage());
+//        }
+//    }
 
 	@Override
 	protected void populate() {

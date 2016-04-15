@@ -12,7 +12,7 @@ import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
-import pt.upa.transporter.ws.cli.TransporterClientException;
+
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import javax.jws.WebService;
@@ -77,11 +77,7 @@ public class BrokerPort implements BrokerPortType {
 			return tc.ping(name);
 		} catch (JAXRException e1) {
 			return "Unreachable";
-		} catch (TransporterClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
 	}
 
 	@Override
@@ -126,9 +122,6 @@ public class BrokerPort implements BrokerPortType {
 			InvalidPriceFault ipf = new InvalidPriceFault();
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
-		} catch (TransporterClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null; // Never gets here
 	}
@@ -165,12 +158,7 @@ public class BrokerPort implements BrokerPortType {
 		TransporterClient tc = null;
 		
 		for (JobView j: jvs) {
-			try {
-				tc = new TransporterClient(jobViews.get(j));
-			} catch (TransporterClientException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			tc = new TransporterClient(jobViews.get(j));
 			if (j.equals(budgetedJob)){
 				try {
 					tc.decideJob(t.getIdentifier(), true);
@@ -194,13 +182,7 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		Transport transport = getTransportById(id);
-		TransporterClient tc=null;
-		try {
-			tc = new TransporterClient(transports.get(transport));
-		} catch (TransporterClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		TransporterClient tc = new TransporterClient(transports.get(transport));
 		
 		transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
 
@@ -233,12 +215,7 @@ public class BrokerPort implements BrokerPortType {
 		Collection<String> clientEndpoints = transports.values();
 		
 		for (String endpoint: clientEndpoints){
-			try {
-				tc = new TransporterClient(endpoint);
-			} catch (TransporterClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
 		

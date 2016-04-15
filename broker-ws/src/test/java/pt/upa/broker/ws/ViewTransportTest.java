@@ -1,20 +1,31 @@
 package pt.upa.broker.ws;
 
+import javax.xml.registry.JAXRException;
+
 import org.junit.Test;
+
+import pt.upa.transporter.ws.cli.TransporterClient;
 
 public class ViewTransportTest extends AbstractBrokerTest {
 
 	@Override
 	protected void populate() {
-		// TODO Auto-generated method stub
-
+	
 	}
 
 	@Test
-    public void test() {
+    public void itest() throws JAXRException {
+		port.lookUp("UpaTransporter1");
 
-        // assertEquals(expected, actual);
-        // if the assert fails, the test fails
+		
+//			Transport transport = getTransportById(id);
+//			TransporterClient tc = new TransporterClient(transports.get(transport));
+//			
+//			transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
+//
+//			return transport.createTransportView();
+			
+		
     }
 
 }

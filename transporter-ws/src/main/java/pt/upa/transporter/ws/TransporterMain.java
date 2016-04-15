@@ -97,6 +97,7 @@ public class TransporterMain {
 			tp.addAvailableJob(j4);
 			tp.addAvailableJob(j5);
     	}
+
 		else{ //operates South and Center
 
 			Job j1 = new Job("Lisboa", "Faro");

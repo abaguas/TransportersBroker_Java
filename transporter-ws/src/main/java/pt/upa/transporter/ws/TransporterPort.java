@@ -204,7 +204,7 @@ public class TransporterPort implements TransporterPortType{
 		Timer timer = new Timer(delay, new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent ae) {
-	           acceptedToHeading(j);
+	           headingToOngoing(j);
 	        }
 	    });
 	    timer.start();
@@ -221,7 +221,7 @@ public class TransporterPort implements TransporterPortType{
 		Timer timer = new Timer(delay, new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent ae) {
-	           acceptedToHeading(j);
+	           ongoingToCompleted(j);
 	        }
 	    });
 	    timer.start();

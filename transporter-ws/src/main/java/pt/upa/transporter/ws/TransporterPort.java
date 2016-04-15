@@ -12,7 +12,6 @@ import javax.swing.Timer;
 
 import pt.upa.transporter.exception.DoesNotOperateException;
 import pt.upa.transporter.exception.InvalidIdentifierException;
-import pt.upa.transporter.exception.NoJobsAvailableException;
 
 @WebService(
 	endpointInterface="pt.upa.transporter.ws.TransporterPortType",
@@ -24,10 +23,9 @@ import pt.upa.transporter.exception.NoJobsAvailableException;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private String id = "00000";
-	private ArrayList<Job> availableJobs = new ArrayList<Job>();
-	private ArrayList<Job> requestedJobs = new ArrayList<Job>();
+	private String id = "0000000000";
 	private String name;
+	private ArrayList<Job> jobs = new ArrayList<Job>();
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
 			Arrays.asList("Setúbal", "Évora", "Portalegre", "Beja", "Faro"));
 	private ArrayList<String> regiaoCentro = new ArrayList<String>(
@@ -47,15 +45,10 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-		Job j = null;
-		if(price<0){
-			BadPriceFault bpf = new BadPriceFault();
-			bpf.setPrice(price);
-			throw new BadPriceFault_Exception("The price must be positive", bpf);
-		}
-		if(price>100){
+		if(origin==null || destination == null){
 			return null;
 		}
+		
 		if(!(regiaoNorte.contains(origin) || regiaoCentro.contains(origin) || regiaoSul.contains(origin))){
 			BadLocationFault blf = new BadLocationFault();
 			blf.setLocation(origin);
@@ -66,24 +59,27 @@ public class TransporterPort implements TransporterPortType{
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
-
+		if(price < 0){
+			BadPriceFault bpf = new BadPriceFault();
+			bpf.setPrice(price);
+			throw new BadPriceFault_Exception("The price must be positive", bpf);
+		}
+		
 		try {
 		  operate(origin, destination, getName());
 		} catch (DoesNotOperateException dnoe){
 			return null;
 		}
 		
-		try {
-		  j = getJobByRoute(origin, destination);
-		} catch (NoJobsAvailableException njae){
-			return null;
-		}
 		
 		Random rand = new Random();
 		
 		int offer;
 		
-		if (price==0){
+		if(price>100){
+			return null;
+		}
+		if (price==0) {
 			return null;
 		}
 		else if(price<=10){
@@ -93,14 +89,13 @@ public class TransporterPort implements TransporterPortType{
 			offer = rand.nextInt(price); 
 		}
 		else{
-			offer = rand.nextInt(100) + price; 
+			offer = rand.nextInt(100) + price + 1; 
 		}
-		Job newJob = new Job(j);
-		newJob.setPrice(offer);
-		newJob.setCompanyName(getName());
-		newJob.setIdentifier(idFactory());
-		addRequestedJob(newJob);
-			
+		
+		Job newJob = new Job(getName(), idFactory(), origin, destination, offer); 
+		
+		addJob(newJob);
+		
 		return newJob.createJobView();
 	}
 	
@@ -123,41 +118,39 @@ public class TransporterPort implements TransporterPortType{
 			}
 		}
 	}
-	
-	public Job getJobByRoute(String origin, String destination) throws NoJobsAvailableException{
-		 ArrayList<Job> jbs = getAvailableJobs();
-		for (Job j : jbs){
-			if ((j.getOrigin().equals(origin)) && (j.getDestination().equals(destination))){
-				return j;
-			}
-		}
-		throw new NoJobsAvailableException(getName(), origin, destination);
-	}
-	
 
 	@Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
 		Random rand = new Random();
 		int delay;
 		
-		Job j = getRequestedJobById(id.substring(0,5));
-		
-		j.setIdentifier(id);
-		
-		if(j == null){
+		final Job j;
+		if (id.length()<11){
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
 			throw new BadJobFault_Exception("invalid ID", fault);
 		}
-			
+		
+		try{
+			j = getJobById(id.substring(0,10));
+		}catch (InvalidIdentifierException iie){
+			BadJobFault fault = new BadJobFault();
+			fault.setId(id);
+			throw new BadJobFault_Exception("invalid ID", fault);
+		}
+		
+		j.setIdentifier(id);
+
+		if (j.getState()!="PROPOSED"){
+			return null;
+		}
+		
 		if(!accept){
 			j.setState("REJECTED");
-			Job job = new Job(j);
-			addAvailableJob(job);
 		}
 		
 		else{
-			delay = rand.nextInt(4000) + 1000; //FIXME milliseconds?
+			delay = rand.nextInt(4000) + 1000;
 			
 			j.setState("ACCEPTED");
 		    
@@ -169,7 +162,6 @@ public class TransporterPort implements TransporterPortType{
 		    });
 		    timer.start();
 		}
-		
 		return j.createJobView();
 	}
 
@@ -186,7 +178,8 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public List<JobView> listJobs() {
 		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		for (Job j : requestedJobs) {
+		ArrayList<Job> jobs = getJobs();
+		for (Job j : jobs) {
 			jobViews.add(j.createJobView());
 		}
 		return jobViews;
@@ -194,75 +187,17 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public void clearJobs() {
-		availableJobs.clear();
-		requestedJobs.clear();
+		getJobs().clear();
 	}
-
-	public List<JobView> listRequestedJobs() {
-		ArrayList<JobView> jobViews = new ArrayList<JobView>();
-		for (Job j : requestedJobs) {
-			jobViews.add(j.createJobView());
-		}
-		return jobViews;
-	}
-	
 	
 	public Job getJobById(String id) throws InvalidIdentifierException {
-		for (Job j: requestedJobs){
+		ArrayList<Job> jobs = getJobs();
+		for (Job j: jobs){
 			if (id == j.getIdentifier()) {
 				return j;
 			}
 		}
 		throw new InvalidIdentifierException(id);
-	}
-	
-	public Job getRequestedJobById(String id) {
-		for (Job j: requestedJobs){
-			if (id==j.getIdentifier())
-			{
-				return j;
-			}
-		}
-		return null;
-	}
-	
-	public String idFactory(){
-		String id = getId();
-		int i = Integer.parseInt(id);
-		i++; 
-		
-		setId(String.format("%010d", i));
-		
-		return id;
-	}
-	
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ArrayList<Job> getAvailableJobs() {
-		return availableJobs;
-	}
-	
-	public ArrayList<Job> getRequestedJobs() {
-		return requestedJobs;
-	}
-	
-	public void addRequestedJob(Job job) {
-		this.requestedJobs.add(job);
-	}
-	
-	public void addAvailableJob(Job job) {
-		this.availableJobs.add(job);
-	}
-	
-	public void removeAvailableJob(Job job) {
-		this.availableJobs.remove(job);
 	}
 	
 	public void acceptedToHeading(Job j){
@@ -273,10 +208,10 @@ public class TransporterPort implements TransporterPortType{
 		
 		j.setState("HEADING");
 	    
-		Timer timer = new Timer(delay, new ActionListener() { //FIXME milliseconds?
+		Timer timer = new Timer(delay, new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent ae) {
-	           acceptedToHeading(j);
+	           headingToOngoing(j);
 	        }
 	    });
 	    timer.start();
@@ -290,10 +225,10 @@ public class TransporterPort implements TransporterPortType{
 		
 		j.setState("ONGOING");
 	    
-		Timer timer = new Timer(delay, new ActionListener() { //FIXME milliseconds?
+		Timer timer = new Timer(delay, new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent ae) {
-	           acceptedToHeading(j);
+	           ongoingToCompleted(j);
 	        }
 	    });
 	    timer.start();
@@ -301,6 +236,40 @@ public class TransporterPort implements TransporterPortType{
 	
 	public void ongoingToCompleted(Job j){
 		j.setState("COMPLETED");
+	}
+	
+	
+	public String idFactory(){
+		String id = getId();
+		int i = Integer.parseInt(id);
+		i++;
+		
+		id = String.format("%010d", i);
+		
+		setId(id);
+		
+		return id;
+	}
+	
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public ArrayList<Job> getJobs() {
+		return this.jobs;
+	}
+	
+	public void addJob(Job job) {
+		this.jobs.add(job);
+	}
+	
+	public void removeJob(Job job) {
+		this.jobs.remove(job);
 	}
 
 	public String getId() {
@@ -310,7 +279,8 @@ public class TransporterPort implements TransporterPortType{
 	public void setId(String id) {
 		this.id = id;
 	}
-
+	
+	
 
 
 }

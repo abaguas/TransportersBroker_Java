@@ -10,22 +10,14 @@ public class Job {
 	private int price;
 	private String state;
 	
-	public Job(String origin, String destination) {
-		this.companyName = "";
-		this.identifier = null;
+	
+	public Job(String name, String id, String origin, String destination, int price){
+		this.companyName = name;
+		this.identifier = id;
 		this.origin = origin;
 		this.destination = destination;
-		this.price = -1;
-		this.state="PROPOSED";
-	}
-	
-	public Job(Job job) {
-		this.companyName = "";
-		this.identifier = job.getIdentifier();
-		this.origin = job.getOrigin();
-		this.destination = job.getDestination();
-		this.price = -1;
-		this.state="PROPOSED";
+		this.price = price;
+		this.state = "PROPOSED";
 	}
 	
 	public JobView createJobView() {

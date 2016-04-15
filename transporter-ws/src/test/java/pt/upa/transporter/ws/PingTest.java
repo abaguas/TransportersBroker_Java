@@ -14,15 +14,20 @@ public class PingTest extends AbstractTransporterTest {
 
 	@Override
 	protected void populate() {
-		port = new TransporterPort("UpaTransporter1");
-	
 	}
 	
     @Test
-    public void test() {
-    	String ping = port.ping("HelloWorld");
+    public void oddPingTest() {
+    	String ping = port1.ping("HelloWorld");
     	assertNotNull("Ping is null", ping);
     	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
+    }
+    
+    @Test
+    public void evenPairPingTest() {
+    	String ping = port2.ping("HelloWorld");
+    	assertNotNull("Ping is null", ping);
+    	assertEquals("Unsuccessful ping", ping, "UpaTransporter2");
     }
 
 }

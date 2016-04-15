@@ -23,8 +23,23 @@ public class RequestJobIT extends AbstractIT {
 
 	@Override
 	protected void populate() {
-	
 	}
+	
+	@Test
+    public void requestTest() {
+		
+		
+    	String ping = tOdd.ping("HelloWorld");
+    	assertNotNull("Ping is null", ping);
+    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
+    }
+	
+	@Test
+    public void oddPingTest() {
+    	String ping = tOdd.ping("HelloWorld");
+    	assertNotNull("Ping is null", ping);
+    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
+    }
 	
 	
 	

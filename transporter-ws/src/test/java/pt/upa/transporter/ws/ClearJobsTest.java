@@ -15,35 +15,24 @@ import java.util.ArrayList;
 
 public class ClearJobsTest extends AbstractTransporterTest {
 
-	private TransporterPort t1;
 	
 	@Override
 	protected void populate() {
-		t1 = new TransporterPort("UpaTransporterPort1");
-		Job j1 = new Job("Lisboa", "Setúbal"); //id=20
-		Job j2 = new Job("Lisboa", "Faro");
-		j1.setCompanyName("UpaTransporter1");
-		j2.setCompanyName("UpaTransporter1");
-		j1.setPrice(15);
-		j2.setPrice(75);
-		t1.addAvailableJob(j1);
-		t1.addAvailableJob(j2);
-		t1.addRequestedJob(j2); // so j2 é que foi requested
 	}
 	
     // tests
     @Test
     public void success() {
-    	t1.clearJobs();
-    	ArrayList<Job> jobs = t1.getAvailableJobs();
-    	ArrayList<Job> requestedJobs = t1.getRequestedJobs();
+    	port1.clearJobs();
+    	port2.clearJobs();
+    	
+    	ArrayList<Job> jobs1 = port1.getJobs();
+    	ArrayList<Job> jobs2 = port2.getJobs();
 
-    	assertNotNull("structure deleted", jobs);
-    	assertNotNull("structure deleted", requestedJobs);
-    	assertEquals("jobs not deleted", 0, jobs.size());
-    	assertEquals("requestedJobs not deleted", 0, requestedJobs.size());
-
-
+    	assertNotNull("structure deleted", jobs1);
+    	assertEquals("jobs not deleted", 0, jobs1.size());
+    	assertNotNull("structure deleted", jobs2);
+    	assertEquals("jobs not deleted", 0, jobs2.size());
     }
 
 

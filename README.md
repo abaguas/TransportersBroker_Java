@@ -107,4 +107,9 @@ mvn clean install
 ...
 
 -------------------------------------------------------------------------------
+instrucoes para o projeto
+
+para correr a transportadora cliente usar o procedimento semelhante as servidoras, usar a opcao -D (e.g. mvn -Dws.i=2) ao fazer  exec:java para definir a que transportadora servidora ela se deve ligar
+
+-------------------------------------------------------------------------------
 **FIM**

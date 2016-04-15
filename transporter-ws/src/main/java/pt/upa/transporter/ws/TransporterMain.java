@@ -78,7 +78,7 @@ public class TransporterMain {
     	String number = tp.getName().substring(tp.getName().length()-1);
 		int num = Integer.parseInt(number);
     	
-		if(num%2==0){ //operates North and Center
+		if(num%2==0){ //operates North and Center (Even)
 	    	Job j1 = new Job("1", "Porto", "Lisboa");
 	    	Job j2 = new Job("2", "Lisboa", "Braga");
 	    	Job j3 = new Job("3", "Santarém", "Vila Real");
@@ -90,7 +90,7 @@ public class TransporterMain {
 			tp.addAvailableJob(j4);
 			tp.addAvailableJob(j5);
     	}
-		else{ //operates South and Center
+		else{ //operates South and Center (Odd)
 			Job j1 = new Job("1", "Lisboa", "Faro");
 	    	Job j2 = new Job("2", "Setúbal", "Aveiro");
 	    	Job j3 = new Job("3", "Guarda", "Beja");

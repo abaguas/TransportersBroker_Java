@@ -1,5 +1,7 @@
 package pt.upa.broker.ws;
 
+import javax.xml.registry.JAXRException;
+
 import org.junit.*;
 
 /**
@@ -46,7 +48,7 @@ public abstract class AbstractBrokerTest {
     // tests
 
     @Test
-    public void test() {
+    public void test()  {
 
         // assertEquals(expected, actual);
         // if the assert fails, the test fails

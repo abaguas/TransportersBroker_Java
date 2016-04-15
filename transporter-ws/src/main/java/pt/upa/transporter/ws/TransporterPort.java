@@ -45,6 +45,10 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
+		if(origin==null || destination == null){
+			return null;
+		}
+		
 		if(!(regiaoNorte.contains(origin) || regiaoCentro.contains(origin) || regiaoSul.contains(origin))){
 			BadLocationFault blf = new BadLocationFault();
 			blf.setLocation(origin);
@@ -55,7 +59,7 @@ public class TransporterPort implements TransporterPortType{
 			blf.setLocation(destination);
 			throw new BadLocationFault_Exception("Unknown destination", blf);
 		}
-		if(price<0){
+		if(price < 0){
 			BadPriceFault bpf = new BadPriceFault();
 			bpf.setPrice(price);
 			throw new BadPriceFault_Exception("The price must be positive", bpf);

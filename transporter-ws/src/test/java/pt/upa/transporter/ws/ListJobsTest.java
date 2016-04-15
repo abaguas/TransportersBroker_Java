@@ -14,36 +14,40 @@ import java.util.ArrayList;
 
 public class ListJobsTest extends AbstractTransporterTest {
 
-	TransporterPort t1; // t2;
-	Job j1, j2, j3, j4;
+//	TransporterPort t1; // t2;
+//	Job j1, j2, j3, j4;
 	
 	protected void populate() {
-		t1 = new TransporterPort("UpaTransporter1");
-
-		j1 = new Job("Lisboa", "Setúbal");
-		j2 = new Job("Lisboa", "Faro");
-		j1.setCompanyName("UpaTransporter1");
-		j2.setCompanyName("UpaTransporter1");
-		j1.setPrice(15);
-		j2.setPrice(75);
-		t1.addAvailableJob(j1);
-		t1.addAvailableJob(j2);
-		t1.addRequestedJob(j1);
-		t1.addRequestedJob(j2);
+//		t1 = new TransporterPort("UpaTransporter1");
+//
+//		j1 = new Job("Lisboa", "Setúbal");
+//		j2 = new Job("Lisboa", "Faro");
+//		j1.setCompanyName("UpaTransporter1");
+//		j2.setCompanyName("UpaTransporter1");
+//		j1.setPrice(15);
+//		j2.setPrice(75);
+//		t1.addAvailableJob(j1);
+//		t1.addAvailableJob(j2);
+//		t1.addRequestedJob(j1);
+//		t1.addRequestedJob(j2);
 	}
 	
      // tests
     @Test
     public void successTest() {
-  
-    	ArrayList<JobView> jv1 = (ArrayList<JobView>) t1.listRequestedJobs();
+    	
+    	JobView jv1 = port1.requestJob("Lisboa", "Setúbal", 15);
+    	JobView jv2 = port2.requestJob("Lisboa",  "Faro", 75);
+    	
+    	
+    	ArrayList<JobView> jobViews = (ArrayList<JobView>) port.listJobs();
     		
-    	assertNotNull("jobViews was not created", jv1);
-    	assertEquals("incorrect number of jobs", 2, jv1.size());
+    	assertNotNull("jobViews was not created", jobViews);
+    	assertEquals("incorrect number of jobs", 2, jobViews.size());
     	//FIXME, UM JOB NAO E UM JOB VIEW //assertEquals("first job not correct", j1, jv1.get(1));
     	//FIXME IGUAL//assertEquals("second job not correct", j2, jv1.get(2));
-    	assertEquals("incorrect company name", "UpaTransporter1", j1.getCompanyName());
-    	assertEquals("incorrect job identifier", "1", j1.getIdentifier());    	
+    	//assertEquals("incorrect company name", "UpaTransporter1", j1.getCompanyName());
+    	//assertEquals("incorrect job identifier", "1", j1.getIdentifier());    	
     	assertEquals("incorrect origin", "Lisboa", j1.getOrigin());
     	assertEquals("incorrect destination", "Setúbal", j1.getDestination());
     	assertEquals("incorrect price", 15, j1.getPrice());

@@ -44,6 +44,8 @@ public class ListJobsTest extends AbstractTransporterTest {
     		
     	assertNotNull("jobViews was not created", jobViews);
     	assertEquals("incorrect number of jobs", 2, jobViews.size());
+    	
+    	
     	//FIXME, UM JOB NAO E UM JOB VIEW //assertEquals("first job not correct", j1, jv1.get(1));
     	//FIXME IGUAL//assertEquals("second job not correct", j2, jv1.get(2));
     	//assertEquals("incorrect company name", "UpaTransporter1", j1.getCompanyName());

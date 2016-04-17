@@ -187,8 +187,10 @@ public class BrokerPort implements BrokerPortType {
 		
 			tc = new TransporterClient(transports.get(transport));
 		
-		transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
-
+		String state = viewToState(tc.jobStatus(id).getJobState());
+		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
+			transport.setState(state);	
+		}
 		return transport.createTransportView();
 		
 	}
@@ -228,10 +230,12 @@ public class BrokerPort implements BrokerPortType {
 	}
     
 	public Transport getTransportById(String id) throws UnknownTransportFault_Exception{
-		Collection<Transport> transps = transports.keySet();
-		for (Transport t: transps){
-			if (id==t.getIdentifier()){
-				return t;
+		if (id != null){
+			Collection<Transport> transps = transports.keySet();
+			for (Transport t: transps){
+				if (id.equals(t.getIdentifier())){
+					return t;
+				}
 			}
 		}
 		UnknownTransportFault fault = new UnknownTransportFault();
@@ -247,32 +251,7 @@ public class BrokerPort implements BrokerPortType {
 	}
 	
 	public String viewToState(JobStateView view){
-		if (view.equals(TransportStateView.REQUESTED)) {
-			return "REQUESTED";
-		}
-		else if (view.equals(TransportStateView.BUDGETED)) {
-			return "BUDGETED";
-		}
-		else if (view.equals(TransportStateView.BOOKED)) {
-			return "BOOKED";
-		}
-		else if (view.equals(TransportStateView.FAILED)) {
-			return "FAILED";
-		}
-		else if (view.equals(TransportStateView.HEADING)) {
-			return "HEADING";
-		}
-		else if (view.equals(TransportStateView.ONGOING)) {
-			return "ONGOING";
-		}
-		else if (view.equals(TransportStateView.COMPLETED)) {
-			return "COMPLETED";
-		}
-		else{
-			return null; //FIXME throw exception? isto é do wsdl e nunca acontece
-		}
-		
-		
+		return view.name();
 	}
 	
 	public String getUddiURL() {

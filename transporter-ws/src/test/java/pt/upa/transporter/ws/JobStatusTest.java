@@ -58,17 +58,17 @@ public class JobStatusTest extends AbstractTransporterTest {
 	@Test
     public void completedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
 		JobView jv = port2.requestJob("Porto", "Guarda", 40);
-		JobView j = port2.decideJob(jv.getJobIdentifier(), true);
+		port2.decideJob(jv.getJobIdentifier(), true);
+		JobView jview = port2.jobStatus(jv.getJobIdentifier());
 		try {
-		    Thread.sleep(25000);                 //1000 milliseconds is one second.
+		    Thread.sleep(15000);                 //1000 milliseconds is one second.
 		} catch(InterruptedException ex) {
 		}
-		JobView jview = port2.jobStatus(j.getJobIdentifier());
 		
     	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.COMPLETED, jview.getJobState());
+    	assertEquals("incorrect state", JobStateView.COMPLETED, jv.getJobState());
     }
-
+	
 	@Test
     public void notAcceptedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
 		JobView jv = port2.requestJob("Porto", "Guarda", 40);

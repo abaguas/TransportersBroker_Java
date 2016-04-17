@@ -125,7 +125,7 @@ public class TransporterPort implements TransporterPortType{
 		int delay;
 		
 		final Job j;
-		if (id.length()<10){
+		if (id.length()<11){
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
 			throw new BadJobFault_Exception("invalid ID", fault);

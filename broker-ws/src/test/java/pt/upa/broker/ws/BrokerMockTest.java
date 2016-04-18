@@ -79,7 +79,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
 
         // second call to mocked server
         try {
-            bp.ping("UpaTransporter1");
+            bp.lookUp("UpaTransporter1");
             fail();
         } catch(WebServiceException e) {
             // exception is expected

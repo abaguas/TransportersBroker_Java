@@ -193,7 +193,7 @@ public class TransporterPort implements TransporterPortType{
 	public Job getJobById(String id) throws InvalidIdentifierException {
 		ArrayList<Job> jobs = getJobs();
 		for (Job j: jobs){
-			if (id == j.getIdentifier()) {
+			if (id.equals(j.getIdentifier())) {
 				return j;
 			}
 		}

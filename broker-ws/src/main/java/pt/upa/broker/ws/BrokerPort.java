@@ -122,7 +122,9 @@ public class BrokerPort implements BrokerPortType {
 			InvalidPriceFault ipf = new InvalidPriceFault();
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
-		}
+
+		} 
+
 		return null; // Never gets here
 	}
 	
@@ -158,7 +160,10 @@ public class BrokerPort implements BrokerPortType {
 		TransporterClient tc = null;
 		
 		for (JobView j: jvs) {
-			tc = new TransporterClient(jobViews.get(j));
+
+			
+				tc = new TransporterClient(jobViews.get(j));
+
 			if (j.equals(budgetedJob)){
 				try {
 					tc.decideJob(t.getIdentifier(), true);
@@ -182,10 +187,16 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		Transport transport = getTransportById(id);
-		TransporterClient tc = new TransporterClient(transports.get(transport));
-		
-		transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
 
+		TransporterClient tc=null;
+		
+			tc = new TransporterClient(transports.get(transport));
+
+		
+		String state = viewToState(tc.jobStatus(id).getJobState());
+		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
+			transport.setState(state);	
+		}
 		return transport.createTransportView();
 		
 	}
@@ -215,7 +226,10 @@ public class BrokerPort implements BrokerPortType {
 		Collection<String> clientEndpoints = transports.values();
 		
 		for (String endpoint: clientEndpoints){
-			tc = new TransporterClient(endpoint);
+
+		
+				tc = new TransporterClient(endpoint);
+			
 			tc.clearJobs();
 		}
 		
@@ -223,10 +237,12 @@ public class BrokerPort implements BrokerPortType {
 	}
     
 	public Transport getTransportById(String id) throws UnknownTransportFault_Exception{
-		Collection<Transport> transps = transports.keySet();
-		for (Transport t: transps){
-			if (id==t.getIdentifier()){
-				return t;
+		if (id != null){
+			Collection<Transport> transps = transports.keySet();
+			for (Transport t: transps){
+				if (id.equals(t.getIdentifier())){
+					return t;
+				}
 			}
 		}
 		UnknownTransportFault fault = new UnknownTransportFault();
@@ -242,32 +258,7 @@ public class BrokerPort implements BrokerPortType {
 	}
 	
 	public String viewToState(JobStateView view){
-		if (view.equals(TransportStateView.REQUESTED)) {
-			return "REQUESTED";
-		}
-		else if (view.equals(TransportStateView.BUDGETED)) {
-			return "BUDGETED";
-		}
-		else if (view.equals(TransportStateView.BOOKED)) {
-			return "BOOKED";
-		}
-		else if (view.equals(TransportStateView.FAILED)) {
-			return "FAILED";
-		}
-		else if (view.equals(TransportStateView.HEADING)) {
-			return "HEADING";
-		}
-		else if (view.equals(TransportStateView.ONGOING)) {
-			return "ONGOING";
-		}
-		else if (view.equals(TransportStateView.COMPLETED)) {
-			return "COMPLETED";
-		}
-		else{
-			return null; //FIXME throw exception? isto é do wsdl e nunca acontece
-		}
-		
-		
+		return view.name();
 	}
 	
 	public String getUddiURL() {

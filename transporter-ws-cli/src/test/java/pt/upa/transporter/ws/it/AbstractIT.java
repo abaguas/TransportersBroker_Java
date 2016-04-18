@@ -75,6 +75,8 @@ public abstract class AbstractIT {
 
     @After
     public void tearDown() {
+    	tOdd.clearJobs();
+    	tEven.clearJobs();
     }
 
 

@@ -43,6 +43,8 @@ public abstract class AbstractTransporterTest {
 
     @After
     public void tearDown() {
+    	port1.clearJobs();
+    	port2.clearJobs();
     }
 
 

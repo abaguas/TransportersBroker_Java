@@ -96,7 +96,6 @@ public class BrokerPort implements BrokerPortType {
 				tc = new TransporterClient(endpoint);
 				JobView jv = tc.requestJob(origin, destination, price);
 				if (jv!=null){
-					t.setIdentifier(jv.getJobIdentifier() + t.getIdentifier());
 					jobViews.put(jv, endpoint);
 				}
 			}
@@ -142,6 +141,7 @@ public class BrokerPort implements BrokerPortType {
 		if (budgetedJob == null) {
 			t.setState("FAILED");
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
+			System.out.println("fiz o throw porque nao há budgeted job");
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
@@ -149,6 +149,7 @@ public class BrokerPort implements BrokerPortType {
 		t.setCompanyName(budgetedJob.getCompanyName());
 		t.setPrice(budgetedJob.getJobPrice());
 		t.setState("BUDGETED");
+		t.setIdentifier(budgetedJob.getJobIdentifier() + t.getIdentifier());
         transports.put(t, jobViews.get(budgetedJob));
         
         decideJob(jvs, jobViews, budgetedJob, t);
@@ -172,7 +173,7 @@ public class BrokerPort implements BrokerPortType {
 			}
 			else {
 				try {
-					tc.decideJob(t.getIdentifier(), false);
+					tc.decideJob(t.getIdentifier()+idFactory(), false);
 					t.setState("FAILED");
 				} catch (BadJobFault_Exception e) {
 					t.setState("FAILED");
@@ -187,9 +188,14 @@ public class BrokerPort implements BrokerPortType {
 		Transport transport = getTransportById(id);
 		TransporterClient tc=null;
 		
-			tc = new TransporterClient(transports.get(transport));
+		tc = new TransporterClient(transports.get(transport));
 		
-		String state = viewToState(tc.jobStatus(id).getJobState());
+		JobView jv = tc.jobStatus(id);
+		
+		JobStateView jsv = jv.getJobState();
+			
+			
+		String state = viewToState(jsv);
 		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
 			transport.setState(state);	
 		}
@@ -202,10 +208,14 @@ public class BrokerPort implements BrokerPortType {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
 		
+		System.out.println(transps.size());
 		
 		for (Iterator<Transport> iterator = transps.iterator(); iterator.hasNext();) {
 	        Transport transport = (Transport) iterator.next();
 	        try {
+	        	System.out.println("aquiiiiiiii--------------------------------------------");
+	        	System.out.println(transport.getIdentifier());
+	        	System.out.println("aquiiiiiiii--------------------------------------------");
 				viewTransport(transport.getIdentifier());
 				transportViews.add(transport.createTransportView());
 			} catch (UnknownTransportFault_Exception e) {

@@ -42,6 +42,7 @@ public abstract class AbstractBrokerTest {
 
     @After
     public void tearDown() {
+    	port.clearTransports();
     }
 
 

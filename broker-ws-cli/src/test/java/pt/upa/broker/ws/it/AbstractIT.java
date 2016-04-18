@@ -63,6 +63,7 @@ public class AbstractIT {
 
     @After
     public void tearDown() {
+    	client.clearTransports();
     }
 
 

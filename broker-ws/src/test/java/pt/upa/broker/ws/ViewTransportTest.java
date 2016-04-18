@@ -13,19 +13,19 @@ public class ViewTransportTest extends AbstractBrokerTest {
 	
 	}
 
-	@Test
-    public void itest() throws JAXRException {
-		port.lookUp("UpaTransporter1");
-
-		
-//			Transport transport = getTransportById(id);
-//			TransporterClient tc = new TransporterClient(transports.get(transport));
-//			
-//			transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
+//	@Test
+//    public void itest() throws JAXRException {
+//		port.lookUp("UpaTransporter1");
 //
-//			return transport.createTransportView();
-			
-		
-    }
+//		
+////			Transport transport = getTransportById(id);
+////			TransporterClient tc = new TransporterClient(transports.get(transport));
+////			
+////			transport.setState(viewToState(tc.jobStatus(id).getJobState()));	
+////
+////			return transport.createTransportView();
+//			
+//		
+//    }
 
 }

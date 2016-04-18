@@ -13,16 +13,6 @@ public class RequestTransportTest extends AbstractBrokerTest {
 	@Override
 	protected void populate() {
 	}
-
-	@Test
-    public void succcessTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
-	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-
-		String s = port.requestTransport("Lisboa", "Braga", 40);
-		
-		assertNotNull("Bug found! Should never be null", s);
-		
-    }
 	
 	@Test (expected = UnknownLocationFault_Exception.class)
     public void wrongOrigin() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
@@ -48,27 +38,12 @@ public class RequestTransportTest extends AbstractBrokerTest {
 
     }
 	
-	@Test (expected = UnavailableTransportFault_Exception.class)
+	//only foe odd
+	@Test (expected = UnavailableTransportPriceFault_Exception.class)
     public void noRouteOnOperation() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
 		port.requestTransport("Santarém", "Beja", 40);
-
-    }
-	
-	@Test (expected = UnavailableTransportFault_Exception.class)
-    public void noRouteOnNoOperation() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
-	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-
-		port.requestTransport("Lisboa", "Porto", 40);
-
-    }
-	
-	@Test (expected = UnavailableTransportFault_Exception.class)
-    public void originDestinationOnSouth() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
-	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-
-		port.requestTransport("Faro", "Beja", 40);
 
     }
 	
@@ -80,12 +55,11 @@ public class RequestTransportTest extends AbstractBrokerTest {
 
     }
 	
-	@Test (expected = UnavailableTransportPriceFault_Exception.class)
-    public void noTransportOffer() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
+	@Test(expected = UnavailableTransportFault_Exception.class)
+    public void priceTooHigh() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
 		port.requestTransport("Lisboa", "Faro", 101);
-
     }
 	
 	

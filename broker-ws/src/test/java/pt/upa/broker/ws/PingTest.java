@@ -11,7 +11,6 @@ public class PingTest extends AbstractBrokerTest {
 	@Override
 	protected void populate() {
 	
-		port = new BrokerPort(""); //FIXME
 	}
 	
     @Test
@@ -19,6 +18,5 @@ public class PingTest extends AbstractBrokerTest {
     	String ping = port.ping("UpaTransporter1");
     	assertNotNull("Ping is null", ping);
     	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
-    	assertEquals("Successful ping", ping, "Unreachable");
     }
 }

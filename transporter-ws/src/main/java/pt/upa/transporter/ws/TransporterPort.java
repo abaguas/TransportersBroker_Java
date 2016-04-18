@@ -70,9 +70,6 @@ public class TransporterPort implements TransporterPortType{
 		try {
 		  operate(origin, destination, getName());
 		} catch (DoesNotOperateException dnoe){
-System.out.println("GANDA NULL");
-System.out.println("GANDA NULL");
-System.out.println("GANDA NULL");
 			return null;
 		}
 		
@@ -91,17 +88,11 @@ System.out.println("GANDA NULL");
 			offer = rand.nextInt(price);
 		}
 		else if(price%2==numberTransporter(getName())%2){
-		System.out.println("Escolhido no menor");
 			offer = rand.nextInt(price); 
 		}
 		else{
-			offer = rand.nextInt(100) + price + 1; 
-		System.out.println("Escolhido no maior");		
+			offer = rand.nextInt(100) + price + 1; 	
 		}
-
-System.out.println("A minha oferta é: ");
-System.out.println(offer);
-System.out.println("fim");
 		
 		Job newJob = new Job(getName(), idFactory(), origin, destination, offer); 
 		
@@ -111,9 +102,7 @@ System.out.println("fim");
 	}
 	
 	public int numberTransporter(String name){
-		System.out.println(name);
 		String number = name.substring(name.length()-1);
-		System.out.println(number);
 		return Integer.parseInt(number);
 	}
 
@@ -123,14 +112,12 @@ System.out.println("fim");
 		else if ((regiaoNorte.contains(origin) || regiaoCentro.contains(origin)) && 
 			((regiaoNorte.contains(destination) || regiaoCentro.contains(destination)))){
 			if (numberTransporter(name)%2!=0){
-System.out.println("nao sou par");
 				throw new DoesNotOperateException(name, origin, destination);
 			}
 		}
 		else if ((regiaoSul.contains(origin) || regiaoCentro.contains(origin)) && 
 			(regiaoSul.contains(destination) || regiaoCentro.contains(destination))){
 			if (numberTransporter(name)%2!=1){
-System.out.println("nao sou impar");
 				throw new DoesNotOperateException(name, origin, destination);
 			}
 		}

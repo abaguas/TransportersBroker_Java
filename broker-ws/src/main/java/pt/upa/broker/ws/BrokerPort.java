@@ -141,7 +141,6 @@ public class BrokerPort implements BrokerPortType {
 		if (budgetedJob == null) {
 			t.setState("FAILED");
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
-			System.out.println("fiz o throw porque nao há budgeted job");
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
 		}
@@ -208,15 +207,10 @@ public class BrokerPort implements BrokerPortType {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
 		
-		System.out.println(transps.size());
-		
 		for (Iterator<Transport> iterator = transps.iterator(); iterator.hasNext();) {
 	        Transport transport = (Transport) iterator.next();
 	        try {
-	        	System.out.println("aquiiiiiiii--------------------------------------------");
-	        	System.out.println(transport.getIdentifier());
-	        	System.out.println("aquiiiiiiii--------------------------------------------");
-				viewTransport(transport.getIdentifier());
+	        	viewTransport(transport.getIdentifier());
 				transportViews.add(transport.createTransportView());
 			} catch (UnknownTransportFault_Exception e) {
 				System.out.println("Cosmic ray exception");

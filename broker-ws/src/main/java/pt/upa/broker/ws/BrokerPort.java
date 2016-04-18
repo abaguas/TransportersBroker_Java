@@ -38,7 +38,7 @@ public class BrokerPort implements BrokerPortType {
 		this.uddiURL = uddiURL;
 	}
 	
-	public Collection<String> list () throws JAXRException { //FIXME má prática?
+	public Collection<String> list () throws JAXRException {
     	String uddiURL = getUddiURL();
     	String name = getName();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
@@ -54,7 +54,7 @@ public class BrokerPort implements BrokerPortType {
         }
     }
 	
-	public String lookUp (String name) throws JAXRException { //FIXME má prática?
+	public String lookUp (String name) throws JAXRException {
 		String uddiURL = getUddiURL();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
@@ -95,18 +95,10 @@ public class BrokerPort implements BrokerPortType {
 			for (String endpoint : endpoints){
 				tc = new TransporterClient(endpoint);
 				JobView jv = tc.requestJob(origin, destination, price);
-				jobViews.put(jv, endpoint);
-				t.setIdentifier(jv.getJobIdentifier() + t.getIdentifier());
-			}
-			if(jobViews.isEmpty()){   //FIXME se tiver nulls dá empty?
-				t.setState("FAILED");
-				UnavailableTransportFault utf = new UnavailableTransportFault();
-				utf.setOrigin(origin);
-				utf.setDestination(destination);
-				throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
-			}
-			else{
-				return chooseJob(jobViews, price, t);
+				if (jv!=null){
+					t.setIdentifier(jv.getJobIdentifier() + t.getIdentifier());
+					jobViews.put(jv, endpoint);
+				}
 			}
 		} catch (JAXRException e1) {
 			// TODO Auto-generated catch block
@@ -125,7 +117,18 @@ public class BrokerPort implements BrokerPortType {
 
 		} 
 
-		return null; // Never gets here
+		
+		if(jobViews.isEmpty()){
+			t.setState("FAILED");
+			UnavailableTransportFault utf = new UnavailableTransportFault();
+			utf.setOrigin(origin);
+			utf.setDestination(destination);
+			throw new UnavailableTransportFault_Exception("Unavailable transport from origin to destination", utf);
+		}
+		else{
+			return chooseJob(jobViews, price, t);
+		}
+
 	}
 	
 	public String chooseJob (Map<JobView, String> jobViews, int price, Transport t) throws UnavailableTransportPriceFault_Exception{

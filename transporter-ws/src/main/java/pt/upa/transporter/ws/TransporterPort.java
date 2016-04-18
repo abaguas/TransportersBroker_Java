@@ -46,7 +46,9 @@ public class TransporterPort implements TransporterPortType{
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
 		if(origin==null || destination == null){
-			return null;
+			BadLocationFault blf = new BadLocationFault();
+			blf.setLocation(origin);
+			throw new BadLocationFault_Exception("Unknown origin", blf);
 		}
 		
 		if(!(regiaoNorte.contains(origin) || regiaoCentro.contains(origin) || regiaoSul.contains(origin))){
@@ -193,7 +195,7 @@ public class TransporterPort implements TransporterPortType{
 	public Job getJobById(String id) throws InvalidIdentifierException {
 		ArrayList<Job> jobs = getJobs();
 		for (Job j: jobs){
-			if (id.equals(j.getIdentifier())) {
+			if (j.getIdentifier().equals(id)) {
 				return j;
 			}
 		}

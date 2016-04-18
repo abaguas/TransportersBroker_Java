@@ -22,7 +22,7 @@ import pt.upa.transporter.ws.cli.TransporterClient;
 public class BrokerMockTest extends AbstractBrokerTest{
 	// static members
 
-
+/*
     private static JobView jv1;
 
     private static JobView jv2;
@@ -167,7 +167,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
             // exception is expected
             assertEquals("Error in requestJob", e.getMessage());
         }
-    }
+    }*/
     
 //    @Test (expected=WebServiceException.class)
 //    public void testDecideJob(

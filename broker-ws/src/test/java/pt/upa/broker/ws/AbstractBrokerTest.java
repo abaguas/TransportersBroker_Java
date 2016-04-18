@@ -21,7 +21,7 @@ public abstract class AbstractBrokerTest {
 	
     @BeforeClass
     public static void oneTimeSetUp() {
-    	port = new BrokerPort("UpaTransporter1");
+    	port = new BrokerPort("http://localhost:9090");
     }
 
     @AfterClass

@@ -1,6 +1,6 @@
 package pt.upa.broker.ws.it;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -17,7 +17,9 @@ public class RequestJobIT extends AbstractIT {
 
 	@Test
     public void successTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		client.requestTransport("Faro", "Lisboa", 45);
+		String id = client.requestTransport("Faro", "Lisboa", 45);
+		System.out.println(id);
+		assertNotNull(id);
     }
 	
 	@Test(expected = InvalidPriceFault_Exception.class)
@@ -35,16 +37,20 @@ public class RequestJobIT extends AbstractIT {
 		client.requestTransport("Lisboa", "Sara", -2);
     }
 	
-	@Test
-    public void NullDestinationTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		String id = client.requestTransport("Lisboa", null, 5);
-		assertNull("shouldnt return a id", id);
+	@Test(expected = UnknownLocationFault_Exception.class)
+    public void nullDestinationOriginTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
+		client.requestTransport(null, null, 40);
+    }
+	
+	@Test(expected = UnavailableTransportFault_Exception.class)
+    public void TooHighPriceTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
+		String id = client.requestTransport("Lisboa", "Faro", 101);
     }
 	
 	@Test
-    public void TooHighPriceTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		String id = client.requestTransport("Lisboa", "Sara", 899);
-		assertNull("shouldnt return a id", id);
+    public void HighestPossiblePriceTest() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
+		String id = client.requestTransport("Lisboa", "Faro", 99);
+		assertNotNull("should return a id", id);
     }
 
 }

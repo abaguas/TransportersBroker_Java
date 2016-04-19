@@ -96,7 +96,6 @@ public class BrokerPort implements BrokerPortType {
 				tc = new TransporterClient(endpoint);
 				JobView jv = tc.requestJob(origin, destination, price);
 				if (jv!=null){
-					t.setIdentifier(jv.getJobIdentifier() + t.getIdentifier());
 					jobViews.put(jv, endpoint);
 				}
 			}
@@ -152,6 +151,7 @@ public class BrokerPort implements BrokerPortType {
 		t.setCompanyName(budgetedJob.getCompanyName());
 		t.setPrice(budgetedJob.getJobPrice());
 		t.setState("BUDGETED");
+		t.setIdentifier(budgetedJob.getJobIdentifier() + t.getIdentifier());
         transports.put(t, jobViews.get(budgetedJob));
         
         decideJob(jvs, jobViews, budgetedJob, t);
@@ -177,7 +177,7 @@ public class BrokerPort implements BrokerPortType {
 			}
 			else {
 				try {
-					tc.decideJob(t.getIdentifier(), false);
+					tc.decideJob(t.getIdentifier()+idFactory(), false);
 					t.setState("FAILED");
 				} catch (BadJobFault_Exception e) {
 					t.setState("FAILED");
@@ -193,10 +193,19 @@ public class BrokerPort implements BrokerPortType {
 
 		TransporterClient tc=null;
 		
+<<<<<<< HEAD
 			tc = new TransporterClient(transports.get(transport));
 
+=======
+		tc = new TransporterClient(transports.get(transport));
+>>>>>>> 974c1b1e0e4951a65584443169ff42585f911c00
 		
-		String state = viewToState(tc.jobStatus(id).getJobState());
+		JobView jv = tc.jobStatus(id);
+		
+		JobStateView jsv = jv.getJobState();
+			
+			
+		String state = viewToState(jsv);
 		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
 			transport.setState(state);	
 		}
@@ -209,11 +218,10 @@ public class BrokerPort implements BrokerPortType {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
 		
-		
 		for (Iterator<Transport> iterator = transps.iterator(); iterator.hasNext();) {
 	        Transport transport = (Transport) iterator.next();
 	        try {
-				viewTransport(transport.getIdentifier());
+	        	viewTransport(transport.getIdentifier());
 				transportViews.add(transport.createTransportView());
 			} catch (UnknownTransportFault_Exception e) {
 				System.out.println("Cosmic ray exception");

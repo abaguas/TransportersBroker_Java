@@ -91,7 +91,7 @@ public class TransporterPort implements TransporterPortType{
 			offer = rand.nextInt(price); 
 		}
 		else{
-			offer = rand.nextInt(100) + price + 1; 
+			offer = rand.nextInt(100) + price + 1; 	
 		}
 		
 		Job newJob = new Job(getName(), idFactory(), origin, destination, offer); 
@@ -107,14 +107,16 @@ public class TransporterPort implements TransporterPortType{
 	}
 
 	public void operate(String origin, String destination, String name) throws DoesNotOperateException {
-		if ((regiaoNorte.contains(origin) || regiaoCentro.contains(origin)) && 
+		if (regiaoCentro.contains(origin) && regiaoCentro.contains(destination)){
+		}
+		else if ((regiaoNorte.contains(origin) || regiaoCentro.contains(origin)) && 
 			((regiaoNorte.contains(destination) || regiaoCentro.contains(destination)))){
 			if (numberTransporter(name)%2!=0){
 				throw new DoesNotOperateException(name, origin, destination);
 			}
 		}
 		else if ((regiaoSul.contains(origin) || regiaoCentro.contains(origin)) && 
-			((regiaoSul.contains(destination) || regiaoCentro.contains(destination)))){
+			(regiaoSul.contains(destination) || regiaoCentro.contains(destination))){
 			if (numberTransporter(name)%2!=1){
 				throw new DoesNotOperateException(name, origin, destination);
 			}

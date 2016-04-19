@@ -2,6 +2,7 @@ package pt.upa.broker.ws;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.xml.ws.WebServiceException;
@@ -22,10 +23,10 @@ import pt.upa.transporter.ws.cli.TransporterClient;
 public class BrokerMockTest extends AbstractBrokerTest{
 	// static members
 
-/*
-    private static JobView jv1;
 
-    private static JobView jv2;
+    private static JobView jv1;
+    
+    private static Collection<String> endpoints;
     
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -37,6 +38,8 @@ public class BrokerMockTest extends AbstractBrokerTest{
     	jv1.setJobPrice(0);
     	jv1.setJobState(JobStateView.PROPOSED);
     	
+    	endpoints = new ArrayList<String>();
+    	endpoints.add("http://localhost:8081/transporter-ws/endpoint");
     	
     	
     }
@@ -55,7 +58,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
     public void tearDown() {
     }
     
-    @Test (expected=WebServiceException.class)
+    @Test
     public void testLookup(
         @Mocked final  UDDINaming uddi)
         throws Exception {
@@ -87,7 +90,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
         }
     }
 
-    @Test (expected=WebServiceException.class)
+    @Test 
     public void testPing(
         @Mocked final  TransporterClient tc1,
         @Mocked final  UDDINaming uddi)
@@ -98,7 +101,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
         	new UDDINaming("http://localhost:9090");
             uddi.lookup("UpaTransporter1");
             result = "http://localhost:8081/transporter-ws/endpoint";
-            new TransporterClient(result.toString());
+            new TransporterClient("http://localhost:8081/transporter-ws/endpoint");
             
             
             tc1.ping("UpaTransporter1");
@@ -112,6 +115,8 @@ public class BrokerMockTest extends AbstractBrokerTest{
         BrokerPort bp = new BrokerPort("http://localhost:9090"); 
 
         try {
+
+            
             bp.ping("UpaTransporter1");
         } catch(WebServiceException e) {
             // exception is not expected
@@ -120,7 +125,9 @@ public class BrokerMockTest extends AbstractBrokerTest{
 
         // second call to mocked server
         try {
+
             bp.ping("UpaTransporter1");
+
             fail();
         } catch(WebServiceException e) {
             // exception is expected
@@ -128,46 +135,54 @@ public class BrokerMockTest extends AbstractBrokerTest{
         }
     }
     
-    @Test (expected=WebServiceException.class)
-    public void testRequestTransport(
-        @Mocked final  TransporterClient tc1,
-        @Mocked final  UDDINaming uddi)
-        throws Exception {
-
-        
-        new Expectations() {{
-        	new UDDINaming("http://localhost:9090");
-            uddi.lookup("UpaTransporter1");
-            result = "http://localhost:8081/transporter-ws/endpoint";
-            new TransporterClient(result.toString());
-            
-            
-            tc1.requestJob("Lisboa", "Faro", 11);
-            
-            result=jv1;
-          
-            result = new WebServiceException("Error in requestJob");
-
-        }};
-
-        BrokerPort bp = new BrokerPort("http://localhost:9090"); 
-
-        try {
-            bp.requestTransport("Lisboa","Faro",1);
-        } catch(WebServiceException e) {
-            // exception is not expected
-            fail();
-        }
-
-        // second call to mocked server
-        try {
-        	bp.requestTransport("Lisboa","Faro",1);
-            fail();
-        } catch(WebServiceException e) {
-            // exception is expected
-            assertEquals("Error in requestJob", e.getMessage());
-        }
-    }*/
+//    @Test 
+//    public void testRequestTransport(
+//        @Mocked final  TransporterClient tc1,
+//        @Mocked final  UDDINaming uddi,
+//        @Mocked final Transport t)
+//        throws Exception {
+//
+//        
+//        new Expectations() {{
+//        	new UDDINaming("http://localhost:9090");
+//            uddi.list("UpaTransporter1");
+//            result = endpoints;
+//            new TransporterClient("http://localhost:8081/transporter-ws/endpoint");
+//            
+//            
+//            tc1.requestJob("Lisboa", "Faro", 1);
+//            
+//            result=jv1;
+//          
+//            result = new WebServiceException("Error in requestJob");
+//            
+//            new Transport(0,"Lisboa","Faro");
+//            
+//
+//        }};
+//
+//        BrokerPort bp = new BrokerPort("http://localhost:9090"); 
+//
+//        try {
+//        	System.out.println("toma");
+//            bp.requestTransport("Lisboa","Faro",1);
+//            System.out.println("toma2");
+//        } catch(WebServiceException e) {
+//        	System.out.println("toma1");
+//            // exception is not expected
+//            fail();
+//        }
+//
+//        // second call to mocked server
+//        try {
+//        	System.out.println("toma3");
+//        	bp.requestTransport("Lisboa","Faro",1);
+//            fail();
+//        } catch(WebServiceException e) {
+//            // exception is expected
+//            assertEquals("Error in requestJob", e.getMessage());
+//        }
+//    }
     
 //    @Test (expected=WebServiceException.class)
 //    public void testDecideJob(

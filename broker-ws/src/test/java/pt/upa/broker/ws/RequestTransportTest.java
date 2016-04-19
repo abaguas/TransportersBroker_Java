@@ -47,7 +47,7 @@ public class RequestTransportTest extends AbstractBrokerTest {
 
     }
 	
-	@Test (expected = UnavailableTransportFault_Exception.class)
+	@Test (expected = UnavailableTransportPriceFault_Exception.class)
     public void originDestinationOnCenter() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 	UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 

@@ -193,12 +193,9 @@ public class BrokerPort implements BrokerPortType {
 
 		TransporterClient tc=null;
 		
-<<<<<<< HEAD
-			tc = new TransporterClient(transports.get(transport));
 
-=======
 		tc = new TransporterClient(transports.get(transport));
->>>>>>> 974c1b1e0e4951a65584443169ff42585f911c00
+
 		
 		JobView jv = tc.jobStatus(id);
 		

@@ -51,7 +51,7 @@ public class RequestJobTest extends AbstractTransporterTest  {
     
     @Test //Testing odd price lower than 10
     public void priceOddLowerThan10() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 1;
+    	int price = 2;
     	JobView jv = port2.requestJob("Lisboa", "Braga", price);
 	
     	assertTrue("Price should be lower than client price", jv.getJobPrice()<price);

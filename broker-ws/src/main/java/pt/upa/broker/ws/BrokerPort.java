@@ -29,7 +29,7 @@ import javax.xml.registry.JAXRException;
 
 public class BrokerPort implements BrokerPortType {
 	
-	private int id = 1;
+	private String id = "0";
 	private String uddiURL;
 	private String name = "UpaTransporter%";
 	private Map<Transport, String> transports = new HashMap<Transport, String>();
@@ -87,7 +87,7 @@ public class BrokerPort implements BrokerPortType {
 
 		Collection<String> endpoints = null;
 		Map<JobView, String> jobViews = new HashMap<JobView, String>();
-		Transport t = new Transport(idFactory(), origin, destination); 
+		Transport t = new Transport(origin, destination); 
 		TransporterClient tc = null;
 		
 		try {
@@ -115,7 +115,6 @@ public class BrokerPort implements BrokerPortType {
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 
 		} 
-
 		
 		if(jobViews.isEmpty()){
 			t.setState("FAILED");
@@ -143,6 +142,7 @@ public class BrokerPort implements BrokerPortType {
 		
 		if (budgetedJob == null) {
 			t.setState("FAILED");
+			t.setIdentifier(idFactory());
 			UnavailableTransportPriceFault utpf = new UnavailableTransportPriceFault();
 			utpf.setBestPriceFound(price);
 			throw new UnavailableTransportPriceFault_Exception("Non-existent transport with pretended price",utpf);
@@ -151,7 +151,7 @@ public class BrokerPort implements BrokerPortType {
 		t.setCompanyName(budgetedJob.getCompanyName());
 		t.setPrice(budgetedJob.getJobPrice());
 		t.setState("BUDGETED");
-		t.setIdentifier(budgetedJob.getJobIdentifier() + t.getIdentifier());
+		t.setIdentifier(budgetedJob.getJobIdentifier());
         transports.put(t, jobViews.get(budgetedJob));
         
         decideJob(jvs, jobViews, budgetedJob, t);
@@ -163,9 +163,8 @@ public class BrokerPort implements BrokerPortType {
 		TransporterClient tc = null;
 		
 		for (JobView j: jvs) {
-
 			
-				tc = new TransporterClient(jobViews.get(j));
+			tc = new TransporterClient(jobViews.get(j));
 
 			if (j.equals(budgetedJob)){
 				try {
@@ -190,12 +189,9 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		Transport transport = getTransportById(id);
-
-		TransporterClient tc=null;
-		
+		TransporterClient tc=null;	
 
 		tc = new TransporterClient(transports.get(transport));
-
 		
 		JobView jv = tc.jobStatus(id);
 		
@@ -234,13 +230,10 @@ public class BrokerPort implements BrokerPortType {
 		Collection<String> clientEndpoints = transports.values();
 		
 		for (String endpoint: clientEndpoints){
-
-		
-				tc = new TransporterClient(endpoint);
-			
+			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
-		
+
 		transports.clear();
 	}
     
@@ -258,11 +251,15 @@ public class BrokerPort implements BrokerPortType {
 		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 	
-	public int idFactory(){
-		int id = getId();
-		setId(id+1);
+	public String idFactory(){
+		String id = getId();
+		int i = Integer.parseInt(id);
+		i++;
 		
-		return id;
+		id = Integer.toString(i);
+		setId(id);
+		
+		return "f".concat(id);
 	}
 	
 	public String viewToState(JobStateView view){
@@ -285,11 +282,11 @@ public class BrokerPort implements BrokerPortType {
 		this.name = name;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

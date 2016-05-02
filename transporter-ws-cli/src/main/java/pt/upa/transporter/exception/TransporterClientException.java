@@ -9,4 +9,8 @@ public class TransporterClientException extends RuntimeException{
 	public TransporterClientException(String msg){
 		super(msg);
 	}
+	
+	public TransporterClientException(String msg, Throwable cause){
+		super(msg, cause);
+	}
 }

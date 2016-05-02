@@ -1,93 +1,124 @@
 package pt.upa.transporter.ws.it;
 
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
 
 import pt.upa.transporter.ws.BadJobFault_Exception;
-import pt.upa.transporter.ws.BadLocationFault_Exception;
-import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 
-import static org.junit.Assert.*;
-
+/**
+ * Test suite
+ */
 public class JobStatusIT extends AbstractIT {
 
-	@Override
-	protected void populate() {		
+	/**
+	 * Test an invocation of jobStatus on an invalid (empty string) job
+	 * identifier. Implementation-dependent.
+	 */
+	@Test
+	public void testInvalidJobStatus() {
+		assertEquals(null, CLIENT.jobStatus(EMPTY_STRING));
 	}
-	
-	@Test
-    public void proposedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception {
-		JobView jv = tEven.requestJob("Porto", "Guarda", 40);
-		JobView jview = tEven.jobStatus(jv.getJobIdentifier());
-		
-    	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.PROPOSED, jv.getJobState());
-    }
-	
-	@Test
-    public void acceptedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
-		JobView jv = tEven.requestJob("Porto", "Guarda", 40);
-		JobView j = tEven.decideJob(jv.getJobIdentifier(), true);
-		JobView jview = tEven.jobStatus(j.getJobIdentifier());
-		
-    	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.ACCEPTED, jview.getJobState());
-    }
-	
-	@Test
-    public void rejectedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
-		JobView jv = tEven.requestJob("Porto", "Guarda", 40);
-		JobView j = tEven.decideJob(jv.getJobIdentifier(), false);
-		JobView jview = tEven.jobStatus(j.getJobIdentifier());
-		
-    	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.REJECTED, jview.getJobState());
-    }
 
+	/**
+	 * Test an invocation of jobStatus on an invalid (null) job identifier.
+	 * Implementation-dependent.
+	 */
 	@Test
-    public void completedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
-		JobView jv = tEven.requestJob("Porto", "Guarda", 40);
-		JobView j = tEven.decideJob(jv.getJobIdentifier(), true);
+	public void testNullJobStatus() throws Exception {
+		assertEquals(null, CLIENT.jobStatus(null));
+	}
+
+	/**
+	 * 1 - Request a job with valid origin, destination and price, check that
+	 * its initial state is JobStateView.PROPOSED. 
+	 * 2 - Decide (accept) on the
+	 * created job and check that its state changed to JobStateView.ACCEPTED. 
+	 * 3 - Try to decide (reject) on the previously-accepted job.
+	 * 
+	 * @result At the end of the test the job rejection should have failed.
+	 * @throws Exception
+	 */
+	@Test
+	public void testJobStatus1() throws Exception {
+		JobView jv = CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_UPPER_LIMIT);
+		String id = jv.getJobIdentifier();
+		System.out.println(id);
+		JobView jv2 = CLIENT.jobStatus(id);
+		System.out.print(jv2);
+		JobStateView jsv = jv2.getJobState();
+		System.out.println(jsv);
+		assertEquals(JobStateView.PROPOSED, jsv);
+
+		jv = CLIENT.decideJob(jv.getJobIdentifier(), true);
+		assertEquals(JobStateView.ACCEPTED, jv.getJobState());
+
 		try {
-		    Thread.sleep(25000);                 //1000 milliseconds is one second.
-		} catch(InterruptedException ex) {
+			CLIENT.decideJob(jv.getJobIdentifier(), false);
+		} catch (BadJobFault_Exception e) {
+			// expected
 		}
-		JobView jview = tEven.jobStatus(j.getJobIdentifier());
-		
-    	assertNotNull("jobView does not exist", jview);
-    	assertEquals("incorrect state", JobStateView.COMPLETED, jview.getJobState());
-    }
+	}
 
+	/**
+	 * Create two more jobs (with valid arguments), check that their states are
+	 * correct and that the number of jobs returned by CLIENT.listJobs increased by two.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-    public void notAcceptedIdentifierTest() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
-		JobView jv = tEven.requestJob("Porto", "Guarda", 40);
-		tEven.decideJob(jv.getJobIdentifier(), false);
-		JobView jview = tEven.jobStatus(jv.getJobIdentifier());
-		try {
-		    Thread.sleep(5000);                 //1000 milliseconds is one second.
-		} catch(InterruptedException ex) {
+	public void testJobStatus2() throws Exception {
+		int initialNrJobs = CLIENT.listJobs().size();
+
+		JobView jv1 = CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_UPPER_LIMIT);
+		JobView jv2 = CLIENT.requestJob(CENTRO_2, SUL_2, PRICE_UPPER_LIMIT - 1);
+		jv2 = CLIENT.decideJob(jv2.getJobIdentifier(), true);
+		assertEquals(initialNrJobs + 2, CLIENT.listJobs().size());
+
+		JobStateView jsv1 = CLIENT.jobStatus(jv1.getJobIdentifier()).getJobState();
+		assertEquals(JobStateView.PROPOSED, jsv1);
+		JobStateView jsv2 = CLIENT.jobStatus(jv2.getJobIdentifier()).getJobState();
+		assertEquals(JobStateView.ACCEPTED, jsv2);
+	}
+
+	/**
+	 * Clear the set of jobs, create a new (with valid arguments) job, decide on
+	 * it (accept it) and check that its state is progressively-updated until it
+	 * is JobStateView.COMPLETED.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testJobStateTransition() throws Exception {
+		List<JobStateView> jobStates = new ArrayList<>();
+		jobStates.add(JobStateView.HEADING);
+		jobStates.add(JobStateView.ONGOING);
+		jobStates.add(JobStateView.COMPLETED);
+		CLIENT.clearJobs();
+		
+		JobView jv = CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_UPPER_LIMIT);
+		JobStateView jsv1 = CLIENT.jobStatus(jv.getJobIdentifier()).getJobState();
+		assertEquals(JobStateView.PROPOSED, jsv1);
+
+		jv = CLIENT.decideJob(jv.getJobIdentifier(), true);
+		JobStateView jsv2 = CLIENT.jobStatus(jv.getJobIdentifier()).getJobState();
+		assertEquals(JobStateView.ACCEPTED, jsv2);
+
+		for (int t = 1; t <= 15; t++) {
+			Thread.sleep(DELAY_LOWER);
+			jv = CLIENT.jobStatus(jv.getJobIdentifier());
+			if (jobStates.contains(jv.getJobState()))
+				jobStates.remove(jv.getJobState());
 		}
-		
-    	assertNotNull("jobView does not exist", jview);
-    	assertNotEquals("incorrect state", JobStateView.ACCEPTED, jv.getJobState());
-    }
-
-	
-	
-	@Test
-    public void invalidIdentifierTest() {
-    	JobView jv = tEven.jobStatus("sistemas distribuidos");
-    	
-    	assertNull("jobView does not exist", jv);
-    }
-	
-	@Test
-    public void nullIdentifierTest() {
-    	JobView jv = tEven.jobStatus(null);
-    	
-    	assertNull("jobView does not exist", jv);
-    }
-
+		assertEquals(0, jobStates.size());
+		// this test does not strictly validate the correct sequence:
+		// HEADING -> ONGOING -> COMPLETED
+		// it just checks if the job was at each state
+	}
 
 }

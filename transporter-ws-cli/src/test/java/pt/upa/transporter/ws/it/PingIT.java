@@ -1,25 +1,21 @@
 package pt.upa.transporter.ws.it;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
+import org.junit.Test;
+
+/**
+ * Test suite
+ */
 public class PingIT extends AbstractIT {
 
-	@Override
-	protected void populate() {		
+	/**
+	 * Receive a non-null reply from the transporter that was pinged through
+	 * CLIENT.
+	 */
+	@Test
+	public void pingEmptyTest() {
+		assertNotNull(CLIENT.ping("test"));
 	}
-	
-	@Test
-    public void oddPingTest() {
-    	String ping = tOdd.ping("HelloWorld");
-    	assertNotNull("Ping is null", ping);
-    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
-    }
-	@Test
-	public void EvenPingTest() {
-    	String ping = tEven.ping("HelloWorld");
-    	assertNotNull("Ping is null", ping);
-    	assertEquals("Unsuccessful ping", ping, "UpaTransporter4");
-    }
 
 }

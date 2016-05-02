@@ -5,18 +5,18 @@ import pt.upa.transporter.exception.TransporterServerException;
 public class InvalidIdentifierException extends TransporterServerException {
     private static final long serialVersionUID = 1L;
 
-    private String _name;
+    private String _id;
 
-    public InvalidIdentifierException(String name){
-        _name=name;
+    public InvalidIdentifierException(String id){
+        _id = id;
     }
 
-    public String getName() {
-        return _name;
+    public String getId() {
+        return _id;
     }
 
     @Override
     public String getMessage(){
-        return "This identifier is not valid: " + getName();
+        return "This identifier is not valid: " + getId();
     }
 }

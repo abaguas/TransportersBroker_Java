@@ -1,174 +1,270 @@
 package pt.upa.transporter.ws.it;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.*;
-import static org.junit.Assert.*;
-import mockit.*;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.WebServiceException;
 import org.junit.Test;
 
 import pt.upa.transporter.ws.BadLocationFault_Exception;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
-import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
-import pt.upa.transporter.ws.TransporterPortType;
-import pt.upa.transporter.ws.TransporterService;
 
+
+/**
+ * Test suite
+ */
 public class RequestJobIT extends AbstractIT {
 
-	@Override
-	protected void populate() {
+	/**
+	 * Request a job (with valid origin, destination and price) with a price of
+	 * 10.
+	 * 
+	 * @result The job should be successfully created and stored by the
+	 *         transporter.
+	 * @throws Exception
+	 */
+	@Test
+	public void testRequestJob() throws Exception {
+		CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_SMALLEST_LIMIT);
 	}
-	
-	@Test //Testing attributes
-    public void success() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv1 = tOdd.requestJob("Lisboa", "Faro", 40);
-    	JobView jv2 = tEven.requestJob("Lisboa", "Braga", 40);
-    	
-        assertEquals("Job with wrong company name", jv1.getCompanyName(), "UpaTransporter1");
-        assertEquals("Job with wrong origin", jv1.getJobOrigin(), "Lisboa");
-        assertEquals("Job with wrong destination", jv1.getJobDestination(), "Faro");
-        assertEquals("Job with wrong state", jv1.getJobState(), JobStateView.PROPOSED);
-        
-        assertEquals("Job with wrong company name", jv2.getCompanyName(), "UpaTransporter2");
-        assertEquals("Job with wrong origin", jv2.getJobOrigin(), "Lisboa");
-        assertEquals("Job with wrong destination", jv2.getJobDestination(), "Braga");
-        assertEquals("Job with wrong state", jv2.getJobState(), JobStateView.PROPOSED);
-        
-    }
-  
-    @Test //Testing price = 10
-    public void priceEquals10() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 10;
-    	JobView jv = tOdd.requestJob("Lisboa", "Faro", price);
-        assertTrue("Price should be less than 10", jv.getJobPrice()<price);
-    }
 
-    @Test //Testing even price lower than 10
-    public void priceEvenLowerThan10() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 2;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);
-    	
-    	assertTrue("Price should be lower than client price", jv.getJobPrice() < price);     
-        
-    }
-    
-    @Test //Testing odd price lower than 10
-    public void priceOddLowerThan10() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 1;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);
-	
-    	assertTrue("Price should be lower than client price", jv.getJobPrice()<price);
-    }
-    
-    @Test //Testing higher than client price
-    public void priceHigherThanClientPrice1() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 40;
-    	JobView jv = tOdd.requestJob("Lisboa", "Faro", price);
-    	
-        assertTrue("Price should be higher than client price",jv.getJobPrice()>price);
-    }
-    
-    @Test //Testing lower than client price
-    public void priceLowerThanClientPrice1() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 41;
-    	JobView jv = tOdd.requestJob("Lisboa", "Faro", price);
-		
-    	assertTrue("Price should be lower than client price",jv.getJobPrice()<price); 
-    } 
-    
-    
-    @Test //Testing higher than client price
-    public void priceHigherThanClientPrice2() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 41;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);
-    	
-        assertTrue("Price should be higher than client price",jv.getJobPrice()>price);
-    }
-    
-    
-    @Test //Testing lower than client price
-    public void priceLowerThanClientPrice2() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 40;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);
-		
-    	assertTrue("Price should be lower than client price",jv.getJobPrice()<price); 
-    }   
-    
-    
-    @Test //Testing price = 0
-    public void priceEquals0() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 0;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);	
-    	assertNull("Shouldn't have a job with a 0 price offer", jv);
-    }
- 
-    
-    @Test //Testing price = 100
-    public void priceEquals100odd() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 100;
-    	JobView jv = tOdd.requestJob("Lisboa", "Faro", price);
-			
-    	assertTrue("Price should be higher than client price", jv.getJobPrice()>price);
-    }
+	// -------------- invalid inputs test cases ---------------
 
-    
-    @Test //Testing price = 100
-    public void priceEquals100even() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	int price = 100;
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", price);
-			
-    	assertTrue("Price should be lower than client price", jv.getJobPrice()<price);
-    }
-    
-    
-    @Test //Testing more than max price
-    public void priceHigherThan100() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tEven.requestJob("Lisboa", "Braga", 101);
-    	
-    	assertNull("Shouldn't have a job with a higher than 100 price offer", jv);
-    }
-    
-    
-    @Test //Testing no operation on destination
-    public void noOperationDestination() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tEven.requestJob("Lisboa", "Beja", 40);
-        assertNull("Transporter doesn't operate on Destination",jv); 
-    }
-    
-    @Test //Testing no operation on origin
-    public void noOperationOrigin() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tOdd.requestJob("Leiria", "Braga", 40);
-        assertNull("Transporter doesn't operate on Destination", jv); 
-    }
-    
+	/**
+	 * Invoke CLIENT.requestJob on an invalid (empty string) origin.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as the origin is invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobInvalidOrigin() throws Exception {
+		CLIENT.requestJob(EMPTY_STRING, CENTRO_1, PRICE_SMALLEST_LIMIT);
+	}
 
-    @Test (expected = BadPriceFault_Exception.class) //Testing negative price
-    public void negativePrice() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	 tOdd.requestJob("Lisboa", "Braga", -1);
-    }
-    
-    
-    @Test (expected = BadLocationFault_Exception.class) //Testing incorrect origin
-    public void incorrectOrigin() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tEven.requestJob("Alcochete", "Braga", 40);
+	/**
+	 * Invoke CLIENT.requestJob on an invalid (null) origin.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as the origin is invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobNullOrigin() throws Exception {
+		CLIENT.requestJob(null, SUL_1, PRICE_SMALLEST_LIMIT);
+	}
 
-    }
-    
-    @Test (expected = BadLocationFault_Exception.class) //Testing incorrect destination
-    public void incorrectDestination() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tEven.requestJob("Lisboa", "Montijo", 40);
-    }
+	/**
+	 * Invoke CLIENT.requestJob on an invalid (empty string) destination.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as the destination is
+	 *         invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobInvalidDestination() throws Exception {
+		CLIENT.requestJob(CENTRO_1, EMPTY_STRING, PRICE_SMALLEST_LIMIT);
+	}
 
-    
-    @Test (expected = BadLocationFault_Exception.class) //Testing empty origin-destination
-    public void emptyOriginDestination() throws BadLocationFault_Exception, BadPriceFault_Exception {
-    	JobView jv = tOdd.requestJob("", "", 40);
-        assertNull("There are no jobs for this route", jv); 
-    }
+	/**
+	 * Invoke CLIENT.requestJob on an invalid (null) destination.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as the destination is
+	 *         invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobNullDestination() throws Exception {
+		CLIENT.requestJob(SUL_1, null, PRICE_SMALLEST_LIMIT);
+	}
+
+	/**
+	 * Invoke CLIENT.requestJob on both invalid (empty string) origin and
+	 * destination.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as both the origin and
+	 *         the destination is invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobInvalidOD() throws Exception {
+		CLIENT.requestJob(EMPTY_STRING, EMPTY_STRING, PRICE_SMALLEST_LIMIT);
+	}
+
+	/**
+	 * Invoke CLIENT.requestJob on both invalid (null) origin and destination.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as both the origin and
+	 *         the destination is invalid.
+	 * @throws Exception
+	 */
+	@Test(expected = BadLocationFault_Exception.class)
+	public void testRequestJobNullOD() throws Exception {
+		CLIENT.requestJob(null, null, PRICE_SMALLEST_LIMIT);
+	}
+
+	/**
+	 * Invoke CLIENT.requestJob with an invalid (negative) price.
+	 * 
+	 * @result Should throw BadPriceFault_Exception as the price given was
+	 *         negative.
+	 * @throws Exception
+	 */
+	@Test(expected = BadPriceFault_Exception.class)
+	public void testRequestJobInvalidPrice() throws Exception {
+		CLIENT.requestJob(CENTRO_1, SUL_1, INVALID_PRICE);
+	}
+
+	/**
+	 * Invoke CLIENT.requestJob with all invalid parameters (empty string
+	 * locations and negative price) of origin, destination and price.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as both the origin and
+	 *         the destination are invalid or BadPriceFault_Exception as an
+	 *         invalid price given.
+	 * @throws Exception
+	 */
+	public void testRequestJobInvalidArgs1() throws Exception {
+		try {
+			CLIENT.requestJob(EMPTY_STRING, EMPTY_STRING, INVALID_PRICE);
+		} catch (BadLocationFault_Exception | BadPriceFault_Exception e) {
+			// do nothing because both exceptions can be expected
+		}
+	}
+
+	/**
+	 * Invoke CLIENT.requestJob with all invalid parameters (null locations and
+	 * negative price) of origin, destination and price.
+	 * 
+	 * @result Should throw BadLocationFault_Exception as both the origin and
+	 *         the destination are invalid or BadPriceFault_Exception as an
+	 *         invalid price given.
+	 * @throws Exception
+	 */
+	public void testRequestJobInvalidArgs2() throws Exception {
+		try {
+			CLIENT.requestJob(null, null, INVALID_PRICE);
+		} catch (BadLocationFault_Exception | BadPriceFault_Exception e) {
+			// do nothing because both exceptions can be expected
+		}
+	}
+
+	// -------------- reference price > 100 ---------------
+
+	/**
+	 * Test that a job request with a price over 100 returns null.
+	 * 
+	 * @return A null JobView reference.
+	 * @throws Exception
+	 */
+	@Test
+	public void testUpperPriceLimit() throws Exception {
+		JobView jv1 = CLIENT.requestJob(SUL_1, CENTRO_1, PRICE_UPPER_LIMIT + 1);
+		assertNull(jv1);
+	}
+
+	// -------------- reference price <= 10 ---------------
+
+	/**
+	 * Test that a job requested with a price below 10 returns a positive price
+	 * lower or equal to 10.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testPriceBelowSmallestLimit() throws Exception {
+		final int referencePrice = PRICE_SMALLEST_LIMIT - UNITARY_PRICE;
+		JobView jv1 = CLIENT.requestJob(CENTRO_1, SUL_1, referencePrice);
+		final int price = jv1.getJobPrice();
+		assertTrue(price >= UNITARY_PRICE && price < referencePrice);
+	}
+
+	/**
+	 * Test a job request with a price of 10. The proposed price should be
+	 * greater or equal to 1 and lower than 10.
+	 * 
+	 * @result JobView with a price value under the constraint mentioned above.
+	 * @throws Exception
+	 */
+	@Test
+	public void testLowerEqualPriceLimit() throws Exception {
+		final int referencePrice = PRICE_SMALLEST_LIMIT;
+		JobView jv1 = CLIENT.requestJob(SUL_1, CENTRO_1, referencePrice);
+		final int price = jv1.getJobPrice();
+		assertTrue(price >= UNITARY_PRICE && price < referencePrice);
+	}
+
+	// -------------- reference price > 10 ---------------
+
+	/**
+	 * Odd transporter, odd price
+	 * 
+	 * Test that an odd-numbered transporter (e.g. UpaTransporter1) with an odd
+	 * price request returns a proposal between [1, price + 1[.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testOddPriceAboveSmallestLimit() throws Exception {
+		int oddReferencePrice = PRICE_SMALLEST_LIMIT + 1;
+		assertTrue(oddReferencePrice % 2 == 1);
+
+		JobView jv1 = CLIENT.requestJob(CENTRO_1, SUL_1, oddReferencePrice);
+		final int price = jv1.getJobPrice();
+		assertTrue(price >= UNITARY_PRICE && price < oddReferencePrice);
+	}
+
+	/**
+	 * Odd transporter, even price
+	 *
+	 * Test that an odd-numbered transporter (e.g. UpaTransporter1) with an even
+	 * price request of 12 returns a proposal between ]price,
+	 * Integer.MAX_VALUE[.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testEvenPriceAboveSmallestLimit() throws Exception {
+		int evenReferencePrice = PRICE_SMALLEST_LIMIT + 2;
+		assertTrue(evenReferencePrice % 2 == 0);
+		assertTrue(evenReferencePrice < Integer.MAX_VALUE - 1);
+
+		JobView jv1 = CLIENT.requestJob(CENTRO_1, SUL_1, evenReferencePrice);
+		final int price = jv1.getJobPrice();
+		assertTrue(price > evenReferencePrice && price < Integer.MAX_VALUE);
+	}
+
+	// -------------- reference price border cases ---------------
+
+	/**
+	 * Test that a job request with a price of 1 returns a proposal with a price
+	 * of 0.
+	 * 
+	 * @return JobView reference with price set to 0.
+	 * @throws Exception
+	 */
+	// @Test
+	// not tested for evaluation as stated in project Q&A:
+	// http://disciplinas.tecnico.ulisboa.pt/leic-sod/2015-2016/labs/proj/faq.html
+	public void testZeroPrice() throws Exception {
+		JobView jv1 = CLIENT.requestJob(SUL_1, CENTRO_1, ZERO_PRICE);
+		final int price = jv1.getJobPrice();
+		assertEquals(ZERO_PRICE, price);
+	}
+
+	/**
+	 * Test that a job request with a price of 1 returns a proposal with a price
+	 * of 0.
+	 * 
+	 * @return JobView reference with price set to 0.
+	 * @throws Exception
+	 */
+	// @Test
+	// not tested for evaluation as stated in project Q&A:
+	// http://disciplinas.tecnico.ulisboa.pt/leic-sod/2015-2016/labs/proj/faq.html
+	public void testUnitaryPrice() throws Exception {
+		JobView jv1 = CLIENT.requestJob(SUL_1, CENTRO_1, UNITARY_PRICE);
+		final int price = jv1.getJobPrice();
+		assertEquals(ZERO_PRICE, price);
+	}
+
 }

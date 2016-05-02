@@ -16,8 +16,7 @@ public class Transport {
 	private int price;
 	private String state;
 
-	public Transport(int id, String origin, String destination) {
-		identifier = Integer.toString(id);
+	public Transport(String origin, String destination) {
 		this.origin = origin;
 		this.destination = destination;
 		this.state = "REQUESTED";

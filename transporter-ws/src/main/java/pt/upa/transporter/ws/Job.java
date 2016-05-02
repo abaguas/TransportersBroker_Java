@@ -32,28 +32,7 @@ public class Job {
 	}
 	
 	public JobStateView stateToView(){
-		if (state.equals("PROPOSED")) {
-			return JobStateView.PROPOSED;
-		}
-		else if (state.equals("ACCEPTED")) {
-			return JobStateView.ACCEPTED;
-		}
-		else if (state.equals("REJECTED")) {
-			return JobStateView.REJECTED;
-		}
-		else if (state.equals("HEADING")) {
-			return JobStateView.HEADING;
-		}
-		else if (state.equals("ONGOING")) {
-			return JobStateView.ONGOING;
-		}
-		else if (state.equals("COMPLETED")) {
-			return JobStateView.COMPLETED;
-		}
-		else {
-			throw new InvalidStateException(state);
-		}
-		
+		return JobStateView.fromValue(state);
 	}
 
 	public String getCompanyName() {

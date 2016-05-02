@@ -12,6 +12,7 @@ import javax.swing.Timer;
 
 import pt.upa.transporter.exception.DoesNotOperateException;
 import pt.upa.transporter.exception.InvalidIdentifierException;
+import pt.upa.transporter.exception.NoAvailableIdentifierException;
 
 @WebService(
 	endpointInterface="pt.upa.transporter.ws.TransporterPortType",
@@ -23,7 +24,8 @@ import pt.upa.transporter.exception.InvalidIdentifierException;
 )
 public class TransporterPort implements TransporterPortType{
 
-	private String id = "0000000000";
+	private String id;
+	private String boundId;
 	private String name;
 	private ArrayList<Job> jobs = new ArrayList<Job>();
 	private ArrayList<String> regiaoSul = new ArrayList<String>(
@@ -35,6 +37,9 @@ public class TransporterPort implements TransporterPortType{
 	
 	public TransporterPort (String name){
 		this.name = name;
+		int n = numberTransporter(name)*100000;
+		id = Integer.toString(n);
+		boundId = Integer.toString(n+100000);
 	}
 	
 	@Override
@@ -88,16 +93,20 @@ public class TransporterPort implements TransporterPortType{
 			offer = rand.nextInt(price);
 		}
 		else if(price%2==numberTransporter(getName())%2){
-			offer = rand.nextInt(price); 
+			offer = rand.nextInt(price);
 		}
 		else{
-			offer = rand.nextInt(100) + price + 1; 	
+			offer = rand.nextInt(100) + price + 1;
+		}
+		
+		if (offer == 0){
+			offer+=1;
 		}
 		
 		Job newJob = new Job(getName(), idFactory(), origin, destination, offer); 
 		
 		addJob(newJob);
-		
+	
 		return newJob.createJobView();
 	}
 	
@@ -129,24 +138,24 @@ public class TransporterPort implements TransporterPortType{
 		int delay;
 		
 		final Job j;
-		if (id.length()<11){
+		if (id==null){
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
 			throw new BadJobFault_Exception("invalid ID", fault);
 		}
 		
 		try{
-			j = getJobById(id.substring(0,10));
+			j = getJobById(id);
 		}catch (InvalidIdentifierException iie){
 			BadJobFault fault = new BadJobFault();
 			fault.setId(id);
 			throw new BadJobFault_Exception("invalid ID", fault);
 		}
-		
-		j.setIdentifier(id);
 
 		if (j.getState()!="PROPOSED"){
-			return null;
+			BadJobFault fault = new BadJobFault();
+			fault.setId(id);
+			throw new BadJobFault_Exception("invalid ID", fault);
 		}
 		
 		if(!accept){
@@ -171,6 +180,9 @@ public class TransporterPort implements TransporterPortType{
 
 	@Override
 	public JobView jobStatus(String id) {
+		if (id==null){
+			return null;
+		}
 		try {
 			Job j = getJobById(id);
 			return j.createJobView();
@@ -196,6 +208,7 @@ public class TransporterPort implements TransporterPortType{
 	
 	public Job getJobById(String id) throws InvalidIdentifierException {
 		ArrayList<Job> jobs = getJobs();
+		
 		for (Job j: jobs){
 			if (j.getIdentifier().equals(id)) {
 				return j;
@@ -203,6 +216,7 @@ public class TransporterPort implements TransporterPortType{
 		}
 		throw new InvalidIdentifierException(id);
 	}
+	
 	
 	public void acceptedToHeading(Job j){
 		int delay;
@@ -248,10 +262,11 @@ public class TransporterPort implements TransporterPortType{
 		int i = Integer.parseInt(id);
 		i++;
 		
-		id = String.format("%010d", i);
+		if (i > Integer.parseInt(getBoundId())){
+			throw new NoAvailableIdentifierException(getName(), i);
+		}
 		
-		setId(id);
-		
+		setId(Integer.toString(i));
 		return id;
 	}
 	
@@ -282,6 +297,14 @@ public class TransporterPort implements TransporterPortType{
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getBoundId() {
+		return boundId;
+	}
+
+	public void setBoundId(String boundId) {
+		this.boundId = boundId;
 	}
 	
 	

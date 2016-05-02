@@ -1,92 +1,67 @@
 package pt.upa.transporter.ws.it;
 
-import org.junit.*;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.upa.transporter.exception.ArgumentsMissingException;
-import pt.upa.transporter.exception.NoEndpointFoundException;
-import pt.upa.transporter.ws.cli.TransporterClient;
-import pt.upa.transporter.ws.cli.TransporterClientMain;
-
-import static org.junit.Assert.*;
-
 import java.io.IOException;
+import java.util.Properties;
 
-import javax.xml.registry.JAXRException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+
+import pt.upa.transporter.ws.cli.TransporterClient;
 
 /**
- *  Integration Test example
- *  
- *  Invoked by Maven in the "verify" life-cycle phase
- *  Should invoke "live" remote servers 
+ * Integration Test suite abstract class. Test classes inherit this one to
+ * better configure and prepare each test.
  */
-public abstract class AbstractIT {
+public class AbstractIT {
 
-    // static members
+	private static final String TEST_PROP_FILE = "/test.properties";
 
-	protected static TransporterClient tEven;
-	protected static TransporterClient tOdd;
+	private static Properties PROPS;
+	protected static TransporterClient CLIENT;
 
-	protected abstract void populate();
-	
-	
-    // one-time initialization and clean-up
+	protected static final int PRICE_UPPER_LIMIT = 100;
+	protected static final int PRICE_SMALLEST_LIMIT = 10;
+	protected static final int UNITARY_PRICE = 1;
+	protected static final int ZERO_PRICE = 0;
+	protected static final int INVALID_PRICE = -1;
+	protected static final String CENTRO_1 = "Lisboa";
+	protected static final String SUL_1 = "Beja";
+	protected static final String CENTRO_2 = "Coimbra";
+	protected static final String SUL_2 = "Portalegre";
+	protected static final String EMPTY_STRING = "";
+	protected static final int DELAY_LOWER = 1000; // milliseconds
+	protected static final int DELAY_UPPER = 5000; // milliseconds
 
-    @BeforeClass
-    public static void oneTimeSetUp() throws IOException, JAXRException {
-		ClientTransporterGetPropertyValues properties = new ClientTransporterGetPropertyValues();
-		String propOdd = properties.getPropValues("uddi.url", "ws.name1");
-		String propEven = properties.getPropValues("uddi.url", "ws.name2");
+	@BeforeClass
+	public static void oneTimeSetup() throws Exception {
+		PROPS = new Properties();
+		try {
+			PROPS.load(AbstractIT.class.getResourceAsStream(TEST_PROP_FILE));
+		} catch (IOException e) {
+			final String msg = String.format("Could not load properties file {}", TEST_PROP_FILE);
+			System.out.println(msg);
+			throw e;
+		}
+		String uddiEnabled = PROPS.getProperty("uddi.enabled");
+		String uddiURL = PROPS.getProperty("uddi.url");
+		String wsName = PROPS.getProperty("ws.name");
+		String wsURL = PROPS.getProperty("ws.url");
 
-		String[] args = propOdd.split(" ");
-		String[] args2 = propEven.split(" ");
-		System.out.println(args[0]);
-		System.out.println(args[1]);
-		
-        try {
-			tOdd = TransporterClientMain.main(args);
-	        System.out.println(args2[0]);
-	        System.out.println(args2[1]);
-	        tEven = TransporterClientMain.main(args2);
-        } catch (ArgumentsMissingException ame){
-        	ame.getMessage();
-        } catch (NoEndpointFoundException nefe){
-        	nefe.getMessage();
-        }
-    }
-    
-    
-    @AfterClass
-    public static void oneTimeTearDown() {
-    	tOdd = null;
-    	tEven = null;
-    }
+		// Note: CLIENT is defined to be an odd transporter in the pom file
+		// (UpaTransporter1).
 
+		if ("true".equalsIgnoreCase(uddiEnabled)) {
+			CLIENT = new TransporterClient(uddiURL, wsName);
+		} else {
+			CLIENT = new TransporterClient(wsURL);
+		}
+		CLIENT.setVerbose(true);
 
-    // members
+	}
 
-
-    // initialization and clean-up for each test
-
-    @Before
-    public void setUp() {
-    	populate();
-    }
-
-    @After
-    public void tearDown() {
-    	tOdd.clearJobs();
-    	tEven.clearJobs();
-    }
-
-
-    // tests
-
-    @Test
-    public void test() {
-
-        // assertEquals(expected, actual);
-        // if the assert fails, the test fails
-    }
+	@AfterClass
+	public static void cleanup() {
+		CLIENT = null;
+	}
 
 }

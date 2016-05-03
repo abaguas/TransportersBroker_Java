@@ -16,6 +16,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.upa.broker.exception.BrokerClientException;
 
 public class BrokerClientTest {
 

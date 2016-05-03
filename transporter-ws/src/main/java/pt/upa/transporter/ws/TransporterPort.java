@@ -130,6 +130,9 @@ public class TransporterPort implements TransporterPortType{
 				throw new DoesNotOperateException(name, origin, destination);
 			}
 		}
+		else{
+			throw new DoesNotOperateException(name, origin, destination);
+		}
 	}
 
 	@Override

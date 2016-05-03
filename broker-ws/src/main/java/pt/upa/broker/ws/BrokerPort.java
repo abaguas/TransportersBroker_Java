@@ -2,8 +2,11 @@ package pt.upa.broker.ws;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import pt.upa.transporter.ws.BadJobFault_Exception;
@@ -72,11 +75,17 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public String ping(String name) {
 		try {
-			String endpointURL = lookUp(name);
-			TransporterClient tc = new TransporterClient(endpointURL);
-			return tc.ping(name);
+			TransporterClient tc = null;
+			Collection<String> list = list();
+			for (String endpointURL: list){
+				tc = new TransporterClient(endpointURL);
+				if (tc.ping(name)==null){
+					return null;
+				}
+			}
+			return "OK";
 		} catch (JAXRException e1) {
-			return "Unreachable";
+			return "Unreachable"; //TODO connection exception
 		}
 	}
 
@@ -91,10 +100,11 @@ public class BrokerPort implements BrokerPortType {
 		TransporterClient tc = null;
 		
 		try {
+			JobView jv = null;
 			endpoints = list();
 			for (String endpoint : endpoints){
 				tc = new TransporterClient(endpoint);
-				JobView jv = tc.requestJob(origin, destination, price);
+				jv = tc.requestJob(origin, destination, price);
 				if (jv!=null){
 					jobViews.put(jv, endpoint);
 				}
@@ -115,8 +125,9 @@ public class BrokerPort implements BrokerPortType {
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
 
 		} 
-		
+
 		if(jobViews.isEmpty()){
+			System.out.println("Entrei");
 			t.setState("FAILED");
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
@@ -197,7 +208,6 @@ public class BrokerPort implements BrokerPortType {
 		
 		JobStateView jsv = jv.getJobState();
 			
-			
 		String state = viewToState(jsv);
 		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
 			transport.setState(state);	
@@ -211,11 +221,11 @@ public class BrokerPort implements BrokerPortType {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
 		
-		for (Iterator<Transport> iterator = transps.iterator(); iterator.hasNext();) {
-	        Transport transport = (Transport) iterator.next();
+		List<Transport> list = new ArrayList<Transport>(transps);
+		
+		for (Transport transport: list) {
 	        try {
-	        	viewTransport(transport.getIdentifier());
-				transportViews.add(transport.createTransportView());
+				transportViews.add(viewTransport(transport.getIdentifier()));
 			} catch (UnknownTransportFault_Exception e) {
 				System.out.println("Cosmic ray exception");
 				//never happens because the transporter id came from the transports map

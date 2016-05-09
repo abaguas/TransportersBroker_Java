@@ -10,13 +10,12 @@ public class InvalidStateException extends BrokerServerException {
     public InvalidStateException(String name){
         _name=name;
     }
-
     public String getName() {
         return _name;
     }
 
     @Override
     public String getMessage(){
-        return "This state isnt valid: " + getName();
+        return "This state is not valid: " + getName();
     }
 }

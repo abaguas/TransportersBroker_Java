@@ -1,5 +1,6 @@
 package pt.upa.broker.ws;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,8 +16,9 @@ import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
-
+import pt.upa.ca.ws.CA;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
 import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
@@ -36,6 +38,8 @@ public class BrokerPort implements BrokerPortType {
 	private String uddiURL;
 	private String name = "UpaTransporter%";
 	private Map<Transport, String> transports = new HashMap<Transport, String>();
+	private CA ca;
+	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
@@ -48,11 +52,23 @@ public class BrokerPort implements BrokerPortType {
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
     	System.out.printf("Looking for '%s'%n", name);
         Collection<String> endpointAddress = uddiNaming.list(name);
+       
         
         if (endpointAddress.isEmpty()) {
             System.out.println("Not found!");
             return null;
-        } else {
+        } 
+        else {
+            Collection<UDDIRecord> record = uddiNaming.listRecords(name);
+            
+        	for (UDDIRecord rec : record){
+        		String portName = rec.getOrgName();
+        		if(!keys.containsKey(portName)){
+//        			PublicKey pk = ca.getPublicKey(portName);
+        			String pk = ca.getPublicKey(portName);
+        			//keys.put(portName, pk);
+        		}
+        	}
             return endpointAddress;
         }
     }

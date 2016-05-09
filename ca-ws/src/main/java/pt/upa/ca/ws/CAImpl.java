@@ -3,10 +3,9 @@ package pt.upa.ca.ws;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.io.IOException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
 import javax.jws.WebService;
@@ -22,7 +21,8 @@ public class CAImpl implements CA {
 	final static String UPATRANSPORTER4 = "UpaTransporter4";
 	final static String CER = ".cer";
 	
-	public Certificate getCertificate (String name) throws Exception {		
+
+	public Certificate getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException {
 		Certificate certificate = null;
 		if (name.equals(UPABROKER)) {
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
@@ -36,9 +36,11 @@ public class CAImpl implements CA {
 		else throw new InvalidWebServiceNameException(name);
 		
 		return certificate;
+
 	}
 	
-	public static Certificate readCertificateFile(String certificateFilePath) throws Exception {
+	
+	public static Certificate readCertificateFile(String certificateFilePath) throws CertificateException, IOException {
 		FileInputStream fis;
 
 		try {
@@ -61,13 +63,6 @@ public class CAImpl implements CA {
 		fis.close();
 		return null;
 	}
-	
-	@Override
-	public String sayHello(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	
 	
 }

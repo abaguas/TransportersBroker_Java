@@ -1,4 +1,4 @@
-package pt.upa.broker.ws;
+package pt.upa.broker.backup.ws;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -16,7 +16,18 @@ import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
-import pt.upa.broker.ws.cli.BrokerClient;
+import pt.upa.broker.ws.BrokerPortType;
+import pt.upa.broker.ws.InvalidPriceFault;
+import pt.upa.broker.ws.InvalidPriceFault_Exception;
+import pt.upa.broker.ws.TransportView;
+import pt.upa.broker.ws.UnavailableTransportFault;
+import pt.upa.broker.ws.UnavailableTransportFault_Exception;
+import pt.upa.broker.ws.UnavailableTransportPriceFault;
+import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
+import pt.upa.broker.ws.UnknownLocationFault;
+import pt.upa.broker.ws.UnknownLocationFault_Exception;
+import pt.upa.broker.ws.UnknownTransportFault;
+import pt.upa.broker.ws.UnknownTransportFault_Exception;
 import pt.upa.ca.ws.CA;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
@@ -25,9 +36,9 @@ import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
 
 @WebService(
-	    endpointInterface="pt.upa.broker.ws.BrokerPortType",
+	    endpointInterface="pt.upa.broker.backup.ws.BrokerPortType",
 	    wsdlLocation="broker.2_0.wsdl",
-	    name="BrokerWebService",
+	    name="BrokerBackupWebService",
 	    portName="BrokerPort",
 	    targetNamespace="http://ws.broker.upa.pt/",
 	    serviceName="BrokerService"
@@ -41,11 +52,6 @@ public class BrokerPort implements BrokerPortType {
 	private Map<Transport, String> transports = new HashMap<Transport, String>();
 	private CA ca;
 	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
-	private BrokerClient brokerClient = null;
-	//FIXME: tens aqui este broker client te divertires a comunicar e conectar com o broker-backup-ws.
-	//no meu está tudo amarelo/verde
-	//n\ao tenho a certeza se o @WebService do broker-backup-ws está bem
-	
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;

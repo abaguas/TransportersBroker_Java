@@ -9,6 +9,8 @@ import javax.xml.ws.BindingProvider;
 
 // classes generated from WSDL
 import pt.upa.ca.ws.CAImplService;
+import pt.upa.ca.ws.CertificateException_Exception;
+import pt.upa.ca.ws.IOException_Exception;
 import pt.upa.ca.ws.CA;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
@@ -54,7 +56,7 @@ public class CAClient {
 //		System.out.println(result);
 	}
 	
-	public pt.upa.ca.ws.Certificate getCertificate(String name){
+	public pt.upa.ca.ws.Certificate getCertificate(String name) throws CertificateException_Exception, IOException_Exception{
 		CAImplService service = new CAImplService();
 		CA port = service.getCAImplPort();
 		pt.upa.ca.ws.Certificate c = port.getCertificate(name);

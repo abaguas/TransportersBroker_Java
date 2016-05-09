@@ -1,6 +1,6 @@
-package pt.upa.broker.ws;
+package pt.upa.broker.backup.ws;
 
-import pt.upa.broker.exception.InvalidStateException;
+import pt.upa.broker.backup.exception.InvalidStateException;
 import pt.upa.broker.ws.TransportStateView;
 import pt.upa.broker.ws.TransportView;
 

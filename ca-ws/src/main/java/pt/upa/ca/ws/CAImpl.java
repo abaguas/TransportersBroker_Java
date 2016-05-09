@@ -15,7 +15,7 @@ import pt.upa.ca.exception.InvalidWebServiceNameException;
 @WebService(endpointInterface = "pt.upa.ca.ws.CA")
 public class CAImpl implements CA {
 	
-	final static String CERTIFICATE_FILES = "/Users/abaguas/Documents/SD/A_64-project/ca-ws/src/resources/";
+	final static String CERTIFICATE_FILES = "/Users/abaguas/Documents/SD/A_64-project/ca-ws/src/main/resources/";
 	final static String UPABROKER = "UpaBroker";
 	final static String UPATRANSPORTER1 = "UpaTransporter1";
 	final static String UPATRANSPORTER4 = "UpaTransporter4";

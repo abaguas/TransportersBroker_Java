@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 
 import pt.upa.broker.ws.cli.BrokerClient;
 
+
+
 /**
  * Integration Test suite abstract class
  */

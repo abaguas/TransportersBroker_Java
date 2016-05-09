@@ -5,7 +5,7 @@
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
     <groupId>pt.upa.a64</groupId>
-    <artifactId>broker-ws</artifactId>
+    <artifactId>broker-backup-ws</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -23,9 +23,9 @@
 
         <mainclass>pt.upa.broker.ws.BrokerMain</mainclass>
 
-		<ws.url>http://localhost:8080/broker-ws/endpoint</ws.url>
+		<ws.url>http://localhost:8090/broker-backup-ws/endpoint</ws.url>
 		
-        <ws.name>UpaBroker</ws.name>
+        <ws.name>UpaBrokerBackup</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
     </properties>
 
@@ -60,16 +60,11 @@
     		<artifactId>transporter-ws-cli</artifactId>
     		<version>1.0-SNAPSHOT</version>
         </dependency>
-	    <dependency>
-		    <groupId>pt.upa.a64</groupId>
-	    	<artifactId>ca-ws-cli</artifactId>
-		    <version>1.0-SNAPSHOT</version>
-	    </dependency>
-	    <dependency>
-		    <groupId>pt.upa.a64</groupId>
-    	    <artifactId>broker-ws-cli</artifactId>
-	        <version>1.0-SNAPSHOT</version>
-	    </dependency>
+	<dependency>
+		<groupId>pt.upa.a64</groupId>
+		<artifactId>ca-ws-cli</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</dependency>
     </dependencies>
 
     <build>

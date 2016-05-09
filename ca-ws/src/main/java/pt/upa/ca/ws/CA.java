@@ -1,10 +1,13 @@
 package pt.upa.ca.ws;
 
+import java.security.PublicKey;
+import java.security.cert.Certificate;
+
 import javax.jws.WebService;
 
 @WebService
 public interface CA {
 
-	String sayHello(String name);
+	Certificate getCertificate(String name);
 
 }

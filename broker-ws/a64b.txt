@@ -1,0 +1,142 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building broker-ws 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- jaxws-maven-plugin:2.3:wsimport (default) @ broker-ws ---
+[INFO] Ignoring: file:/home/zacarias/SD/proj/A_64-project/broker-ws/src/main/resources/broker.1_0.wsdl
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ broker-ws ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ broker-ws ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ broker-ws ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/zacarias/SD/proj/A_64-project/broker-ws/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ broker-ws ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ broker-ws ---
+[INFO] Surefire report directory: /home/zacarias/SD/proj/A_64-project/broker-ws/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running pt.upa.broker.ws.BrokerMockTest
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter1'
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter1'
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter1'
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter1'
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.473 sec
+Running pt.upa.broker.ws.RequestTransportTest
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Creating stub ...
+Setting endpoint address ...
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter%'
+Creating stub ...
+Setting endpoint address ...
+Tests run: 7, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 4.992 sec <<< FAILURE!
+originDestinationOnCenter(pt.upa.broker.ws.RequestTransportTest)  Time elapsed: 0.772 sec  <<< FAILURE!
+java.lang.AssertionError: Expected exception: pt.upa.broker.ws.UnavailableTransportPriceFault_Exception
+	at org.junit.internal.runners.statements.ExpectException.evaluate(ExpectException.java:32)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+
+Running pt.upa.broker.ws.ClearTransportsTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Running pt.upa.broker.ws.ViewTransportTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running pt.upa.broker.ws.ListTransportTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Running pt.upa.broker.ws.PingTest
+Contacting UDDI at http://localhost:9090
+Looking for 'UpaTransporter1'
+Creating stub ...
+Setting endpoint address ...
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.29 sec
+
+Results :
+
+Failed tests:   originDestinationOnCenter(pt.upa.broker.ws.RequestTransportTest): Expected exception: pt.upa.broker.ws.UnavailableTransportPriceFault_Exception
+
+Tests run: 16, Failures: 1, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 7.178 s
+[INFO] Finished at: 2016-04-19T09:01:09+01:00
+[INFO] Final Memory: 12M/212M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project broker-ws: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /home/zacarias/SD/proj/A_64-project/broker-ws/target/surefire-reports for the individual test results.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

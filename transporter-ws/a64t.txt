@@ -1,0 +1,53 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building transporter-ws 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- jaxws-maven-plugin:2.3:wsimport (default) @ transporter-ws ---
+[INFO] Ignoring: file:/home/zacarias/SD/proj/A_64-project/transporter-ws/src/main/resources/transporter.1_0.wsdl
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ transporter-ws ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ transporter-ws ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ transporter-ws ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/zacarias/SD/proj/A_64-project/transporter-ws/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ transporter-ws ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ transporter-ws ---
+[INFO] Surefire report directory: /home/zacarias/SD/proj/A_64-project/transporter-ws/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running pt.upa.transporter.ws.DecideJobTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.448 sec
+Running pt.upa.transporter.ws.ListJobsTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Running pt.upa.transporter.ws.JobStatusTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec
+Running pt.upa.transporter.ws.RequestJobTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 sec
+Running pt.upa.transporter.ws.ClearJobsTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running pt.upa.transporter.ws.PingTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+
+Results :
+
+Tests run: 39, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.071 s
+[INFO] Finished at: 2016-04-19T08:59:51+01:00
+[INFO] Final Memory: 12M/212M
+[INFO] ------------------------------------------------------------------------

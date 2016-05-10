@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.swing.Timer;
 
@@ -22,6 +23,9 @@ import pt.upa.transporter.exception.NoAvailableIdentifierException;
 	targetNamespace="http://ws.transporter.upa.pt/",
 	serviceName="TransporterService"
 )
+
+@HandlerChain(file = "/Transporter-chain.xml")
+
 public class TransporterPort implements TransporterPortType{
 
 	private String id;

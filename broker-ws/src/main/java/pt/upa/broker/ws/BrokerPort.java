@@ -53,10 +53,11 @@ import javax.xml.registry.JAXRException;
 public class BrokerPort implements BrokerPortType {
 	
 	private String id = "0";
-	private String uddiURL;
-	private String name = "UpaTransporter%";
+	private String uddiURL = null;
+	private String name = null;
+	private String searchName = "UpaTransporter%";
 	private Map<Transport, String> transports = new HashMap<Transport, String>();
-	private CA ca;
+	private CA ca = null;
 	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
 	private BrokerClient brokerClient = null;
 	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
@@ -65,17 +66,21 @@ public class BrokerPort implements BrokerPortType {
 	private final static String KEY_PASSWORD = "ins3cur3";
 
 	
-	public BrokerPort (String uddiURL){
+	public BrokerPort (String name, String uddiURL) {
+		this.name = name;
 		this.uddiURL = uddiURL;
+		if (name.equals("UpaBroker")){
+			
+		}
 	}
 	
 	public Collection<String> list () throws JAXRException {
     	String uddiURL = getUddiURL();
-    	String name = getName();
+    	String searchName = getSearchName();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
-    	System.out.printf("Looking for '%s'%n", name);
-        Collection<String> endpointAddress = uddiNaming.list(name);
+    	System.out.printf("Looking for '%s'%n", searchName);
+        Collection<String> endpointAddress = uddiNaming.list(searchName);
        
         
         if (endpointAddress.isEmpty()) {
@@ -84,10 +89,11 @@ public class BrokerPort implements BrokerPortType {
         } 
      
         else {
-            Collection<UDDIRecord> record = uddiNaming.listRecords(name);
+            Collection<UDDIRecord> record = uddiNaming.listRecords(searchName);
             
         	for (UDDIRecord rec : record){
         		String transportName = rec.getOrgName();
+        		String endpoint = rec.getUrl();
         		if(!keys.containsKey(transportName)){
         			String s = null;
 					
@@ -117,7 +123,7 @@ public class BrokerPort implements BrokerPortType {
         			try {
 						if(verifySignedCertificate(cert)){
 							PublicKey pk = cert.getPublicKey();
-							keys.put(transportName, pk);
+							keys.put(endpoint, pk);
 						}
 						else{
 							throw new InvalidSignedCertificateException();
@@ -127,6 +133,23 @@ public class BrokerPort implements BrokerPortType {
 					}
         		}
         	}
+            return endpointAddress;
+        }
+        
+    }
+	
+	
+	public String lookUp (String name) throws JAXRException {
+		String uddiURL = getUddiURL();
+		System.out.printf("Contacting UDDI at %s%n", uddiURL);
+    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	System.out.printf("Looking for '%s'%n", name);
+        String endpointAddress = uddiNaming.lookup(name);
+        
+        if (endpointAddress == null) {
+            System.out.println("Not found!");
+            return null;
+        } else {
             return endpointAddress;
         }
     }
@@ -165,20 +188,10 @@ public class BrokerPort implements BrokerPortType {
 		return keystore;
 	}
 	
-	public String lookUp (String name) throws JAXRException {
-		String uddiURL = getUddiURL();
-		System.out.printf("Contacting UDDI at %s%n", uddiURL);
-    	UDDINaming uddiNaming = new UDDINaming(uddiURL);
-    	System.out.printf("Looking for '%s'%n", name);
-        String endpointAddress = uddiNaming.lookup(name);
-        
-        if (endpointAddress == null) {
-            System.out.println("Not found!");
-            return null;
-        } else {
-            return endpointAddress;
-        }
-    }
+//////////////////////////////////////////////////////////////////////////////////////////
+          //                            OPERATIONS                          //	
+//////////////////////////////////////////////////////////////////////////////////////////
+	
 	
 	@Override
 	public String ping(String name) {
@@ -295,7 +308,7 @@ public class BrokerPort implements BrokerPortType {
 			}
 			else {
 				try {
-					tc.decideJob(t.getIdentifier()+idFactory(), false);
+					tc.decideJob(t.getIdentifier(), false);  //XXX se der mal foi aqui (alterei o identificador)
 					t.setState("FAILED");
 				} catch (BadJobFault_Exception e) {
 					t.setState("FAILED");
@@ -369,6 +382,25 @@ public class BrokerPort implements BrokerPortType {
 		throw new UnknownTransportFault_Exception("Unknown id", fault);
 	}
 	
+	public String viewToState(JobStateView view){
+		return view.name();
+	}
+	
+	@Override
+	public void updateTransport(TransportView transport) {
+		if (!getName().equals("UpaBroker")){
+			//TODO atualizar o estado
+		}
+	}
+
+	@Override
+	public void iAmAlive(String iAmAlive) {
+		if (!getName().equals("UpaBroker")){
+			//TODO adiar o timeout
+		}
+	}
+	
+	
 	public String idFactory(){
 		String id = getId();
 		int i = Integer.parseInt(id);
@@ -380,9 +412,10 @@ public class BrokerPort implements BrokerPortType {
 		return "f".concat(id);
 	}
 	
-	public String viewToState(JobStateView view){
-		return view.name();
-	}
+//////////////////////////////////////////////////////////////////////////////////////////
+      //                           GETTERS AND SETTERS                          //	
+//////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	public String getUddiURL() {
 		return uddiURL;
@@ -392,12 +425,8 @@ public class BrokerPort implements BrokerPortType {
 		this.uddiURL = uddiURL;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public String getSearchName() {
+		return searchName;
 	}
 
 	public String getId() {
@@ -408,16 +437,12 @@ public class BrokerPort implements BrokerPortType {
 		this.id = id;
 	}
 
-	@Override
-	public void updateTransport(TransportView transport) {
-		// TODO Auto-generated method stub
-		
+	public String getName() {
+		return name;
 	}
 
-	@Override
-	public void iAmAlive(String iAmAlive) {
-		// TODO Auto-generated method stub
-		
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

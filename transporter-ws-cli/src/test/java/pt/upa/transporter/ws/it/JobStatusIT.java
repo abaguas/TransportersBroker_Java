@@ -48,11 +48,8 @@ public class JobStatusIT extends AbstractIT {
 	public void testJobStatus1() throws Exception {
 		JobView jv = CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_UPPER_LIMIT);
 		String id = jv.getJobIdentifier();
-		System.out.println(id);
 		JobView jv2 = CLIENT.jobStatus(id);
-		System.out.print(jv2);
 		JobStateView jsv = jv2.getJobState();
-		System.out.println(jsv);
 		assertEquals(JobStateView.PROPOSED, jsv);
 
 		jv = CLIENT.decideJob(jv.getJobIdentifier(), true);

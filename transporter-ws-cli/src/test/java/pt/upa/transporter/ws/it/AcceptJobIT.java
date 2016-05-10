@@ -23,8 +23,6 @@ public class AcceptJobIT extends AbstractIT {
 	@Test
 	public void testAcceptJob() throws Exception {
 		JobView jv = CLIENT.requestJob(CENTRO_1, SUL_1, PRICE_UPPER_LIMIT);
-		System.out.println("-----------------------------------------------------------");
-		System.out.println(jv.getJobIdentifier());
 		jv = CLIENT.decideJob(jv.getJobIdentifier(), true);
 		assertEquals(JobStateView.ACCEPTED, jv.getJobState());
 	}

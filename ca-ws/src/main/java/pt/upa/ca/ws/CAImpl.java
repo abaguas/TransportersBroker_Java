@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+
 
 import javax.jws.WebService;
 
@@ -22,7 +24,7 @@ public class CAImpl implements CA {
 	final static String CER = ".cer";
 	
 
-	public Certificate getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException {
+	public String getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException {
 		Certificate certificate = null;
 		if (name.equals(UPABROKER)) {
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
@@ -35,7 +37,7 @@ public class CAImpl implements CA {
 		}
 		else throw new InvalidWebServiceNameException(name);
 		
-		return certificate;
+		return printBase64Binary(certificate.getEncoded());
 
 	}
 	

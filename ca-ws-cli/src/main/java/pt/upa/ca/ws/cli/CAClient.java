@@ -56,10 +56,10 @@ public class CAClient {
 //		System.out.println(result);
 	}
 	
-	public pt.upa.ca.ws.Certificate getCertificate(String name) throws CertificateException_Exception, IOException_Exception{
+	public String getCertificate(String name) throws CertificateException_Exception, IOException_Exception{
 		CAImplService service = new CAImplService();
 		CA port = service.getCAImplPort();
-		pt.upa.ca.ws.Certificate c = port.getCertificate(name);
+		String c = port.getCertificate(name);
 		return c;
 	}
 

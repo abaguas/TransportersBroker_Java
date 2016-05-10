@@ -12,6 +12,6 @@ import pt.upa.ca.exception.InvalidWebServiceNameException;
 @WebService
 public interface CA {
 
-	Certificate getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException;
+	String getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException;
 
 }

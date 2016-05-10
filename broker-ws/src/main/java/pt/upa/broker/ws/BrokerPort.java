@@ -1,6 +1,19 @@
 package pt.upa.broker.ws;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,10 +29,14 @@ import pt.upa.transporter.ws.BadPriceFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
+import pt.upa.broker.exception.InvalidSignedCertificateException;
 import pt.upa.broker.ws.cli.BrokerClient;
 import pt.upa.ca.ws.CA;
+import pt.upa.ca.ws.CertificateException_Exception;
+import pt.upa.ca.ws.IOException_Exception;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 
 import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
@@ -42,10 +59,11 @@ public class BrokerPort implements BrokerPortType {
 	private CA ca;
 	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
 	private BrokerClient brokerClient = null;
-	//FIXME: tens aqui este broker client te divertires a comunicar e conectar com o broker-backup-ws.
-	//no meu está tudo amarelo/verde
-	//n\ao tenho a certeza se o @WebService do broker-backup-ws está bem
-	
+	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
+	private static final String KEYSTORE_PASS = "1nsecure";
+	private final static String KEY_ALIAS = "example";
+	private final static String KEY_PASSWORD = "ins3cur3";
+
 	
 	public BrokerPort (String uddiURL){
 		this.uddiURL = uddiURL;
@@ -64,20 +82,88 @@ public class BrokerPort implements BrokerPortType {
             System.out.println("Not found!");
             return null;
         } 
+     
         else {
             Collection<UDDIRecord> record = uddiNaming.listRecords(name);
             
         	for (UDDIRecord rec : record){
-        		String portName = rec.getOrgName();
-        		if(!keys.containsKey(portName)){
-//        			PublicKey pk = ca.getPublicKey(portName);
-        			//String pk = ca.getPublicKey(portName);
-        			//keys.put(portName, pk);
+        		String transportName = rec.getOrgName();
+        		if(!keys.containsKey(transportName)){
+        			String s = null;
+					
+        			try {
+						s = (ca.getCertificate(transportName));
+					} catch (CertificateException_Exception | IOException_Exception e1) {
+						e1.printStackTrace();
+					}
+					
+        			byte[] c = parseBase64Binary(s);
+        			CertificateFactory certFactory = null;
+					
+        			try {
+						certFactory = CertificateFactory.getInstance("X.509");
+					} catch (CertificateException e1) {
+						e1.printStackTrace();
+					}
+        			
+        			InputStream in = new ByteArrayInputStream(c);
+        			Certificate cert = null;
+        			
+        			try {
+						cert = certFactory.generateCertificate(in);
+					} catch (CertificateException e) {
+						e.printStackTrace();
+					}
+        			try {
+						if(verifySignedCertificate(cert)){
+							PublicKey pk = cert.getPublicKey();
+							keys.put(transportName, pk);
+						}
+						else{
+							throw new InvalidSignedCertificateException();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
         		}
         	}
             return endpointAddress;
         }
     }
+	
+	public static boolean verifySignedCertificate(Certificate certificate) throws Exception {
+		
+			try {
+				PublicKey pk = getCAPublicKey();
+				certificate.verify(pk);
+			} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
+					| SignatureException e) {
+				e.printStackTrace();
+			}
+
+		return true;
+	}
+	
+	public static PublicKey getCAPublicKey() throws Exception {
+
+		KeyStore keystore = readKeystoreFile();
+		PublicKey key = (PublicKey) keystore.getKey(KEY_ALIAS, KEY_PASSWORD.toCharArray());
+
+		return key;
+	}
+	
+	public static KeyStore readKeystoreFile() throws Exception {
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(KEYSTORE_PATH);
+		} catch (FileNotFoundException e) {
+			System.err.println("Keystore file <" + KEYSTORE_PATH + "> not found.");
+			return null;
+		}
+		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keystore.load(fis, KEYSTORE_PASS.toCharArray());
+		return keystore;
+	}
 	
 	public String lookUp (String name) throws JAXRException {
 		String uddiURL = getUddiURL();

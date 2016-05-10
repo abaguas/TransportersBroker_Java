@@ -71,7 +71,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
             result = new WebServiceException("Fail on lookup");
         }};
 
-        BrokerPort bp = new BrokerPort("http://localhost:9090"); 
+        BrokerPort bp = new BrokerPort("UpaBroker", "http://localhost:9090"); 
        
         try {
             bp.lookUp("UpaTransporter1");
@@ -112,7 +112,7 @@ public class BrokerMockTest extends AbstractBrokerTest{
 
         }};
 
-        BrokerPort bp = new BrokerPort("http://localhost:9090"); 
+        BrokerPort bp = new BrokerPort("UpaBroker", "http://localhost:9090"); 
 
         try {
 

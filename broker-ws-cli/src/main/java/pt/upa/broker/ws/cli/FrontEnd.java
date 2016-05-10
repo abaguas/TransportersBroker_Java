@@ -16,24 +16,63 @@ import pt.upa.broker.ws.TransportView;
 import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
 import pt.upa.broker.ws.UnknownLocationFault_Exception;
+import java.util.*;
 import pt.upa.broker.ws.UnknownTransportFault_Exception;
 
 public class FrontEnd implements BrokerPortType{
 	
-	private BrokerPortType port;
+	private BrokerPortType port = null;
 	private boolean verbose = false;
 	private String endpointURL= null;
+	private BindingProvider bindingProvider = null;
+    private Map<String, Object> requestContext = null;
+    private List<String> CONN_TIME_PROPS = null;
 
     public FrontEnd(String uddiURL, String name) {
         lookUp(uddiURL, name);
         createStub();
+        setTimeouts();
     }
     
     /** constructor with provided web service URL */
     public FrontEnd(String endpointURL) throws BrokerClientException {
 		this.endpointURL = endpointURL;
 		createStub();
+		setTimeouts();
 	}
+
+    private void setTimeouts () {
+    	bindingProvider = (BindingProvider) port;
+        requestContext = bindingProvider.getRequestContext();
+        int connectionTimeout = 2000;
+        // The connection timeout property has different names in different versions of JAX-WS
+        // Set them all to avoid compatibility issues
+        CONN_TIME_PROPS = new ArrayList<String>();
+        CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
+        CONN_TIME_PROPS.add("com.sun.xml.internal.ws.connect.timeout");
+        CONN_TIME_PROPS.add("javax.xml.ws.client.connectionTimeout");
+        // Set timeout until a connection is established (unit is milliseconds; 0 means infinite)
+        for (String propName : CONN_TIME_PROPS)
+            requestContext.put(propName, connectionTimeout);
+        System.out.printf("Set connection timeout to %d milliseconds%n", connectionTimeout);
+
+        int receiveTimeout = 5000;
+        // The receive timeout property has alternative names
+        // Again, set them all to avoid compability issues
+        final List<String> RECV_TIME_PROPS = new ArrayList<String>();
+        RECV_TIME_PROPS.add("com.sun.xml.ws.request.timeout");
+        RECV_TIME_PROPS.add("com.sun.xml.internal.ws.request.timeout");
+        RECV_TIME_PROPS.add("javax.xml.ws.client.receiveTimeout");
+        // Set timeout until the response is received (unit is milliseconds; 0 means infinite)
+        for (String propName : RECV_TIME_PROPS)
+            requestContext.put(propName, 1000);
+        System.out.printf("Set receive timeout to %d milliseconds%n", receiveTimeout);
+    }
+
+    
+    
+    
+    
 
     
     public void lookUp (String uddiURL, String name) {

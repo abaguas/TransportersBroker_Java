@@ -113,10 +113,17 @@ public class BrokerClient implements BrokerPortType{
 		this.verbose = verbose;
 	}
 
+
 	@Override
-	public String updateTransport(TransportView transport) {
+	public void updateTransport(TransportView transport) {
 		// TODO Auto-generated method stub
-		return null;
+		
+	}
+
+	@Override
+	public void iAmAlive(String iAmAlive) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

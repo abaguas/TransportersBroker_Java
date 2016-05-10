@@ -26,7 +26,7 @@ import javax.xml.registry.JAXRException;
 
 @WebService(
 	    endpointInterface="pt.upa.broker.ws.BrokerPortType",
-	    wsdlLocation="broker.2_0.wsdl",
+	    wsdlLocation="broker.3_0.wsdl",
 	    name="BrokerWebService",
 	    portName="BrokerPort",
 	    targetNamespace="http://ws.broker.upa.pt/",
@@ -323,9 +323,15 @@ public class BrokerPort implements BrokerPortType {
 	}
 
 	@Override
-	public String updateTransport(TransportView transport) {
-		// nothing to do
-		return null;
+	public void updateTransport(TransportView transport) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void iAmAlive(String iAmAlive) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

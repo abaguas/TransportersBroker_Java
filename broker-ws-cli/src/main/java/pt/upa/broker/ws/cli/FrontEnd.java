@@ -1,6 +1,8 @@
 package pt.upa.broker.ws.cli;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+import java.util.TimerTask;
+import java.util.Timer;
 
 import java.util.List;
 import java.util.Map;
@@ -22,11 +24,12 @@ import pt.upa.broker.ws.UnknownTransportFault_Exception;
 public class FrontEnd implements BrokerPortType{
 	
 	private BrokerPortType port = null;
-	private boolean verbose = false;
+	private boolean verbose = true;
 	private String endpointURL= null;
 	private BindingProvider bindingProvider = null;
     private Map<String, Object> requestContext = null;
     private List<String> CONN_TIME_PROPS = null;
+    private Timer timer = null;
 
     public FrontEnd(String uddiURL, String name) {
         lookUp(uddiURL, name);
@@ -69,12 +72,6 @@ public class FrontEnd implements BrokerPortType{
         System.out.printf("Set receive timeout to %d milliseconds%n", receiveTimeout);
     }
 
-    
-    
-    
-    
-
-    
     public void lookUp (String uddiURL, String name) {
     	try {
     		if (verbose){
@@ -118,6 +115,7 @@ public class FrontEnd implements BrokerPortType{
 	
 	@Override
 	public String ping(String name) {
+		System.out.println("Mandei ganda ping");
 		return port.ping(name);
 	}
 
@@ -141,7 +139,28 @@ public class FrontEnd implements BrokerPortType{
 	@Override
 	public void clearTransports() {
 		port.clearTransports();
+	}
+	
+	@Override
+	public void updateTransport(TransportView transport) {
+		port.updateTransport(transport);
 		
+	}
+
+	@Override
+	public void iAmAlive(String iAmAlive) {
+		System.out.println("Settei o timer");
+
+		timer = new Timer();
+		TimerTask timerTask = new TimerTask(){
+
+			@Override
+			public void run() {
+				port.iAmAlive(iAmAlive);
+				iAmAlive(iAmAlive);
+			}
+		};
+		timer.schedule(timerTask, 8000);
 	}
 
 	public boolean isVerbose() {
@@ -150,19 +169,6 @@ public class FrontEnd implements BrokerPortType{
 
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
-	}
-
-
-	@Override
-	public void updateTransport(TransportView transport) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void iAmAlive(String iAmAlive) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

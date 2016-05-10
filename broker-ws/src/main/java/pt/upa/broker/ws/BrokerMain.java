@@ -13,6 +13,7 @@ public class BrokerMain {
             return;
         }
 
+        BrokerPort bp = null;
         String uddiURL = args[0];
 		String name = args[1];
 		if (name.equals("UpaBroker1")) {
@@ -22,8 +23,9 @@ public class BrokerMain {
 
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
-        try {	
-            endpoint = Endpoint.create(new BrokerPort(name, uddiURL));
+        try {
+        	bp = new BrokerPort(name, uddiURL, url);
+            endpoint = Endpoint.create(bp);
 
             // publish endpoint
             System.out.printf("Starting %s%n", url);
@@ -38,7 +40,9 @@ public class BrokerMain {
             // wait
             System.out.println("Awaiting connections");
             System.out.println("Press enter to shutdown");
+            bp.init();
             System.in.read();
+            
 
         } catch (Exception e) {
 			System.out.printf("Caught exception: %s%n", e);
@@ -46,6 +50,7 @@ public class BrokerMain {
 
 		} finally {
 			try {
+				bp.killTime();
 				if (endpoint != null) {
 					// stop endpoint
 					endpoint.stop();

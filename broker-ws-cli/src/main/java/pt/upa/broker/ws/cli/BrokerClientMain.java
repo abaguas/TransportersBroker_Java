@@ -23,6 +23,9 @@ public class BrokerClientMain {
 		System.out.println(args[1]);
         client = new BrokerClient(args[0], args[1]);
         
+        client.requestTransport("Faro", "Lisboa", 39);
+        
+        
      // call using set endpoint address
     	try {
     	    String result = client.requestTransport("", "", 1);

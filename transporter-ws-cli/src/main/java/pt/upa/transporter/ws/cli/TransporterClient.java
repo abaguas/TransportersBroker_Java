@@ -104,7 +104,7 @@ public class TransporterClient implements TransporterPortType {
 
 	@Override
 	public JobView jobStatus(String id) {
-		return jobStatus(id);
+		return port.jobStatus(id);
 	}
 
 	@Override

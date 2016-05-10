@@ -37,6 +37,8 @@ public class CAImpl implements CA {
 		}
 		else throw new InvalidWebServiceNameException(name);
 		
+		
+		System.out.println("Estou a enviar o ganda certificado");
 		return printBase64Binary(certificate.getEncoded());
 
 	}

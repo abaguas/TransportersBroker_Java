@@ -26,7 +26,7 @@ public class TransporterMain {
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
         try {	
-            endpoint = Endpoint.create(new TransporterPort(name));
+            endpoint = Endpoint.create(new TransporterPort(name,uddiURL));
 
             // publish endpoint
             System.out.printf("Starting %s%n", url);

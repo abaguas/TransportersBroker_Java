@@ -20,8 +20,8 @@ public abstract class AbstractTransporterTest {
 	
     @BeforeClass
     public static void oneTimeSetUp() {
-    	port1 = new TransporterPort("UpaTransporter1");
-    	port2 = new TransporterPort("UpaTransporter2");
+    	port1 = new TransporterPort("UpaTransporter1", "http://localhost:9090");
+    	port2 = new TransporterPort("UpaTransporter2", "http://localhost:9090");
     }
 
     @AfterClass

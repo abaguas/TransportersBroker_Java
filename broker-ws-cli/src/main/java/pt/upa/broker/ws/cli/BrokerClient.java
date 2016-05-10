@@ -15,6 +15,8 @@ public class BrokerClient implements BrokerPortType{
 	private FrontEnd fe = null;
 
     public BrokerClient(String uddiURL, String name) {
+    	System.out.println(name);
+    	System.out.println("Fui chamado: construtor do broker cli");
         fe = new FrontEnd(uddiURL, name);
     }
     
@@ -22,7 +24,6 @@ public class BrokerClient implements BrokerPortType{
     public BrokerClient(String endpointURL) throws BrokerClientException {
 		fe = new FrontEnd(endpointURL);
 	}
-	
 	
 	@Override
 	public String ping(String name) {
@@ -54,12 +55,13 @@ public class BrokerClient implements BrokerPortType{
 
 	@Override
 	public void updateTransport(TransportView transport) {
-		// TODO Auto-generated method stub	
+		fe.updateTransport(transport);
 	}
 
 	@Override
 	public void iAmAlive(String iAmAlive) {
-		// TODO Auto-generated method stub
+		System.out.println("Disse ao FE para fazer coisas");
+		fe.iAmAlive(iAmAlive);
 	}
 
 	public FrontEnd getFe() {

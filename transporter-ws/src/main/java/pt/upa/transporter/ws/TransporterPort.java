@@ -32,7 +32,7 @@ import pt.upa.ca.ws.cli.CAClient;
 import pt.upa.ca.ws.CertificateException_Exception;
 import pt.upa.ca.ws.IOException_Exception;
 import pt.upa.transporter.exception.DoesNotOperateException;
-import pt.upa.transporter.exception.InvalidIdentifierException;;
+import pt.upa.transporter.exception.InvalidIdentifierException;
 import pt.upa.transporter.exception.InvalidSignedCertificateException;
 import pt.upa.transporter.exception.NoAvailableIdentifierException;
 
@@ -60,7 +60,7 @@ public class TransporterPort implements TransporterPortType{
 			Arrays.asList("Lisboa", "Leiria", "Santarém", "Castelo Branco", "Coimbra", "Aveiro", "Viseu", "Guarda"));
 	private ArrayList<String> regiaoNorte = new ArrayList<String>(
 			Arrays.asList("Porto", "Braga", "Viana do Castelo", "Vila Real", "Bragança"));
-	private PublicKey brokerKey;
+	private PublicKey brokerKey = null;
 	private CAClient ca = null;
 	private static final String BROKER_NAME = "UpaBroker";
 	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
@@ -110,6 +110,8 @@ public class TransporterPort implements TransporterPortType{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(brokerKey);  //FIXME
 	}
 
 /////////////////////////////////////////REPETIDO/////////////////////////////////////////////////

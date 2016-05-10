@@ -22,10 +22,15 @@
         <wsdl.filename>broker.3_0.wsdl</wsdl.filename>
 
         <mainclass>pt.upa.broker.ws.BrokerMain</mainclass>
+        
+        <!-- instance number - redefine using -D option - e.g. mvn -Dws.br=2 exec:java -->
+        <ws.br>1</ws.br>
 
-		<ws.url>http://localhost:8080/broker-ws/endpoint</ws.url>
+		<ws.host>localhost</ws.host>
+        <ws.port>809${ws.br}</ws.port>
+        <ws.url>http://${ws.host}:${ws.port}/broker-ws/endpoint</ws.url>
 		
-        <ws.name>UpaBroker</ws.name>
+        <ws.name>UpaBroker${ws.br}</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
     </properties>
 

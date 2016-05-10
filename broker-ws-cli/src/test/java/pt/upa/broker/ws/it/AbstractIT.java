@@ -10,6 +10,7 @@ import pt.upa.broker.ws.cli.BrokerClient;
 
 
 
+
 /**
  * Integration Test suite abstract class
  */
@@ -65,7 +66,7 @@ public class AbstractIT {
 		} else {
 			CLIENT = new BrokerClient(wsURL);
 		}
-		CLIENT.setVerbose(true);
+		CLIENT.getFe().setVerbose(true);
 
 	}
 

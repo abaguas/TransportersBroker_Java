@@ -15,6 +15,9 @@ public class BrokerMain {
 
         String uddiURL = args[0];
 		String name = args[1];
+		if (name.equals("UpaBroker1")) {
+			name = "UpaBroker";
+		}
 		String url = args[2];
 
 		Endpoint endpoint = null;

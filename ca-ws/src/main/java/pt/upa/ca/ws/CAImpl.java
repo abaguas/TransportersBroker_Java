@@ -30,10 +30,10 @@ public class CAImpl implements CA {
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
 		}
 		else if (name.equals(UPATRANSPORTER1)){
-			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
+			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER1+CER);
 		}
 		else if (name.equals(UPATRANSPORTER4)){
-			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
+			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER4+CER);
 		}
 		else throw new InvalidWebServiceNameException(name);
 		

@@ -1,6 +1,7 @@
 package pt.upa.broker.ws.cli;
 
 import java.util.List;
+
 import pt.upa.broker.exception.BrokerClientException;
 import pt.upa.broker.ws.BrokerPortType;
 import pt.upa.broker.ws.InvalidPriceFault_Exception;
@@ -54,8 +55,8 @@ public class BrokerClient implements BrokerPortType{
 	}
 
 	@Override
-	public void updateTransport(TransportView transport) {
-		fe.updateTransport(transport);
+	public void updateTransport(TransportView transport, String endpoint) {
+		fe.updateTransport(transport, endpoint);
 	}
 
 	@Override

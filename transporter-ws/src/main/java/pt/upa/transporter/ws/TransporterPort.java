@@ -26,6 +26,8 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.swing.Timer;
 import javax.xml.registry.JAXRException;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.ca.ws.cli.CAClient;
@@ -35,6 +37,7 @@ import pt.upa.transporter.exception.DoesNotOperateException;
 import pt.upa.transporter.exception.InvalidIdentifierException;
 import pt.upa.transporter.exception.InvalidSignedCertificateException;
 import pt.upa.transporter.exception.NoAvailableIdentifierException;
+import pt.upa.transporter.ws.handler.TransporterServerHandler;
 
 @WebService(
 	endpointInterface="pt.upa.transporter.ws.TransporterPortType",
@@ -63,7 +66,7 @@ public class TransporterPort implements TransporterPortType{
 	private PublicKey brokerKey = null;
 	private CAClient ca = null;
 	private static final String BROKER_NAME = "UpaBroker";
-	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
+	private static final String KEYSTORE_PATH = "src/main/resources/UpaTransporter1.jks"; //FIXME name of Transporter
 	private static final String KEYSTORE_PASS = "1nsecure";
 	private final static String KEY_ALIAS = "example";
 	private final static String KEY_PASSWORD = "ins3cur3";
@@ -74,46 +77,54 @@ public class TransporterPort implements TransporterPortType{
 		id = Integer.toString(n);
 		boundId = Integer.toString(n+100000);
 		this.uddiURL = uddiURL;
+		
+	}
+
+	public void init(){
 		String s = null;
 		ca = new CAClient(uddiURL);
 		
 		try {
-			s = (ca.getCertificate(BROKER_NAME));
-		} catch (CertificateException_Exception | IOException_Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		byte[] c = parseBase64Binary(s);
-		CertificateFactory certFactory = null;
-		
-		try {
-			certFactory = CertificateFactory.getInstance("X.509");
-		} catch (CertificateException e1) {
-			e1.printStackTrace();
-		}
-		
-		InputStream in = new ByteArrayInputStream(c);
-		Certificate cert = null;
-		
-		try {
-			cert = certFactory.generateCertificate(in);
-		} catch (CertificateException e) {
-			e.printStackTrace();
-		}
-		try {
-			if(verifySignedCertificate(cert)){
-				brokerKey = cert.getPublicKey();
-			}
-			else{
-				throw new InvalidSignedCertificateException();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println(brokerKey);  //FIXME
-	}
+			System.out.println("AGUAS");
+			s = (ca.getCertificate("UpaTransporter1"));
 
+		} catch (CertificateException_Exception | IOException_Exception e1) {
+//			e1.printStackTrace();
+			if(s==null)
+				System.out.println("ISTO ESTA A NULL");
+			e1.getMessage();
+		}
+		
+//		byte[] c = parseBase64Binary(s);
+//		CertificateFactory certFactory = null;
+//		
+//		try {
+//			certFactory = CertificateFactory.getInstance("X.509");
+//		} catch (CertificateException e1) {
+//			e1.printStackTrace();
+//		}
+//		
+//		InputStream in = new ByteArrayInputStream(c);
+//		Certificate cert = null;
+//		
+//		try {
+//			cert = certFactory.generateCertificate(in);
+//		} catch (CertificateException e) {
+//			e.printStackTrace();
+//		}
+//		try {
+//			if(verifySignedCertificate(cert)){
+//				brokerKey = cert.getPublicKey();
+//			}
+//			else{
+//				throw new InvalidSignedCertificateException();
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		System.out.println(brokerKey);  //FIXME
+	}
 /////////////////////////////////////////REPETIDO/////////////////////////////////////////////////
 	
 	public static boolean verifySignedCertificate(Certificate certificate) throws Exception {
@@ -155,11 +166,13 @@ public class TransporterPort implements TransporterPortType{
 	@Override
 	public String ping(String name) {
 		return this.name;
+		
 	}
 	
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
+		
 		if(origin==null || destination == null){
 			BadLocationFault blf = new BadLocationFault();
 			blf.setLocation(origin);

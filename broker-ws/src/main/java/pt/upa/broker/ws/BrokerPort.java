@@ -91,48 +91,48 @@ public class BrokerPort implements BrokerPortType {
         else {
             Collection<UDDIRecord> record = uddiNaming.listRecords(searchName);
             
-        	for (UDDIRecord rec : record){
-        		String transportName = rec.getOrgName();
-        		String endpoint = rec.getUrl();
-        		if(!keys.containsKey(transportName)){
-        			String s = null;
-					
-        			try {
-						s = (ca.getCertificate(transportName));
-					} catch (CertificateException_Exception | IOException_Exception e1) {
-						e1.printStackTrace();
-					}
-					
-        			byte[] c = parseBase64Binary(s);
-        			CertificateFactory certFactory = null;
-					
-        			try {
-						certFactory = CertificateFactory.getInstance("X.509");
-					} catch (CertificateException e1) {
-						e1.printStackTrace();
-					}
-        			
-        			InputStream in = new ByteArrayInputStream(c);
-        			Certificate cert = null;
-        			
-        			try {
-						cert = certFactory.generateCertificate(in);
-					} catch (CertificateException e) {
-						e.printStackTrace();
-					}
-        			try {
-						if(verifySignedCertificate(cert)){
-							PublicKey pk = cert.getPublicKey();
-							keys.put(endpoint, pk);
-						}
-						else{
-							throw new InvalidSignedCertificateException();
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-        		}
-        	}
+//        	for (UDDIRecord rec : record){
+//        		String transportName = rec.getOrgName();
+//        		String endpoint = rec.getUrl();
+//        		if(!keys.containsKey(transportName)){
+//        			String s = null;
+//					
+//        			try {
+//						s = (ca.getCertificate(transportName));
+//					} catch (CertificateException_Exception | IOException_Exception e1) {
+//						e1.printStackTrace();
+//					}
+//					
+//        			byte[] c = parseBase64Binary(s);
+//        			CertificateFactory certFactory = null;
+//					
+//        			try {
+//						certFactory = CertificateFactory.getInstance("X.509");
+//					} catch (CertificateException e1) {
+//						e1.printStackTrace();
+//					}
+//        			
+//        			InputStream in = new ByteArrayInputStream(c);
+//        			Certificate cert = null;
+//        			
+//        			try {
+//						cert = certFactory.generateCertificate(in);
+//					} catch (CertificateException e) {
+//						e.printStackTrace();
+//					}
+//        			try {
+//						if(verifySignedCertificate(cert)){
+//							PublicKey pk = cert.getPublicKey();
+//							keys.put(endpoint, pk);
+//						}
+//						else{
+//							throw new InvalidSignedCertificateException();
+//						}
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//        		}
+//        	}
             return endpointAddress;
         }
         

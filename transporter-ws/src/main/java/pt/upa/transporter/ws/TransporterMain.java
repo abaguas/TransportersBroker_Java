@@ -25,9 +25,12 @@ public class TransporterMain {
 
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
-        try {	
-            endpoint = Endpoint.create(new TransporterPort(name,uddiURL));
-
+        try {
+        	TransporterPort tp = new TransporterPort(name,uddiURL);
+            endpoint = Endpoint.create(tp);
+            
+           
+            
             // publish endpoint
             System.out.printf("Starting %s%n", url);
             endpoint.publish(url);
@@ -36,6 +39,7 @@ public class TransporterMain {
          	System.out.printf("Publishing '%s' to UDDI at %s%n", name, uddiURL);
          	uddiNaming = new UDDINaming(uddiURL);
          	uddiNaming.rebind(name, url);
+         	//tp.init(); FIXME
 
 
             // wait

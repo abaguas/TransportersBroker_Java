@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,18 +103,18 @@ public class BrokerPort implements BrokerPortType {
 				@Override
 				public void run() {
 					setName("UpaBroker");
-					System.out.print("Mudei o meu nome");
+					System.out.print("Changed name");
 					try {
 						UDDINaming uddiNaming = new UDDINaming(getUddiURL());
 						uddiNaming.rebind("UpaBroker", getEndpoint());
-						System.out.println("Fiz o rebind");
+						System.out.println("Did rebind");
 					} catch (JAXRException e) {
 						throw new BrokerClientException("Could not rebind");
 					}
 					
 				}
 			};
-			timer.schedule(timerTask, 10000);
+			timer.schedule(timerTask, 5000);
 		}
 	}
 	
@@ -273,7 +274,7 @@ public class BrokerPort implements BrokerPortType {
 
 		} 
 
-		if(jobViews.isEmpty()){
+		if(jobViews.isEmpty()) {
 			t.setState("FAILED");
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
@@ -291,6 +292,12 @@ public class BrokerPort implements BrokerPortType {
 		JobView budgetedJob = null;
 		
 		for (JobView j : jvs) {
+			System.out.println(j.getCompanyName());
+			System.out.println(j.getJobDestination());
+			System.out.println(j.getJobOrigin());
+			System.out.println(j.getJobIdentifier());
+			System.out.println(j.getJobPrice());
+			System.out.println(j.getJobState().value());
 			if (j.getJobPrice()<=price){
 				budgetedJob = j;
 				price = j.getJobPrice();
@@ -309,10 +316,13 @@ public class BrokerPort implements BrokerPortType {
 		t.setPrice(budgetedJob.getJobPrice());
 		t.setState("BUDGETED");
 		t.setIdentifier(budgetedJob.getJobIdentifier());
-        transports.put(t, jobViews.get(budgetedJob));
+		String endpoint = jobViews.get(budgetedJob);
+        transports.put(t, endpoint);
         
         decideJob(jvs, jobViews, budgetedJob, t);
-        
+        if (brokerClient != null) {
+        	brokerClient.updateTransport(t.createTransportView(), endpoint);
+        }
         return t.getIdentifier();
 	}
 	
@@ -347,10 +357,20 @@ public class BrokerPort implements BrokerPortType {
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		Transport transport = getTransportById(id);
 		TransporterClient tc=null;	
+		String endpoint = transports.get(transport);
 
-		tc = new TransporterClient(transports.get(transport));
+		System.out.println("Estou a ir ao endpoint: " + endpoint);
+		
+		tc = new TransporterClient(endpoint);
 		
 		JobView jv = tc.jobStatus(id);
+		
+		System.out.println(jv.getCompanyName());
+		System.out.println(jv.getJobDestination());
+		System.out.println(jv.getJobOrigin());
+		System.out.println(jv.getJobIdentifier());
+		System.out.println(jv.getJobPrice());
+		System.out.println(jv.getJobState().value());
 		
 		JobStateView jsv = jv.getJobState();
 			
@@ -358,7 +378,13 @@ public class BrokerPort implements BrokerPortType {
 		if (!state.equals("ACCEPTED") && !state.equals("ACCEPTED")){
 			transport.setState(state);	
 		}
-		return transport.createTransportView();
+		
+		TransportView tv = transport.createTransportView();
+		
+		if (brokerClient != null) {
+			brokerClient.updateTransport(tv, endpoint);
+		}
+		return tv;
 		
 	}
 
@@ -412,10 +438,8 @@ public class BrokerPort implements BrokerPortType {
 	}
 	
 	@Override
-	public void updateTransport(TransportView transport) {
-		if (!getName().equals("UpaBroker")){
-			//TODO atualizar o estado
-		}
+	public void updateTransport(TransportView transportView, String endpoint) {
+		updateTransportList(transportView, endpoint);
 	}
 
 	@Override
@@ -443,9 +467,25 @@ public class BrokerPort implements BrokerPortType {
 					}
 				};
 	
-				timer.schedule(timerTask, 10000);
+				timer.schedule(timerTask, 5000);
 				System.out.println("Timer re-scheduled");
 			}
+		}
+	}
+	
+	
+	public void updateTransportList(TransportView transportView, String endpoint){
+		String id = transportView.getId();
+		Collection<Transport> transps = transports.keySet();
+		boolean notInList = true;
+		for (Transport transport: transps) {
+			if (transport.getIdentifier().equals(id)) {
+				transport.setState(transportView.getState().value());
+				notInList = false;
+			}
+		}
+		if (notInList){
+			transports.put(new Transport(transportView), endpoint);
 		}
 	}
 	

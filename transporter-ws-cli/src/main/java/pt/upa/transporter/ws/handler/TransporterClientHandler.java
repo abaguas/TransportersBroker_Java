@@ -59,6 +59,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
         
         try {
             if (outboundElement.booleanValue()) {
+            	
                 System.out.println("Writing header in outbound SOAP message...");
 
                 // get SOAP envelope
@@ -72,20 +73,23 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                     sh = se.addHeader();
 
                 
-                //add header element (name, namespace prefix, namespace)
+                // add header element (name, namespace prefix, namespace)
                 Name headerName = se.createName("nonce", "n", "http://nonce");
                 SOAPHeaderElement headerElement = sh.addHeaderElement(headerName);
-                
+
+
                 //generate secure random number
         		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 
         		System.out.println("Generating random byte array ...");
         		final byte array[] = new byte[16];
         		random.nextBytes(array);
+
         		System.out.println(printBase64Binary(array));
         		headerElement.addTextNode(printBase64Binary(array));
  
                 SOAPBody sb = se.getBody();
+
 
                 DOMSource source = new DOMSource(sb);
 				StringWriter stringResult = new StringWriter();
@@ -96,7 +100,16 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                 //FIXME getContentToEncrytpt
 
                 
+                
+				/*                
+                MessageFactory factory = MessageFactory.newInstance();
+                SOAPMessage newMessage = factory.createMessage(oldMessage.getMimeHeaders(), inputByteArray);
+                oldMessage.getSOAPPart().setContent(newMessage.getSOAPPart().getContent());
+ 				*/                                                
+                
+				
                 final byte[] plainBytes = bodyString.getBytes();
+
 
 
         		// get a message digest object using the specified algorithm
@@ -108,8 +121,10 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
         		System.out.println("Digest:");
 
         		
+
                 String digested = printBase64Binary(digest);
                 System.out.println(digested);
+
         		System.out.println("Digested!!!");
 
         		Name paramName = se.createName("digest", "d", "http://digest");
@@ -123,34 +138,40 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
             }
             
             else {
-            	//                System.out.println("Reading header in inbound SOAP message...");
-//
-//                // get SOAP envelope header
-//                SOAPMessage msg = smc.getMessage();
-//                SOAPPart sp = msg.getSOAPPart();
-//                SOAPEnvelope se = sp.getEnvelope();
-//                SOAPHeader sh = se.getHeader();
-//
-//                // check header
-//                if (sh == null) {
-//                    System.out.println("Header not found.");
-//                    return true;
-//                }
-//            	
-//                // get first header element
-//                Name name = se.createName("receivedNonce", "rn", "http://receivedNonce");
-//                Iterator it = sh.getChildElements(name);
-//                // check header element
-//                if (!it.hasNext()) {
-//                    System.out.println("Header element not found.");
-//                    return true;
-//                }
-//                SOAPElement element = (SOAPElement) it.next();
-//
-//                // get header element value
-//                String recNonce = element.getValue();
-//                int value = Integer.parseInt(recNonce);
+            	
+            	System.out.println("Reading header in inbound SOAP message...");
 
+                // get SOAP envelope header
+                SOAPMessage msg = smc.getMessage();
+                SOAPPart sp = msg.getSOAPPart();
+                SOAPEnvelope se = sp.getEnvelope();
+                SOAPHeader sh = se.getHeader();
+
+                
+                
+                // check header
+                if (sh == null) {
+                    System.out.println("Header not found.");
+                    return true;
+                }
+
+                
+                // get first header element
+                Name name = se.createName("receivedNonce", "rn", "http://receivedNonce");
+                Iterator it = sh.getChildElements(name);
+                // check header element
+                if (!it.hasNext()) {
+                    System.out.println("Header element not found.");
+                    return true;
+                }
+                SOAPElement element = (SOAPElement) it.next();
+
+                // get header element value
+                String recNonce = element.getValue();
+                int value = Integer.parseInt(recNonce);
+
+                
+                
                 
             }
             
@@ -187,7 +208,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		try {
 			fis = new FileInputStream(keyStoreFilePath);
 		} catch (FileNotFoundException e) {
-			System.err.println("Keystore file <" + keyStoreFilePath + "> not fount.");
+			System.err.println("Keystore file <" + keyStoreFilePath + "> not found.");
 			return null;
 		}
 		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());

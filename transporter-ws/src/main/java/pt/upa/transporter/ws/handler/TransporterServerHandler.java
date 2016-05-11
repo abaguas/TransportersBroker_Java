@@ -110,21 +110,24 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 				}
 
 				// get first header element
-				Name name = se.createName(REQUEST_HEADER, "e", REQUEST_NS);
+				Name name = se.createName("GetSpeech", "GS", "http://getspeech");
 				Iterator it = sh.getChildElements(name);
 				// check header element
 				if (!it.hasNext()) {
-					System.out.printf("Header element %s not found.%n", REQUEST_HEADER);
+					System.out.printf("Header element not found");
 					return true;
 				}
 				SOAPElement element = (SOAPElement) it.next();
 
-				// *** #4 ***
+				
+				
 				// get header element value
 				String headerValue = element.getValue();
-				System.out.printf("%s got '%s'%n", CLASS_NAME, headerValue);
-
-				// *** #5 ***
+				
+				
+				
+				
+				
 				// put token in request context
 				String newValue = headerValue + "," + TOKEN;
 				System.out.printf("%s put token '%s' on request context%n", CLASS_NAME, TOKEN);
@@ -133,6 +136,8 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 				// access property
 				smc.setScope(REQUEST_PROPERTY, Scope.APPLICATION);
 
+				
+				
 			} catch (SOAPException e) {
 				System.out.printf("Failed to get SOAP header because of %s%n", e);
 			}

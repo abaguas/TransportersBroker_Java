@@ -19,6 +19,15 @@ public class Transport {
 		this.state = "REQUESTED";
 	}
 	
+	public Transport(TransportView transportView) {
+		companyName = transportView.getTransporterCompany();
+		identifier = transportView.getId();
+		origin = transportView.getOrigin();
+		destination = transportView.getDestination();
+		price = transportView.getPrice();
+		state = transportView.getState().value();
+	}
+	
 	public TransportView createTransportView() {
 		TransportView tv = new TransportView();
 		tv.setTransporterCompany(companyName);

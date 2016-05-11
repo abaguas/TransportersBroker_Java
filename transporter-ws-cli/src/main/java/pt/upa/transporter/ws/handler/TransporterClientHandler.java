@@ -78,21 +78,15 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                 
                 //generate secure random number
         		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-        		//System.out.println(random.getProvider().getInfo());
+
         		System.out.println("Generating random byte array ...");
         		final byte array[] = new byte[16];
         		random.nextBytes(array);
         		System.out.println(printBase64Binary(array));
         		headerElement.addTextNode(printBase64Binary(array));
  
-
-
-                // get body
                 SOAPBody sb = se.getBody();
-//                NodeList nl = sb.getElementsByTagNameNS("http://ws.transporter.upa.pt", "*");
-//                String st = nl.item(0).getChildNodes().item(0).getNodeValue();
-				
-                
+
                 DOMSource source = new DOMSource(sb);
 				StringWriter stringResult = new StringWriter();
 				TransformerFactory.newInstance().newTransformer().transform(source, new StreamResult(stringResult));
@@ -100,7 +94,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                 
                 
                 //FIXME getContentToEncrytpt
-                //String plainText = smc.getMessage().getSOAPPart().getEnvelope().getBody().getValue();
+
                 
                 final byte[] plainBytes = bodyString.getBytes();
 
@@ -114,30 +108,14 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
         		System.out.println("Digest:");
 
         		
-                
-                System.out.println(printBase64Binary(digest));
+                String digested = printBase64Binary(digest);
+                System.out.println(digested);
         		System.out.println("Digested!!!");
 
         		Name paramName = se.createName("digest", "d", "http://digest");
 //        		SOAPBodyElement service = body.addBodyElement(serviceName);   
         		SOAPHeaderElement param = sh.addHeaderElement(paramName);
-        		param.addTextNode(printBase64Binary(digest));
-        		
-//        		MessageFactory factory = MessageFactory.newInstance();
-//        		SOAPMessage newMessage = factory.createMessage();
-//        		
-//        		
-//                SOAPPart spn = newMessage.getSOAPPart();
-//                SOAPEnvelope sen = spn.getEnvelope();
-//
-//                // add header
-//                SOAPHeader shn = sen.getHeader();
-//                if (shn == null)
-//                    shn = sen.addHeader();
-                
-
-        		
-//        		Name serviceName = se.createName("digestedBody", "db", "http://getspeech");
+        		param.addTextNode(digested);
         		
         		
 

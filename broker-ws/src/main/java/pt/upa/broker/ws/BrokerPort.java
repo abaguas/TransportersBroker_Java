@@ -128,6 +128,7 @@ public class BrokerPort implements BrokerPortType {
 	    	System.out.printf("Looking for '%s'%n", searchName);
 	        endpointAddress = uddiNaming.list(searchName);
        
+
 	        if (endpointAddress.isEmpty()) {
 	        	throw new NoEndpointFoundException();
 	        }
@@ -152,10 +153,12 @@ public class BrokerPort implements BrokerPortType {
 //	        			Certificate cert = null;
 //	        			
 //						cert = certFactory.generateCertificate(in);
+
 //						if(verifySignedCertificate(cert)){
 //							PublicKey pk = cert.getPublicKey();
 //							keys.put(endpoint, pk);
 //						}
+
 //						else throw new InvalidSignedCertificateException();
 //	        		}
 //	        	}

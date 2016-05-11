@@ -28,6 +28,7 @@ public class TransporterMain {
 		UDDINaming uddiNaming = null;
         try {
             endpoint = Endpoint.create(new TransporterPort(name,uddiURL));
+
             
             // publish endpoint
             System.out.printf("Starting %s%n", url);
@@ -37,6 +38,7 @@ public class TransporterMain {
          	System.out.printf("Publishing '%s' to UDDI at %s%n", name, uddiURL);
          	uddiNaming = new UDDINaming(uddiURL);
          	uddiNaming.rebind(name, url);
+         	//tp.init(); FIXME
 
             // wait
             System.out.println("Awaiting connections");

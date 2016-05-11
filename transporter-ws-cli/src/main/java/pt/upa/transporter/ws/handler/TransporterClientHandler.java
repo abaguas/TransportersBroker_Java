@@ -92,16 +92,12 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 				TransformerFactory.newInstance().newTransformer().transform(source, new StreamResult(stringResult));
 				String bodyString = stringResult.toString();
                 
-                
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                msg.writeTo(stream);
-//                String bodyString = new String(stream.toByteArray(), "UTF-8"); 
-                
-                
-//                MessageFactory factory = MessageFactory.newInstance();
-//                SOAPMessage newMessage = factory.createMessage(oldMessage.getMimeHeaders(), inputByteArray);
-//                oldMessage.getSOAPPart().setContent(newMessage.getSOAPPart().getContent());
-                
+				
+				/*                
+                MessageFactory factory = MessageFactory.newInstance();
+                SOAPMessage newMessage = factory.createMessage(oldMessage.getMimeHeaders(), inputByteArray);
+                oldMessage.getSOAPPart().setContent(newMessage.getSOAPPart().getContent());
+ 				*/                
                 
                 
                 //FIXME getContentToEncrytpt
@@ -204,7 +200,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		try {
 			fis = new FileInputStream(keyStoreFilePath);
 		} catch (FileNotFoundException e) {
-			System.err.println("Keystore file <" + keyStoreFilePath + "> not fount.");
+			System.err.println("Keystore file <" + keyStoreFilePath + "> not found.");
 			return null;
 		}
 		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());

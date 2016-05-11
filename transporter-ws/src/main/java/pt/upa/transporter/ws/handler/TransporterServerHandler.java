@@ -35,17 +35,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext> {
 
-	public static final String REQUEST_PROPERTY = "my.request.property";
-	public static final String RESPONSE_PROPERTY = "my.response.property";
-
-	public static final String REQUEST_HEADER = "myRequestHeader";
-	public static final String REQUEST_NS = "urn:example";
-
-	public static final String RESPONSE_HEADER = "myResponseHeader";
-	public static final String RESPONSE_NS = REQUEST_NS;
-
-	public static final String CLASS_NAME = TransporterServerHandler.class.getSimpleName();
-	public static final String TOKEN = "server-handler";
 
 	public boolean handleMessage(SOAPMessageContext smc) {
 		Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);

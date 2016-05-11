@@ -14,15 +14,16 @@ public class BrokerClient implements BrokerPortType{
 	
 	private FrontEnd fe = null;
 
-    public BrokerClient(String uddiURL, String name) {
-        fe = new FrontEnd(uddiURL, name);
+    public BrokerClient(String uddiURL, String searchName) {
+    	System.out.println(searchName);
+    	System.out.println("Fui chamado: construtor do broker cli");
+        fe = new FrontEnd(uddiURL, searchName);
     }
     
     /** constructor with provided web service URL */
     public BrokerClient(String endpointURL) throws BrokerClientException {
 		fe = new FrontEnd(endpointURL);
 	}
-	
 	
 	@Override
 	public String ping(String name) {
@@ -54,12 +55,12 @@ public class BrokerClient implements BrokerPortType{
 
 	@Override
 	public void updateTransport(TransportView transport) {
-		// TODO Auto-generated method stub	
+		fe.updateTransport(transport);
 	}
 
 	@Override
 	public void iAmAlive(String iAmAlive) {
-		// TODO Auto-generated method stub
+		fe.iAmAlive(iAmAlive);
 	}
 
 	public FrontEnd getFe() {

@@ -1,6 +1,6 @@
 package pt.upa.broker.exception;
 
-public class NoEndpointFoundException extends BrokerClientException {
+public class NoEndpointFoundException extends BrokerServerException {
     private static final long serialVersionUID = 1L;
 
     public NoEndpointFoundException(){

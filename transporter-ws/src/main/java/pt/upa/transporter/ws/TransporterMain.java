@@ -2,6 +2,7 @@ package pt.upa.transporter.ws;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.Endpoint;
@@ -26,10 +27,8 @@ public class TransporterMain {
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
         try {
-        	TransporterPort tp = new TransporterPort(name,uddiURL);
-            endpoint = Endpoint.create(tp);
-            
-           
+            endpoint = Endpoint.create(new TransporterPort(name,uddiURL));
+
             
             // publish endpoint
             System.out.printf("Starting %s%n", url);
@@ -40,7 +39,6 @@ public class TransporterMain {
          	uddiNaming = new UDDINaming(uddiURL);
          	uddiNaming.rebind(name, url);
          	//tp.init(); FIXME
-
 
             // wait
             System.out.println("Awaiting connections");

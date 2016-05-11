@@ -49,7 +49,6 @@ import pt.upa.transporter.ws.handler.TransporterServerHandler;
 )
 
 @HandlerChain(file = "/Transporter-chain.xml")
-
 public class TransporterPort implements TransporterPortType{
 
 	private String id;
@@ -77,24 +76,15 @@ public class TransporterPort implements TransporterPortType{
 		id = Integer.toString(n);
 		boundId = Integer.toString(n+100000);
 		this.uddiURL = uddiURL;
-		
-	}
-
-	public void init(){
-		String s = null;
-		ca = new CAClient(uddiURL);
-		
-		try {
-			System.out.println("AGUAS");
-			s = (ca.getCertificate("UpaTransporter1"));
-
-		} catch (CertificateException_Exception | IOException_Exception e1) {
+//		String s = null;
+//		ca = new CAClient(uddiURL);
+//		
+//		try {
+//			s = (ca.getCertificate(BROKER_NAME));
+//		} catch (CertificateException_Exception | IOException_Exception e1) {
 //			e1.printStackTrace();
-			if(s==null)
-				System.out.println("ISTO ESTA A NULL");
-			e1.getMessage();
-		}
-		
+//		}
+//		
 //		byte[] c = parseBase64Binary(s);
 //		CertificateFactory certFactory = null;
 //		

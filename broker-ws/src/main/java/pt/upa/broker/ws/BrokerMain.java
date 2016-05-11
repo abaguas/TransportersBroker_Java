@@ -50,7 +50,6 @@ public class BrokerMain {
 
 		} finally {
 			try {
-				bp.killTime();
 				if (endpoint != null) {
 					// stop endpoint
 					endpoint.stop();
@@ -62,7 +61,7 @@ public class BrokerMain {
 			try {
 				if (uddiNaming != null) {
 					// delete from UDDI
-					uddiNaming.unbind(name);
+					uddiNaming.unbind("UpaBroker");
 					System.out.printf("Deleted '%s' from UDDI%n", name);
 				}
 			} catch (Exception e) {

@@ -3,6 +3,7 @@ package pt.upa.broker.ws;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
@@ -78,22 +79,21 @@ public class BrokerPort implements BrokerPortType {
 		this.endpoint = endpoint;
 	}
 	
-	public void killTime(){
-		timerTask.cancel();
-		timer = null;
-	}
-	
-	public void init() throws CertificateException_Exception, IOException_Exception {
+	public void init() throws CertificateException_Exception, IOException_Exception, IOException {
 		if (name.equals("UpaBroker")) {
-			caCli = new CAClient(uddiURL);
-			//FIXME
-			String s = caCli.getCertificate("UpaTransporter1");
-			System.out.println(s);
+			System.out.println("Press enter when UpaBroker2 is on");
+	        System.in.read();
+//			caCli = new CAClient(uddiURL);
+//			//FIXME
+//			String s = caCli.getCertificate("UpaTransporter1");
+//			System.out.println(s);
 			brokerClient = new BrokerClient(uddiURL, "UpaBroker2");
-			System.out.println("Sending I am alive");
 			brokerClient.iAmAlive("I am alive");
 		}
 		else {
+			System.out.println("Press enter to init the timer");
+	        System.in.read();
+			
 			System.out.println("Iniciei o timer de verificacao");
 
 			timer = new Timer();
@@ -101,10 +101,19 @@ public class BrokerPort implements BrokerPortType {
 
 				@Override
 				public void run() {
-					System.out.println("Hora da substituicao :)");
+					setName("UpaBroker");
+					System.out.print("Mudei o meu nome");
+					try {
+						UDDINaming uddiNaming = new UDDINaming(getUddiURL());
+						uddiNaming.rebind("UpaBroker", getEndpoint());
+						System.out.println("Fiz o rebind");
+					} catch (JAXRException e) {
+						throw new BrokerClientException("Could not rebind");
+					}
+					
 				}
 			};
-			timer.schedule(timerTask, 9000);
+			timer.schedule(timerTask, 10000);
 		}
 	}
 	
@@ -125,36 +134,37 @@ public class BrokerPort implements BrokerPortType {
 	        else {
 	            Collection<UDDIRecord> record = uddiNaming.listRecords(searchName);
 	            
-	        	for (UDDIRecord rec : record) {
-	        		String transportName = rec.getOrgName();
-	        		String endpoint = rec.getUrl();
-	        		if(!keys.containsKey(transportName)){
-	        			String s = null;
-						
-						s = (caCli.getCertificate(transportName));
-						
-	        			byte[] c = parseBase64Binary(s);
-	        			CertificateFactory certFactory = null;
-						
-						certFactory = CertificateFactory.getInstance("X.509");
-	        			
-	        			InputStream in = new ByteArrayInputStream(c);
-	        			Certificate cert = null;
-	        			
-						cert = certFactory.generateCertificate(in);
-						if(verifySignedCertificate(cert)){
-							PublicKey pk = cert.getPublicKey();
-							keys.put(endpoint, pk);
-						}
-						else throw new InvalidSignedCertificateException();
-	        		}
-	        	}
+//	        	for (UDDIRecord rec : record) {
+//	        		String transportName = rec.getOrgName();
+//	        		String endpoint = rec.getUrl();
+//	        		if(!keys.containsKey(transportName)){
+//	        			String s = null;
+//						
+//						s = (caCli.getCertificate(transportName));
+//						
+//	        			byte[] c = parseBase64Binary(s);
+//	        			CertificateFactory certFactory = null;
+//						
+//						certFactory = CertificateFactory.getInstance("X.509");
+//	        			
+//	        			InputStream in = new ByteArrayInputStream(c);
+//	        			Certificate cert = null;
+//	        			
+//						cert = certFactory.generateCertificate(in);
+//						if(verifySignedCertificate(cert)){
+//							PublicKey pk = cert.getPublicKey();
+//							keys.put(endpoint, pk);
+//						}
+//						else throw new InvalidSignedCertificateException();
+//	        		}
+//	        	}
 	        }
     	} catch (JAXRException je) {
     		throw new UDDIException();
-		} catch (IOException_Exception | CertificateException_Exception | CertificateException je){
-			throw new CouldNotConvertCertificateException();
-		}
+    	}
+//		} catch (IOException_Exception | CertificateException_Exception | CertificateException je){
+//			throw new CouldNotConvertCertificateException();
+//		}
         return endpointAddress;
     }
 	
@@ -408,27 +418,31 @@ public class BrokerPort implements BrokerPortType {
 	@Override
 	public void iAmAlive(String iAmAlive) {
 		if (!getName().equals("UpaBroker")) {
-			if (timerTask.cancel()){
-				System.out.println("Cancelei o outro timer");
-			}
-			timerTask = new TimerTask() {
-
-				@Override
-				public void run() {
-					setName("UpaBroker");
-					try {
-						UDDINaming uddiNaming = new UDDINaming(getUddiURL());
-						uddiNaming.rebind("UpaBroker", getEndpoint());
-						System.out.println("Fiz o rebind");
-					} catch (JAXRException e) {
-						throw new BrokerClientException("Could not rebing");
-					}
-					
+			System.out.println("Receveived I am alive");
+			if (timerTask!=null) {
+				if (timerTask.cancel()){
+					System.out.println("Cancelled timer");
 				}
-			};
-
-			timer.schedule(timerTask, 10000);
-			System.out.println("Fiz re-schedule");
+				timerTask = new TimerTask() {
+	
+					@Override
+					public void run() {
+						setName("UpaBroker");
+						System.out.print("Changed my name");
+						try {
+							UDDINaming uddiNaming = new UDDINaming(getUddiURL());
+							uddiNaming.rebind("UpaBroker", getEndpoint());
+							System.out.println("Rebinded");
+						} catch (JAXRException e) {
+							throw new BrokerClientException("Could not rebing");
+						}
+						
+					}
+				};
+	
+				timer.schedule(timerTask, 10000);
+				System.out.println("Timer re-scheduled");
+			}
 		}
 	}
 	

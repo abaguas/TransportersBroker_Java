@@ -14,10 +14,10 @@ public class BrokerClient implements BrokerPortType{
 	
 	private FrontEnd fe = null;
 
-    public BrokerClient(String uddiURL, String name) {
-    	System.out.println(name);
+    public BrokerClient(String uddiURL, String searchName) {
+    	System.out.println(searchName);
     	System.out.println("Fui chamado: construtor do broker cli");
-        fe = new FrontEnd(uddiURL, name);
+        fe = new FrontEnd(uddiURL, searchName);
     }
     
     /** constructor with provided web service URL */
@@ -60,7 +60,6 @@ public class BrokerClient implements BrokerPortType{
 
 	@Override
 	public void iAmAlive(String iAmAlive) {
-		System.out.println("Disse ao FE para fazer coisas");
 		fe.iAmAlive(iAmAlive);
 	}
 

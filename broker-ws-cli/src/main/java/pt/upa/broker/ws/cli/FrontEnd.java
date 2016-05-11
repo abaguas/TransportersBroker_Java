@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 
@@ -52,47 +53,65 @@ public class FrontEnd implements BrokerPortType{
 	}
 
     private void setTimeouts () {
-    	bindingProvider = (BindingProvider) port;
-        requestContext = bindingProvider.getRequestContext();
-        int connectionTimeout = 20000;
-        // The connection timeout property has different names in different versions of JAX-WS
-        // Set them all to avoid compatibility issues
-        CONN_TIME_PROPS = new ArrayList<String>();
-        CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
-        CONN_TIME_PROPS.add("com.sun.xml.internal.ws.connect.timeout");
-        CONN_TIME_PROPS.add("javax.xml.ws.client.connectionTimeout");
-        // Set timeout until a connection is established (unit is milliseconds; 0 means infinite)
-        for (String propName : CONN_TIME_PROPS)
-            requestContext.put(propName, connectionTimeout);
-        System.out.printf("Set connection timeout to %d milliseconds%n", connectionTimeout);
-
-        int receiveTimeout = 20000;
-        // The receive timeout property has alternative names
-        // Again, set them all to avoid compability issues
-        final List<String> RECV_TIME_PROPS = new ArrayList<String>();
-        RECV_TIME_PROPS.add("com.sun.xml.ws.request.timeout");
-        RECV_TIME_PROPS.add("com.sun.xml.internal.ws.request.timeout");
-        RECV_TIME_PROPS.add("javax.xml.ws.client.receiveTimeout");
-        // Set timeout until the response is received (unit is milliseconds; 0 means infinite)
-        for (String propName : RECV_TIME_PROPS)
-            requestContext.put(propName, receiveTimeout);
-        System.out.printf("Set receive timeout to %d milliseconds%n", receiveTimeout);
+    	if (getSearchName().equals("UpaBroker")) {
+	    	bindingProvider = (BindingProvider) port;
+	        requestContext = bindingProvider.getRequestContext();
+	        int connectionTimeout = 15000;
+	        // The connection timeout property has different names in different versions of JAX-WS
+	        // Set them all to avoid compatibility issues
+	        CONN_TIME_PROPS = new ArrayList<String>();
+	        CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
+	        CONN_TIME_PROPS.add("com.sun.xml.internal.ws.connect.timeout");
+	        CONN_TIME_PROPS.add("javax.xml.ws.client.connectionTimeout");
+	        // Set timeout until a connection is established (unit is milliseconds; 0 means infinite)
+	        for (String propName : CONN_TIME_PROPS)
+	            requestContext.put(propName, connectionTimeout);
+	        System.out.printf("Set connection timeout to %d milliseconds%n", connectionTimeout);
+	
+	        int receiveTimeout = 15000;
+	        // The receive timeout property has alternative names
+	        // Again, set them all to avoid compability issues
+	        final List<String> RECV_TIME_PROPS = new ArrayList<String>();
+	        RECV_TIME_PROPS.add("com.sun.xml.ws.request.timeout");
+	        RECV_TIME_PROPS.add("com.sun.xml.internal.ws.request.timeout");
+	        RECV_TIME_PROPS.add("javax.xml.ws.client.receiveTimeout");
+	        // Set timeout until the response is received (unit is milliseconds; 0 means infinite)
+	        for (String propName : RECV_TIME_PROPS)
+	            requestContext.put(propName, receiveTimeout);
+	        System.out.printf("Set receive timeout to %d milliseconds%n", receiveTimeout);
+    	}
     }
 
     public void lookUp (String uddiURL, String searchName) {
-    	try {
+    	
     		if (verbose){
     	    	System.out.printf("Contacting UDDI at %s%n", uddiURL);
     		}
-        	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+        	UDDINaming uddiNaming = null;
+			try {
+				uddiNaming = new UDDINaming(uddiURL);
+			} catch (JAXRException e) {
+	    		String msg = String.format("Client failed to connect UDDI at %s!", uddiURL);
+				throw new BrokerClientException(msg, e);
+	    	}
     		if (verbose){
     			System.out.printf("Looking for '%s'%n", searchName);
     		}
-    		endpointURL = uddiNaming.lookup(searchName);
-    	}catch (Exception e){
-    		String msg = String.format("Client failed lookup on UDDI at %s!", uddiURL);
-			throw new BrokerClientException(msg, e);
-    	}
+    		
+    		try {
+    			if (searchName.equals("UpaBroker")) {
+    				System.out.println("A dormir no lookup");
+    				Thread.sleep(2000);
+    				System.out.println("Acordei");
+    			}
+				endpointURL = uddiNaming.lookup(searchName);
+			} catch (JAXRException e) {
+				String msg = String.format("Client failed to lookup UDDI to %s!", searchName);
+				throw new BrokerClientException(msg, e);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     	
         if (endpointURL == null) {
         	String msg = String.format(
@@ -145,20 +164,24 @@ public class FrontEnd implements BrokerPortType{
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 		try {
-			System.out.println("A requestar o transport");
+			System.out.println("Pedi");
 			return port.requestTransport(origin, destination, price);
 			
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
             if (cause != null && cause instanceof SocketTimeoutException) {
+            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
                 lookUp(getUddiURL(), getSearchName());
                 createStub();
                 return requestTransport(origin, destination, price);
             }
             else {
-	            System.out.println("Another web service exception");
-	            return null;
+            	System.out.println("Connecção, ardeu! Vou procurar no UDDI o Broker");
+                lookUp(getUddiURL(), getSearchName());
+                createStub();
+                System.out.println("A fazer novo request ------------------------------");
+                return requestTransport(origin, destination, price);
             }
         }	
 	}
@@ -217,7 +240,7 @@ public class FrontEnd implements BrokerPortType{
 
 	@Override
 	public void iAmAlive(String iAmAlive) {
-		System.out.println("Settei o timer");
+		System.out.println("I am alive will be sent in 7 seconds");
 
 		timer = new Timer();
 		TimerTask timerTask = new TimerTask(){
@@ -225,10 +248,11 @@ public class FrontEnd implements BrokerPortType{
 			@Override
 			public void run() {
 				port.iAmAlive(iAmAlive);
+				System.out.println("I am alive sent");
 				iAmAlive(iAmAlive);
 			}
 		};
-		timer.schedule(timerTask, 6000);
+		timer.schedule(timerTask, 7000);
 	}
 
 	public boolean isVerbose() {

@@ -46,7 +46,6 @@ import pt.upa.transporter.exception.NoAvailableIdentifierException;
 )
 
 @HandlerChain(file = "/Transporter-chain.xml")
-
 public class TransporterPort implements TransporterPortType{
 
 	private String id;
@@ -74,44 +73,44 @@ public class TransporterPort implements TransporterPortType{
 		id = Integer.toString(n);
 		boundId = Integer.toString(n+100000);
 		this.uddiURL = uddiURL;
-		String s = null;
-		ca = new CAClient(uddiURL);
-		
-		try {
-			s = (ca.getCertificate(BROKER_NAME));
-		} catch (CertificateException_Exception | IOException_Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		byte[] c = parseBase64Binary(s);
-		CertificateFactory certFactory = null;
-		
-		try {
-			certFactory = CertificateFactory.getInstance("X.509");
-		} catch (CertificateException e1) {
-			e1.printStackTrace();
-		}
-		
-		InputStream in = new ByteArrayInputStream(c);
-		Certificate cert = null;
-		
-		try {
-			cert = certFactory.generateCertificate(in);
-		} catch (CertificateException e) {
-			e.printStackTrace();
-		}
-		try {
-			if(verifySignedCertificate(cert)){
-				brokerKey = cert.getPublicKey();
-			}
-			else{
-				throw new InvalidSignedCertificateException();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println(brokerKey);  //FIXME
+//		String s = null;
+//		ca = new CAClient(uddiURL);
+//		
+//		try {
+//			s = (ca.getCertificate(BROKER_NAME));
+//		} catch (CertificateException_Exception | IOException_Exception e1) {
+//			e1.printStackTrace();
+//		}
+//		
+//		byte[] c = parseBase64Binary(s);
+//		CertificateFactory certFactory = null;
+//		
+//		try {
+//			certFactory = CertificateFactory.getInstance("X.509");
+//		} catch (CertificateException e1) {
+//			e1.printStackTrace();
+//		}
+//		
+//		InputStream in = new ByteArrayInputStream(c);
+//		Certificate cert = null;
+//		
+//		try {
+//			cert = certFactory.generateCertificate(in);
+//		} catch (CertificateException e) {
+//			e.printStackTrace();
+//		}
+//		try {
+//			if(verifySignedCertificate(cert)){
+//				brokerKey = cert.getPublicKey();
+//			}
+//			else{
+//				throw new InvalidSignedCertificateException();
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		System.out.println(brokerKey);  //FIXME
 	}
 
 /////////////////////////////////////////REPETIDO/////////////////////////////////////////////////

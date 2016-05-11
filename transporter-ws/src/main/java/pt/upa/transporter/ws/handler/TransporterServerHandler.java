@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
@@ -65,20 +67,26 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 				SOAPEnvelope se = sp.getEnvelope();
 
 				// add header
-				SOAPHeader sh = se.getHeader();
-				if (sh == null)
-					sh = se.addHeader();
-
-				// add header element (name, namespace prefix, namespace)
-				Name name = se.createName(RESPONSE_HEADER, "e", RESPONSE_NS);
-				SOAPHeaderElement element = sh.addHeaderElement(name);
-
-				// *** #9 ***
-				// add header element value
-				String newValue = propertyValue + "," + TOKEN;
-				element.addTextNode(newValue);
-
-				System.out.printf("%s put token '%s' on response message header%n", CLASS_NAME, TOKEN);
+//				SOAPHeader sh = se.getHeader();
+//				if (sh == null)
+//					sh = se.addHeader();
+////
+//////				// add header element (name, namespace prefix, namespace)
+//				Name name = se.createName(RESPONSE_HEADER, "e", RESPONSE_NS);
+//				SOAPHeaderElement element = sh.addHeaderElement(name);
+//////
+//////				// *** #9 ***
+//////				// add header element value
+//				String newValue = propertyValue + "," + TOKEN;
+//				element.addTextNode(newValue);
+//
+//				System.out.printf("%s put token '%s' on response message header%n", CLASS_NAME, TOKEN);
+     		   SOAPBody body = se.getBody();
+     		   Name serviceName = se.createName("GetSpeechSERVER", "GS", "http://coisoetal");
+     		   Name paramName = se.createName("RequestSERVER", "Rqst", "http://talecoiso");
+     		   SOAPBodyElement service = body.addBodyElement(serviceName);   
+     		   SOAPElement param = service.addChildElement(paramName);
+     		   param.addTextNode("To be, or not to be[SERVER]");
 
 			} catch (SOAPException e) {
 				System.out.printf("Failed to add SOAP header because of %s%n", e);
@@ -146,4 +154,3 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 	}
 
 }
-

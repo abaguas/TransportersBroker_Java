@@ -16,8 +16,6 @@ public class BrokerClient implements BrokerPortType{
 	private FrontEnd fe = null;
 
     public BrokerClient(String uddiURL, String searchName) {
-    	System.out.println(searchName);
-    	System.out.println("Fui chamado: construtor do broker cli");
         fe = new FrontEnd(uddiURL, searchName);
     }
     

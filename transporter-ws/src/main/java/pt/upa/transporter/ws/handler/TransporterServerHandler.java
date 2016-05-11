@@ -19,6 +19,8 @@ import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import pt.upa.ca.ws.cli.CAClient;
+
 /**
  * This is the handler server class of the Relay example.
  *

@@ -17,8 +17,8 @@ import pt.upa.ca.exception.InvalidWebServiceNameException;
 @WebService(endpointInterface = "pt.upa.ca.ws.CA")
 public class CAImpl implements CA {
 	
-	final static String CERTIFICATE_FILES = "/home/zacarias/SD/proj/A_64-project/ca-ws/src/main/resources";
-			//"../../../../../resources/";
+	final static String CERTIFICATE_FILES = "src/main/resources/";
+	//"../../../../../resources/";
 	final static String UPABROKER = "UpaBroker";
 	final static String UPATRANSPORTER1 = "UpaTransporter1";
 	final static String UPATRANSPORTER4 = "UpaTransporter4";
@@ -37,7 +37,10 @@ public class CAImpl implements CA {
 		else if (name.equals(UPATRANSPORTER4)){
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER4+CER);
 		}
-		else throw new InvalidWebServiceNameException(name);
+		else {
+			System.out.println("Dont have the certificate from this transporter: "+ name);
+			return null;
+		}
 		
 		
 		System.out.println("Estou a enviar o ganda certificado");

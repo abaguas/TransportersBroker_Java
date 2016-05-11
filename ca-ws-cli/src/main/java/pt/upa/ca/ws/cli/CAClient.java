@@ -18,7 +18,7 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 public class CAClient {
 	
-	CA port = null;
+	private CA port = null;
 	
 	public CAClient(String uddiURL) throws CAClientException {
         final String name = "CA";
@@ -41,7 +41,7 @@ public class CAClient {
 
 		System.out.println("Creating stub ...");
 		CAImplService service = new CAImplService();
-		CA port = service.getCAImplPort();
+		port = service.getCAImplPort();
 
 		System.out.println("Setting endpoint address ...");
 		BindingProvider bindingProvider = (BindingProvider) port;
@@ -51,7 +51,7 @@ public class CAClient {
 	
 	public String getCertificate(String name) throws CertificateException_Exception, IOException_Exception{
 		String c = port.getCertificate(name);
-		System.out.println("Enviei o certificado");
+		System.out.println("Recebi o certificado");
 		return c;
 	}
 

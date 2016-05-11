@@ -98,6 +98,7 @@ public class FrontEnd implements BrokerPortType{
 		}
 		try {
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
+    	if (uddiNaming == null) {System.out.println("cenas más");}
 		if (verbose){
 			System.out.printf("Looking for '%s'%n", searchName);
 		}

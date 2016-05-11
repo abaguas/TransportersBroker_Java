@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
@@ -19,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +34,6 @@ import pt.upa.broker.exception.BrokerServerException;
 import pt.upa.broker.exception.CouldNotConvertCertificateException;
 import pt.upa.broker.exception.CouldNotVerifyCertificateException;
 import pt.upa.broker.exception.InvalidSignedCertificateException;
-import pt.upa.broker.exception.NoEndpointFoundException;
 import pt.upa.broker.exception.UDDIException;
 import pt.upa.broker.ws.cli.BrokerClient;
 import pt.upa.ca.ws.CertificateException_Exception;
@@ -67,9 +66,9 @@ public class BrokerPort implements BrokerPortType {
 	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
 	private BrokerClient brokerClient = null;
 	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
-	private static final String KEYSTORE_PASS = "1nsecure";
-	private final static String KEY_ALIAS = "example";
-	private final static String KEY_PASSWORD = "ins3cur3";
+	private static final String KEYSTORE_PASS = "ins3cur3";
+	private final static String ALIAS = "ca";
+	private final static String KEY_PASSWORD = "1nsecure";
 	private Timer timer = null;
 	private TimerTask timerTask = null;
 
@@ -84,10 +83,6 @@ public class BrokerPort implements BrokerPortType {
 		if (name.equals("UpaBroker")) {
 			System.out.println("Press enter when UpaBroker2 is on");
 	        System.in.read();
-//			caCli = new CAClient(uddiURL);
-//			//FIXME
-//			String s = caCli.getCertificate("UpaTransporter1");
-//			System.out.println(s);
 			brokerClient = new BrokerClient(uddiURL, "UpaBroker2");
 			brokerClient.iAmAlive("I am alive");
 		}
@@ -123,52 +118,55 @@ public class BrokerPort implements BrokerPortType {
     	String searchName = getSearchName();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
 		Collection<String> endpointAddress = null;
+		caCli = new CAClient(uddiURL);
     	try {
 			UDDINaming uddiNaming = new UDDINaming(uddiURL);
 	    	System.out.printf("Looking for '%s'%n", searchName);
 	        endpointAddress = uddiNaming.list(searchName);
        
-
 	        if (endpointAddress.isEmpty()) {
-	        	throw new NoEndpointFoundException();
+	        	return endpointAddress;
 	        }
 
 	        else {
-	            Collection<UDDIRecord> record = uddiNaming.listRecords(searchName);
-	            
-//	        	for (UDDIRecord rec : record) {
-//	        		String transportName = rec.getOrgName();
-//	        		String endpoint = rec.getUrl();
-//	        		if(!keys.containsKey(transportName)){
-//	        			String s = null;
-//						
-//						s = (caCli.getCertificate(transportName));
-//						
-//	        			byte[] c = parseBase64Binary(s);
-//	        			CertificateFactory certFactory = null;
-//						
-//						certFactory = CertificateFactory.getInstance("X.509");
-//	        			
-//	        			InputStream in = new ByteArrayInputStream(c);
-//	        			Certificate cert = null;
-//	        			
-//						cert = certFactory.generateCertificate(in);
+	            Collection<UDDIRecord> records = uddiNaming.listRecords(searchName);
+	        	for (UDDIRecord rec : records) {
+	        		String transportName = rec.getOrgName();
+	        		System.out.println(rec.getOrgName());
 
-//						if(verifySignedCertificate(cert)){
-//							PublicKey pk = cert.getPublicKey();
-//							keys.put(endpoint, pk);
-//						}
-
-//						else throw new InvalidSignedCertificateException();
-//	        		}
-//	        	}
+	        		String endpoint = rec.getUrl();
+	        		if(!keys.containsKey(transportName)){
+	        			String s = null;
+						
+						s = caCli.getCertificate(transportName);
+						
+	        			byte[] c = parseBase64Binary(s);
+	        			CertificateFactory certFactory = null;
+						
+						certFactory = CertificateFactory.getInstance("X.509");
+	        			
+	        			InputStream in = new ByteArrayInputStream(c);
+	        			Certificate cert = null;
+	        			
+						cert = certFactory.generateCertificate(in);
+						System.out.println("Printing the certificate");
+						System.out.println(cert);
+						
+						if(verifySignedCertificate(cert)){
+							PublicKey pk = cert.getPublicKey();
+							keys.put(endpoint, pk);
+							System.out.println("validei");
+							System.out.println(pk);
+						}
+						else throw new InvalidSignedCertificateException();
+	        		}
+	        	}
 	        }
     	} catch (JAXRException je) {
     		throw new UDDIException();
-    	}
-//		} catch (IOException_Exception | CertificateException_Exception | CertificateException je){
-//			throw new CouldNotConvertCertificateException();
-//		}
+		} catch (IOException_Exception | CertificateException_Exception | CertificateException je){
+			throw new CouldNotConvertCertificateException();
+		}
         return endpointAddress;
     }
 	
@@ -190,11 +188,14 @@ public class BrokerPort implements BrokerPortType {
 	
 	public static boolean verifySignedCertificate(Certificate certificate) throws CouldNotVerifyCertificateException  {
 		try {
+			System.out.println("Vou buscar a public key da CA");
 			PublicKey pk = getCAPublicKey();
+			System.out.println("Vou verifcar o certificado com a public key que fui buscar");
 			certificate.verify(pk);
 		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
 				| SignatureException e) {
-			throw new CouldNotVerifyCertificateException();
+			System.out.println("Falhei na validação");
+			return false;
 		} catch (Exception ee){
 			throw new CouldNotVerifyCertificateException();
 		}
@@ -203,13 +204,26 @@ public class BrokerPort implements BrokerPortType {
 	
 	public static PublicKey getCAPublicKey() throws Exception {
 
-		KeyStore keystore = readKeystoreFile();
-		PublicKey key = (PublicKey) keystore.getKey(KEY_ALIAS, KEY_PASSWORD.toCharArray());
-
+		KeyStore keystore;
+		try {
+			System.out.println("A ler o keystore");
+			keystore = readKeystoreFile();
+		} catch (Exception e) {
+			System.out.println("Could not read keystore");
+			throw e;
+		}
+		PublicKey key = null;
+		try{
+			System.out.println("A sacar ganda key");
+			key = keystore.getCertificate(ALIAS).getPublicKey();
+		}catch (Exception e){
+			System.out.println("Could not get key");
+			throw e;
+		}
 		return key;
 	}
 	
-	public static KeyStore readKeystoreFile() throws Exception {
+	public static KeyStore readKeystoreFile() throws Exception{
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(KEYSTORE_PATH);
@@ -217,8 +231,21 @@ public class BrokerPort implements BrokerPortType {
 			System.err.println("Keystore file <" + KEYSTORE_PATH + "> not found.");
 			return null;
 		}
-		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keystore.load(fis, KEYSTORE_PASS.toCharArray());
+		KeyStore keystore;
+		try {
+			keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+			System.out.println("Já tenho uma instancia do keystore");
+		} catch (KeyStoreException e) {
+			System.out.println("could not get an instance of keysore");
+			throw e;
+		}
+		try {
+			keystore.load(fis, KEYSTORE_PASS.toCharArray());
+			System.out.println("Já loadei a keystore");
+		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
+			System.out.println("could not load keystore");
+			throw e;
+		}
 		return keystore;
 	}
 	
@@ -231,6 +258,9 @@ public class BrokerPort implements BrokerPortType {
 	public String ping(String name) {
 		TransporterClient tc = null;
 		Collection<String> list = list();
+		
+		if (list.isEmpty()) return null;
+		
 		for (String endpointURL: list){
 			tc = new TransporterClient(endpointURL);
 			if (tc.ping(name)==null){
@@ -253,7 +283,7 @@ public class BrokerPort implements BrokerPortType {
 		try {
 			JobView jv = null;
 			endpoints = list();
-			for (String endpoint : endpoints){
+			for (String endpoint : endpoints) {
 				tc = new TransporterClient(endpoint);
 				jv = tc.requestJob(origin, destination, price);
 				if (jv!=null){

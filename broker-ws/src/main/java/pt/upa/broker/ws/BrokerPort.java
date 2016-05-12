@@ -56,6 +56,7 @@ import javax.xml.registry.JAXRException;
 
 public class BrokerPort implements BrokerPortType {
 	
+	private int nap = 0;
 	private String id = "0";
 	private String uddiURL = null;
 	private String endpoint = null;
@@ -73,10 +74,11 @@ public class BrokerPort implements BrokerPortType {
 	private TimerTask timerTask = null;
 
 	
-	public BrokerPort (String name, String uddiURL, String endpoint) {
+	public BrokerPort (String name, String uddiURL, String endpoint, int nap) {
 		this.name = name;
 		this.uddiURL = uddiURL;
 		this.endpoint = endpoint;
+		this.nap = nap;
 	}
 	
 	public void init() throws CertificateException_Exception, IOException_Exception, IOException {
@@ -256,6 +258,7 @@ public class BrokerPort implements BrokerPortType {
 	
 	@Override
 	public String ping(String name) {
+		nap(getNap());
 		TransporterClient tc = null;
 		Collection<String> list = list();
 		
@@ -275,6 +278,7 @@ public class BrokerPort implements BrokerPortType {
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 
+		nap(getNap());
 		Collection<String> endpoints = null;
 		Map<JobView, String> jobViews = new HashMap<JobView, String>();
 		Transport t = new Transport(origin, destination); 
@@ -385,6 +389,8 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
+		
+		nap(getNap());
 		Transport transport = getTransportById(id);
 		TransporterClient tc=null;	
 		String endpoint = transports.get(transport);
@@ -423,6 +429,7 @@ public class BrokerPort implements BrokerPortType {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
 		
+		nap(getNap());
 		List<Transport> list = new ArrayList<Transport>(transps);
 		
 		for (Transport transport: list) {
@@ -438,6 +445,8 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public void clearTransports() {
+		
+		nap(getNap());
 		TransporterClient tc = null;
 		Collection<String> clientEndpoints = transports.values();
 		
@@ -449,23 +458,6 @@ public class BrokerPort implements BrokerPortType {
 		transports.clear();
 	}
     
-	public Transport getTransportById(String id) throws UnknownTransportFault_Exception{
-		if (id != null){
-			Collection<Transport> transps = transports.keySet();
-			for (Transport t: transps){
-				if (id.equals(t.getIdentifier())){
-					return t;
-				}
-			}
-		}
-		UnknownTransportFault fault = new UnknownTransportFault();
-		fault.setId(id);
-		throw new UnknownTransportFault_Exception("Unknown id", fault);
-	}
-	
-	public String viewToState(JobStateView view){
-		return view.name();
-	}
 	
 	@Override
 	public void updateTransport(TransportView transportView, String endpoint) {
@@ -503,6 +495,12 @@ public class BrokerPort implements BrokerPortType {
 		}
 	}
 	
+
+//////////////////////////////////////////////////////////////////////////////////////////
+       //                          AUXILIAR METHODS                          //	
+//////////////////////////////////////////////////////////////////////////////////////////
+
+	
 	
 	public void updateTransportList(TransportView transportView, String endpoint){
 		String id = transportView.getId();
@@ -520,6 +518,25 @@ public class BrokerPort implements BrokerPortType {
 	}
 	
 	
+	public Transport getTransportById(String id) throws UnknownTransportFault_Exception{
+		if (id != null){
+			Collection<Transport> transps = transports.keySet();
+			for (Transport t: transps){
+				if (id.equals(t.getIdentifier())){
+					return t;
+				}
+			}
+		}
+		UnknownTransportFault fault = new UnknownTransportFault();
+		fault.setId(id);
+		throw new UnknownTransportFault_Exception("Unknown id", fault);
+	}
+	
+	public String viewToState(JobStateView view){
+		return view.name();
+	}
+	
+	
 	public String idFactory(){
 		String id = getId();
 		int i = Integer.parseInt(id);
@@ -530,6 +547,22 @@ public class BrokerPort implements BrokerPortType {
 		
 		return "f".concat(id);
 	}
+	
+	private void nap(int seconds) {
+        try {
+            System.out.printf("%s %s>%n    ", Thread.currentThread(), this);
+            System.out.printf("Sleeping for %d seconds...%n", seconds);
+
+            Thread.sleep(seconds*1000);
+
+            System.out.printf("%s %s>%n    ", Thread.currentThread(), this);
+            System.out.printf("Woke up!%n");
+
+        } catch(InterruptedException e) {
+            System.out.printf("%s %s>%n    ", Thread.currentThread(), this);
+            System.out.printf("Caught exception: %s%n", e);
+        }
+    }
 	
 //////////////////////////////////////////////////////////////////////////////////////////
       //                           GETTERS AND SETTERS                          //	
@@ -570,6 +603,10 @@ public class BrokerPort implements BrokerPortType {
 
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
+	}
+
+	public int getNap() {
+		return nap;
 	}
 
 }

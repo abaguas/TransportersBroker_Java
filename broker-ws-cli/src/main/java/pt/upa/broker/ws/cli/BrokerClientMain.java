@@ -47,7 +47,7 @@ public class BrokerClientMain {
         	System.out.println(tv.getId());
         	System.out.println(tv.getOrigin());
         	System.out.println(tv.getDestination());
-        	System.out.print(tv.getTransporterCompany());
+        	System.out.println(tv.getTransporterCompany());
         	System.out.println(tv.getPrice());
         	System.out.println(tv.getState().value());
         	System.out.println(tv.toString());

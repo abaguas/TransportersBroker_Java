@@ -7,7 +7,7 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 public class BrokerMain {
     public static void main(String[] args) {
     	// Check arguments
-        if (args.length < 3) {
+        if (args.length < 4) {
             System.err.println("Argument(s) missing!");
             System.err.printf("Usage: java %s url%n", BrokerMain.class.getName());
             return;
@@ -20,11 +20,12 @@ public class BrokerMain {
 			name = "UpaBroker";
 		}
 		String url = args[2];
-
+		int nap = Integer.parseInt(args[3]);
+		
 		Endpoint endpoint = null;
 		UDDINaming uddiNaming = null;
         try {
-        	bp = new BrokerPort(name, uddiURL, url);
+        	bp = new BrokerPort(name, uddiURL, url, nap);
             endpoint = Endpoint.create(bp);
 
             // publish endpoint

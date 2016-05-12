@@ -37,7 +37,6 @@ import pt.upa.transporter.exception.DoesNotOperateException;
 import pt.upa.transporter.exception.InvalidIdentifierException;
 import pt.upa.transporter.exception.InvalidSignedCertificateException;
 import pt.upa.transporter.exception.NoAvailableIdentifierException;
-import pt.upa.transporter.ws.handler.TransporterServerHandler;
 
 @WebService(
 	endpointInterface="pt.upa.transporter.ws.TransporterPortType",
@@ -48,7 +47,7 @@ import pt.upa.transporter.ws.handler.TransporterServerHandler;
 	serviceName="TransporterService"
 )
 
-@HandlerChain(file = "/Transporter-chain.xml")
+//@HandlerChain(file = "/Transporter-chain.xml")
 public class TransporterPort implements TransporterPortType{
 
 	private String id;

@@ -27,6 +27,7 @@ import pt.upa.broker.ws.UnknownTransportFault_Exception;
 
 public class FrontEnd implements BrokerPortType{
 	
+	private final int MAXTRIES = 5;
 	private String uddiURL = null;
 	private String searchName = null;
 	private BrokerPortType port = null;
@@ -34,7 +35,6 @@ public class FrontEnd implements BrokerPortType{
 	private String endpointURL= null;
 	private BindingProvider bindingProvider = null;
     private Map<String, Object> requestContext = null;
-    private List<String> CONN_TIME_PROPS = null;
     private Timer timer = null;
 
     public FrontEnd(String uddiURL, String searchName) {
@@ -56,19 +56,8 @@ public class FrontEnd implements BrokerPortType{
     	if (getSearchName().equals("UpaBroker")) {
 	    	bindingProvider = (BindingProvider) port;
 	        requestContext = bindingProvider.getRequestContext();
-	        int connectionTimeout = 10000;
-	        // The connection timeout property has different names in different versions of JAX-WS
-	        // Set them all to avoid compatibility issues
-	        CONN_TIME_PROPS = new ArrayList<String>();
-	        CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
-	        CONN_TIME_PROPS.add("com.sun.xml.internal.ws.connect.timeout");
-	        CONN_TIME_PROPS.add("javax.xml.ws.client.connectionTimeout");
-	        // Set timeout until a connection is established (unit is milliseconds; 0 means infinite)
-	        for (String propName : CONN_TIME_PROPS)
-	            requestContext.put(propName, connectionTimeout);
-	        System.out.printf("Set connection timeout to %d milliseconds%n", connectionTimeout);
 	
-	        int receiveTimeout = 10000;
+	        int receiveTimeout = 6000;
 	        // The receive timeout property has alternative names
 	        // Again, set them all to avoid compability issues
 	        final List<String> RECV_TIME_PROPS = new ArrayList<String>();
@@ -98,7 +87,6 @@ public class FrontEnd implements BrokerPortType{
 		}
 		try {
     	UDDINaming uddiNaming = new UDDINaming(uddiURL);
-    	if (uddiNaming == null) {System.out.println("cenas más");}
 		if (verbose){
 			System.out.printf("Looking for '%s'%n", searchName);
 		}
@@ -136,124 +124,106 @@ public class FrontEnd implements BrokerPortType{
 	
 	@Override
 	public String ping(String name) {
-		try {
-			return port.ping(name);
-			
-        } catch(WebServiceException wse) {
-            System.out.println("Caught: " + wse);
-            Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
-            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                return port.ping(name);
-            }
-            else {
-            	System.out.println("Connexão, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                System.out.println("A fazer novo ping ------------------------------");
-                return port.ping(name);
-            }
-        }	
+		
+		for (int i=0; i<MAXTRIES; i++) {
+			try {
+				return port.ping(name);
+				
+	        } catch(WebServiceException wse) {
+	            System.out.println("Caught: " + wse);
+	            Throwable cause = wse.getCause();
+	            if (cause != null && cause instanceof SocketTimeoutException) {
+	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), true);
+	                createStub();
+	                return port.ping(name);
+	            }
+	        }
+		}
+		return null;
 	}
 
 	@Override
 	public String requestTransport(String origin, String destination, int price)
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		try {
-			return port.requestTransport(origin, destination, price);
-			
-        } catch(WebServiceException wse) {
-            System.out.println("Caught: " + wse);
-            Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
-            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                return port.requestTransport(origin, destination, price);
-            }
-            else {
-            	System.out.println("Connecção, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                System.out.println("A fazer novo request ------------------------------");
-                return requestTransport(origin, destination, price);
-            }
-        }	
+		
+		for (int i=0; i<MAXTRIES; i++) {
+			try {
+				return port.requestTransport(origin, destination, price);
+				
+	        } catch(WebServiceException wse) {
+	            System.out.println("Caught: " + wse);
+	            Throwable cause = wse.getCause();
+	            if (cause != null && cause instanceof SocketTimeoutException) {
+	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), true);
+	                createStub();
+	                return port.requestTransport(origin, destination, price);
+	            }
+	        }
+		}
+		return null;
 	}
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		try {
-			return port.viewTransport(id);
-			
-        } catch(WebServiceException wse) {
-            System.out.println("Caught: " + wse);
-            Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
-            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                return port.viewTransport(id);
-            }
-            else {
-            	System.out.println("Connecção, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                System.out.println("A fazer novo view ------------------------------");
-                return port.viewTransport(id);
-            }
-        }
+		for (int i=0; i<MAXTRIES; i++) {
+			try {
+				return port.viewTransport(id);
+				
+	        } catch(WebServiceException wse) {
+	            System.out.println("Caught: " + wse);
+	            Throwable cause = wse.getCause();
+	            if (cause != null && cause instanceof SocketTimeoutException) {
+	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), true);
+	                createStub();
+	                return port.viewTransport(id);
+	            }
+	        }
+		}
+		return null;
 	}
 
 	@Override
 	public List<TransportView> listTransports() {
-		try {
-			return port.listTransports();
-			
-        } catch(WebServiceException wse) {
-            System.out.println("Caught: " + wse);
-            Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
-            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                return port.listTransports();
-            }
-            else {
-            	System.out.println("Connecção, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                System.out.println("A fazer novo list ------------------------------");
-                return port.listTransports();
-            }
-        }
+		for (int i=0; i<MAXTRIES; i++) {
+				
+			try {
+				return port.listTransports();
+				
+	        } catch(WebServiceException wse) {
+	            System.out.println("Caught: " + wse);
+	            Throwable cause = wse.getCause();
+	            if (cause != null && cause instanceof SocketTimeoutException) {
+	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), true);
+	                createStub();
+	                return port.listTransports();
+	            }
+	        }	
+		}
+		return null;
 	}
-
 	@Override
 	public void clearTransports() {
-		try {
-			port.clearTransports();
-			
-        } catch(WebServiceException wse) {
-            System.out.println("Caught: " + wse);
-            Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
-            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                port.clearTransports();
-            }
-            else {
-            	System.out.println("Connecção, ardeu! Vou procurar no UDDI o Broker");
-                lookUp(getUddiURL(), getSearchName(), true);
-                createStub();
-                System.out.println("A fazer novo clear ------------------------------");
-                port.clearTransports();
-            }
-        }
+		for (int i=0; i<MAXTRIES; i++) {
+		
+			try {
+				port.clearTransports();
+				
+	        } catch(WebServiceException wse) {
+	            System.out.println("Caught: " + wse);
+	            Throwable cause = wse.getCause();
+	            if (cause != null && cause instanceof SocketTimeoutException) {
+	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), true);
+	                createStub();
+	                port.clearTransports();
+	            }
+	        }
+		}
 	}
 	
 	

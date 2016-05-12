@@ -25,6 +25,8 @@
         
         <!-- instance number - redefine using -D option - e.g. mvn -Dws.br=2 exec:java -->
         <ws.br>1</ws.br>
+        <!-- timeout seconds - redefine using -D option - e.g. mvn -Dws.br=2 exec:java -->
+        <ws.nap>0</ws.nap>
 
 		<ws.host>localhost</ws.host>
         <ws.port>809${ws.br}</ws.port>
@@ -136,6 +138,7 @@
                         <argument>${uddi.url}</argument>
                         <argument>${ws.name}</argument>
                         <argument>${ws.url}</argument>
+                        <argument>${ws.nap}</argument>
                     </arguments>
                 </configuration>
             </plugin>

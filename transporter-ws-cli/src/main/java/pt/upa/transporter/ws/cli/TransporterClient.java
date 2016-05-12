@@ -82,6 +82,9 @@ public class TransporterClient implements TransporterPortType {
         	BindingProvider bindingProvider = (BindingProvider) port;
 		    Map<String, Object> requestContext = bindingProvider.getRequestContext();
 		    requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointURL);
+		    char a = endpointURL.charAt(20);
+		    System.out.println("ENDPOOOOOOOOOOOINT UpaTransporter" + a);
+			requestContext.put("Transporter", "UpaTransporter"+a);
         }
     }
     

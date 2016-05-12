@@ -417,9 +417,6 @@ public class BrokerPort implements BrokerPortType {
 		
 		TransportView tv = transport.createTransportView();
 		
-		if (brokerClient != null) {
-			brokerClient.updateTransport(tv, endpoint);
-		}
 		return tv;
 		
 	}
@@ -454,7 +451,8 @@ public class BrokerPort implements BrokerPortType {
 			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
-
+		
+		brokerClient.clearTransports();
 		transports.clear();
 	}
     

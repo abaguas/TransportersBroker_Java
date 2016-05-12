@@ -22,7 +22,10 @@
         <wsdl.filename>broker.3_0.wsdl</wsdl.filename>
 
         <mainclass>pt.upa.broker.ws.cli.BrokerClientMain</mainclass>
-
+		
+		<!-- number of process of broker to kill in tests -->
+		<process>10000000000</process>
+		
         <ws.name>UpaBroker</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
     </properties>
@@ -125,6 +128,7 @@
                     <arguments>
                         <argument>${uddi.url}</argument>
                         <argument>${ws.name}</argument>
+                        <argument>${process}</argument>
                     </arguments>
                 </configuration>
             </plugin>

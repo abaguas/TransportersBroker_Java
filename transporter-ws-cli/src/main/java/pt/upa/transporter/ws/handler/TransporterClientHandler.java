@@ -4,13 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,11 +38,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import org.w3c.dom.NodeList;
 
 import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
@@ -49,6 +51,10 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 
 
 	private ArrayList<String> nonces = new ArrayList();
+	private static final String KEYSTORE_PATH = "/home/zacarias/SD/proj/A_64-project/broker-ws/src/main/resources/UpaBroker.jks";
+	private static final String KEYSTORE_PASS = "ins3cur3";
+	private final static String ALIAS = "upabroker";
+	private final static String KEY_PASSWORD = "1nsecure";
 	
 	@Override
 	public Set<QName> getHeaders() {
@@ -63,8 +69,9 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		
         Boolean outboundElement = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
-        
-
+		String TransporterName = (String) smc.get("Transporter");
+	
+		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "+ TransporterName);
             if (outboundElement.booleanValue()) {
             	try {
 	                System.out.println("Writing header in outbound SOAP message...");
@@ -78,7 +85,10 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	                SOAPHeader sh = se.getHeader();
 	                if (sh == null)
 	                    sh = se.addHeader();
-	
+	                
+	        		Name transpName = se.createName("transporter", "t", "http://transporter"); 
+	        		SOAPHeaderElement transp = sh.addHeaderElement(transpName);
+	        		transp.addTextNode(TransporterName);
 	                
 	                // add header element (name, namespace prefix, namespace)
 	                Name headerName = se.createName("nonce", "n", "http://nonce");
@@ -105,6 +115,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	                
 					
 					
+
 	                
 	                //FIXME getContentToEncrypt
 	
@@ -126,19 +137,32 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	
 	        		messageDigest.update(plainBytes);
 	        		byte[] digest = messageDigest.digest();
+
 	
-	        		System.out.println("Digest:");
-	
-	        		
-	
-	                String digested = printBase64Binary(digest);
-	                System.out.println(digested);
-	
-	        		System.out.println("Digested!!!");
-	
-	        		Name paramName = se.createName("digest", "d", "http://digest");
-	//        		SOAPBodyElement service = body.addBodyElement(serviceName);   
+	        		Name paramName = se.createName("digest", "d", "http://digest"); 
 	        		SOAPHeaderElement param = sh.addHeaderElement(paramName);
+	        		
+	        		PrivateKey pk = null;
+	                try {
+						pk = getPrivateKeyFromKeystore();
+						System.out.println("----"+printBase64Binary(pk.getEncoded())+"-------------------------------------");
+					} catch (Exception e) {
+						System.out.println("NAO DEU PARA OBTER A PK");
+						e.printStackTrace();
+					}
+	                
+	                try {
+						digest = makeDigitalSignature(digest, pk);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		
+	                String digested = printBase64Binary(digest);
+	        		System.out.println("Digest:");
+	                System.out.println(digested);
+	            
+	        		System.out.println("Digested!!!");	                
 	        		param.addTextNode(digested);
             	}
         		catch (SOAPException | TransformerException | TransformerFactoryConfigurationError | NoSuchAlgorithmException e) {
@@ -244,30 +268,68 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	public void close(MessageContext context) {
 				
 	}
-
-
-	public static KeyStore readKeystoreFile(String keyStoreFilePath, char[] keyStorePassword) throws Exception {
+	
+	public static KeyStore readKeystoreFile() throws Exception{
 		FileInputStream fis;
 		try {
-			fis = new FileInputStream(keyStoreFilePath);
+			fis = new FileInputStream(KEYSTORE_PATH);
 		} catch (FileNotFoundException e) {
-			System.err.println("Keystore file <" + keyStoreFilePath + "> not found.");
+			System.err.println("Keystore file <" + KEYSTORE_PATH + "> not found.");
 			return null;
 		}
-		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keystore.load(fis, keyStorePassword);
+		KeyStore keystore;
+		try {
+			keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+			System.out.println("Já tenho uma instancia do keystore");
+		} catch (KeyStoreException e) {
+			System.out.println("could not get an instance of keysore");
+			throw e;
+		}
+		try {
+			keystore.load(fis, KEYSTORE_PASS.toCharArray());
+			System.out.println("Já loadei a keystore");
+		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
+			System.out.println("could not load keystore");
+			throw e;
+		}
 		return keystore;
 	}
 	
 	
-	public static PrivateKey getPrivateKeyFromKeystore(String keyStoreFilePath, char[] keyStorePassword,
-			String keyAlias, char[] keyPassword) throws Exception {
+	public static PrivateKey getPrivateKeyFromKeystore() throws Exception {
 
-		KeyStore keystore = readKeystoreFile(keyStoreFilePath, keyStorePassword);
-		PrivateKey key = (PrivateKey) keystore.getKey(keyAlias, keyPassword);
+		KeyStore keystore;
+		try {
+			System.out.println("A ler o keystore");
+			keystore = readKeystoreFile();
+		} catch (Exception e) {
+			System.out.println("Could not read keystore");
+			throw e;
+		}
+		PrivateKey key = null;
+		try{
+			System.out.println("A sacar ganda key");
+			key = (PrivateKey) keystore.getKey(ALIAS, KEY_PASSWORD.toCharArray());
+		}catch (Exception e){
+			System.out.println("Could not get key");
+			throw e;
+		}
+				
 
 		return key;
 	}
+	public static byte[] makeDigitalSignature(byte[] bytes, PrivateKey privateKey) throws Exception {
+
+		// get a signature object using the SHA-1 and RSA combo
+		// and sign the plain-text with the private key
+		Signature sig = Signature.getInstance("SHA1WithRSA");
+		sig.initSign(privateKey);
+		sig.update(bytes);
+		byte[] signature = sig.sign();
+
+		return signature;
+	}
+
 	
 }
 

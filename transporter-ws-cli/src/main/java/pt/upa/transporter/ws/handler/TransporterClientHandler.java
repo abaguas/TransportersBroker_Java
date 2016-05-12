@@ -41,6 +41,8 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import pt.upa.ca.ws.cli.CAClient;
+
 import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
@@ -51,6 +53,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 
 
 	private ArrayList<String> nonces = new ArrayList();
+	private CAClient ca;
 	private static final String KEYSTORE_PATH = "/home/zacarias/SD/proj/A_64-project/broker-ws/src/main/resources/UpaBroker.jks";
 	private static final String KEYSTORE_PASS = "ins3cur3";
 	private final static String ALIAS = "upabroker";

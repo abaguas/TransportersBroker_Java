@@ -5,6 +5,7 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,17 +34,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext> {
 
-	public static final String REQUEST_PROPERTY = "my.request.property";
-	public static final String RESPONSE_PROPERTY = "my.response.property";
-
-	public static final String REQUEST_HEADER = "myRequestHeader";
-	public static final String REQUEST_NS = "urn:example";
-
-	public static final String RESPONSE_HEADER = "myResponseHeader";
-	public static final String RESPONSE_NS = REQUEST_NS;
-
-	public static final String CLASS_NAME = TransporterServerHandler.class.getSimpleName();
-	public static final String TOKEN = "server-handler";
 
 	private ArrayList<String> nonces = new ArrayList();
 	
@@ -51,37 +41,81 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 	public boolean handleMessage(SOAPMessageContext smc) {
 		Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		if (outbound) {
-//			// outbound message
-//
-//			// get token from response context
-//			String propertyValue = (String) smc.get(RESPONSE_PROPERTY);
-//			System.out.printf("%s received '%s'%n", CLASS_NAME, propertyValue);
-//
-//			// put token in response SOAP header
 //			try {
-//				// get SOAP envelope
-//				SOAPMessage msg = smc.getMessage();
-//				SOAPPart sp = msg.getSOAPPart();
-//				SOAPEnvelope se = sp.getEnvelope();
-//
-//				// add header
-//				SOAPHeader sh = se.getHeader();
-//				if (sh == null)
-//					sh = se.addHeader();
-//
-//				// add header element (name, namespace prefix, namespace)
-//				Name name = se.createName(RESPONSE_HEADER, "e", RESPONSE_NS);
-//				SOAPHeaderElement element = sh.addHeaderElement(name);
-//
-//				// *** #9 ***
-//				// add header element value
-//				String newValue = propertyValue + "," + TOKEN;
-//				element.addTextNode(newValue);
-//
-//				System.out.printf("%s put token '%s' on response message header%n", CLASS_NAME, TOKEN);
-//
-//			} catch (SOAPException e) {
-//				System.out.printf("Failed to add SOAP header because of %s%n", e);
+//	            System.out.println("Writing header in outbound SOAP message...");
+//	        	
+//	            // get SOAP envelope
+//	            SOAPMessage msg = smc.getMessage();
+//	            SOAPPart sp = msg.getSOAPPart();
+//	            SOAPEnvelope se = sp.getEnvelope();
+//	
+//	            // add header
+//	            SOAPHeader sh = se.getHeader();
+//	            if (sh == null)
+//	                sh = se.addHeader();
+//	
+//	            
+//	            // add header element (name, namespace prefix, namespace)
+//	            Name headerName = se.createName("nonce", "n", "http://nonce");
+//	            SOAPHeaderElement headerElement = sh.addHeaderElement(headerName);
+//	
+//	
+//	            //generate secure random number
+//	    		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+//	
+//	    		System.out.println("Generating random byte array ...");
+//	    		final byte array[] = new byte[16];
+//	    		random.nextBytes(array);
+//	
+//	    		System.out.println(printBase64Binary(array));
+//	    		headerElement.addTextNode(printBase64Binary(array));
+//	
+//	            SOAPBody sb = se.getBody();
+//	
+//	
+//	            DOMSource source = new DOMSource(sb);
+//				StringWriter stringResult = new StringWriter();
+//				TransformerFactory.newInstance().newTransformer().transform(source, new StreamResult(stringResult));
+//				String bodyString = stringResult.toString();
+//	            
+//	            
+//	            //FIXME getContentToEncrytpt
+//	
+//	            
+//	            
+//				/*                
+//	            MessageFactory factory = MessageFactory.newInstance();
+//	            SOAPMessage newMessage = factory.createMessage(oldMessage.getMimeHeaders(), inputByteArray);
+//	            oldMessage.getSOAPPart().setContent(newMessage.getSOAPPart().getContent());
+//					*/                                                
+//	            
+//				
+//	            final byte[] plainBytes = bodyString.getBytes();
+//	
+//	
+//	
+//	    		// get a message digest object using the specified algorithm
+//	    		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+//	
+//	    		messageDigest.update(plainBytes);
+//	    		byte[] digest = messageDigest.digest();
+//	
+//	    		System.out.println("Digest:");
+//	
+//	    		
+//	
+//	            String digested = printBase64Binary(digest);
+//	            System.out.println(digested);
+//	
+//	    		System.out.println("Digested!!!");
+//	
+//	    		Name paramName = se.createName("digest", "d", "http://digest");
+//	//        		SOAPBodyElement service = body.addBodyElement(serviceName);   
+//	    		SOAPHeaderElement param = sh.addHeaderElement(paramName);
+//	    		param.addTextNode(digested);
+//			}
+//			catch (SOAPException | TransformerException | TransformerFactoryConfigurationError | NoSuchAlgorithmException e) {
+//				System.out.printf("Failed to get SOAP header because of %s%n", e);
 //			}
 
 		} else {
@@ -110,13 +144,14 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 					System.out.printf("Header element  not found");
 					return true;
 				}
-				SOAPElement element1 = (SOAPElement) it1.next();
+				SOAPElement nonceResponse = (SOAPElement) it1.next();
 
-				String element1Value = element1.getValue();
+				String nonceResponseValue = nonceResponse.getValue();
 				
-				if(nonces.contains(element1Value))
+				if(nonces.contains(nonceResponseValue))
 					return false;
-				
+//				System.out.println("NONCE 35 " + nonceResponseValue + "----------------------------------------");
+
 				
 				
 				
@@ -127,9 +162,9 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 					System.out.printf("Header element  not found");
 					return true;
 				}
-				SOAPElement element2 = (SOAPElement) it2.next();
+				SOAPElement digestResponse = (SOAPElement) it2.next();
 
-				String element2Value = element2.getValue();
+				String digestResponseValue = digestResponse.getValue();
 
 				
                 //convert body to string
@@ -150,9 +185,9 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
         		System.out.println("Digested:");
         		String digested = printBase64Binary(digest);
 
-				if(!digested.equals(element2Value))
+				if(!digested.equals(digestResponseValue))
 					return false;
-				
+//				System.out.println("BENFICAAAAA 35 " + digestResponseValue + "----------------------------------------" +digested);
 	
 				
 				

@@ -60,7 +60,7 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
 
 	private ArrayList<String> nonces = new ArrayList<String>();
 	public static CAClient ca = new CAClient("http://localhost:9090"); //FIXME TODO XXX
-	private static String TransporterName;
+	private static String TransporterName = null;
 	private static final String KEYSTORE_PATH = "/home/zacarias/SD/proj/A_64-project/transporter-ws/src/main/resources/";
 	private static final String KEYSTORE_PASS = "ins3cur3";
 	private final static String KEY_PASSWORD = "1nsecure";
@@ -83,6 +83,8 @@ public class TransporterServerHandler implements SOAPHandler<SOAPMessageContext>
                 
         		Name transpName = se.createName("transporter", "t", "http://transporter"); 
         		SOAPHeaderElement transp = sh.addHeaderElement(transpName);
+        		
+        		if(TransporterName!=null)
         		transp.addTextNode(TransporterName);
                 
                 // add header element (name, namespace prefix, namespace)

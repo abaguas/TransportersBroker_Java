@@ -23,11 +23,12 @@ public class CAImpl implements CA {
 	final static String UPATRANSPORTER1 = "UpaTransporter1";
 	final static String UPATRANSPORTER4 = "UpaTransporter4";
 	final static String CER = ".cer";
+	final static String CA_CERTIFICATE = "ca-certificate.pem.txt";
+	final static String CA = "CA";
 	
 
 	public String getCertificate(String name) throws CertificateException, IOException, InvalidWebServiceNameException {
 		Certificate certificate = null;
-		System.out.println("TOMMMMMAAAA");
 		if (name.equals(UPABROKER)) {
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPABROKER+CER);
 		}
@@ -37,13 +38,16 @@ public class CAImpl implements CA {
 		else if (name.equals(UPATRANSPORTER4)){
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER4+CER);
 		}
+		else if (name.equals(CA)){
+			certificate = readCertificateFile(CERTIFICATE_FILES+CA_CERTIFICATE);
+		}
 		else {
 			System.out.println("Dont have the certificate from this transporter: "+ name);
 			return null;
 		}
 		
 		
-		System.out.println("Estou a enviar o ganda certificado");
+		System.out.println("Estou a enviar o ganda certificado" + name);
 		return printBase64Binary(certificate.getEncoded());
 
 	}

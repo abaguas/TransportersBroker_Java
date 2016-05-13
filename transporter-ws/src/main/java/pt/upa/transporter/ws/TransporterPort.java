@@ -1,22 +1,7 @@
 package pt.upa.transporter.ws;
 
-import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,17 +10,8 @@ import java.util.Random;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.swing.Timer;
-import javax.xml.registry.JAXRException;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.upa.ca.ws.cli.CAClient;
-import pt.upa.ca.ws.CertificateException_Exception;
-import pt.upa.ca.ws.IOException_Exception;
 import pt.upa.transporter.exception.DoesNotOperateException;
 import pt.upa.transporter.exception.InvalidIdentifierException;
-import pt.upa.transporter.exception.InvalidSignedCertificateException;
 import pt.upa.transporter.exception.NoAvailableIdentifierException;
 
 @WebService(
@@ -47,7 +23,7 @@ import pt.upa.transporter.exception.NoAvailableIdentifierException;
 	serviceName="TransporterService"
 )
 
-//@HandlerChain(file = "/Transporter-chain.xml")
+@HandlerChain(file = "/Transporter-chain.xml")
 public class TransporterPort implements TransporterPortType{
 
 	private String id;
@@ -61,13 +37,7 @@ public class TransporterPort implements TransporterPortType{
 			Arrays.asList("Lisboa", "Leiria", "Santarém", "Castelo Branco", "Coimbra", "Aveiro", "Viseu", "Guarda"));
 	private ArrayList<String> regiaoNorte = new ArrayList<String>(
 			Arrays.asList("Porto", "Braga", "Viana do Castelo", "Vila Real", "Bragança"));
-	private PublicKey brokerKey = null;
-	private CAClient ca = null;
-	private static final String BROKER_NAME = "UpaBroker";
-	private static final String KEYSTORE_PATH = "src/main/resources/UpaTransporter1.jks"; //FIXME name of Transporter
-	private static final String KEYSTORE_PASS = "1nsecure";
-	private final static String KEY_ALIAS = "example";
-	private final static String KEY_PASSWORD = "ins3cur3";
+
 	
 	public TransporterPort (String name, String uddiURL){
 		this.name = name;
@@ -75,82 +45,7 @@ public class TransporterPort implements TransporterPortType{
 		id = Integer.toString(n);
 		boundId = Integer.toString(n+100000);
 		this.uddiURL = uddiURL;
-//		String s = null;
-//		ca = new CAClient(uddiURL);
-//		
-//		try {
-//			s = (ca.getCertificate(BROKER_NAME));
-//		} catch (CertificateException_Exception | IOException_Exception e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		byte[] c = parseBase64Binary(s);
-//		CertificateFactory certFactory = null;
-//		
-//		try {
-//			certFactory = CertificateFactory.getInstance("X.509");
-//		} catch (CertificateException e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		InputStream in = new ByteArrayInputStream(c);
-//		Certificate cert = null;
-//		
-//		try {
-//			cert = certFactory.generateCertificate(in);
-//		} catch (CertificateException e) {
-//			e.printStackTrace();
-//		}
-//		try {
-//			if(verifySignedCertificate(cert)){
-//				brokerKey = cert.getPublicKey();
-//			}
-//			else{
-//				throw new InvalidSignedCertificateException();
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		System.out.println(brokerKey);  //FIXME
 	}
-/////////////////////////////////////////REPETIDO/////////////////////////////////////////////////
-	
-	public static boolean verifySignedCertificate(Certificate certificate) throws Exception {
-		
-			try {
-				PublicKey pk = getCAPublicKey();
-				certificate.verify(pk);
-			} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
-					| SignatureException e) {
-				e.printStackTrace();
-			}
-	
-		return true;
-	}
-	
-	public static PublicKey getCAPublicKey() throws Exception {
-	
-		KeyStore keystore = readKeystoreFile();
-		PublicKey key = (PublicKey) keystore.getKey(KEY_ALIAS, KEY_PASSWORD.toCharArray());
-	
-		return key;
-	}
-	
-	public static KeyStore readKeystoreFile() throws Exception {
-		FileInputStream fis;
-		try {
-			fis = new FileInputStream(KEYSTORE_PATH);
-		} catch (FileNotFoundException e) {
-			System.err.println("Keystore file <" + KEYSTORE_PATH + "> not found.");
-			return null;
-		}
-		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keystore.load(fis, KEYSTORE_PASS.toCharArray());
-		return keystore;
-	}
-
-/////////////////////////////////////////REPETIDO/////////////////////////////////////////////////
 	
 	@Override
 	public String ping(String name) {

@@ -5,6 +5,9 @@
         <handler>
             <handler-class>pt.upa.transporter.ws.handler.TransporterServerHandler</handler-class>
         </handler>
+	 <!--handler>
+            <handler-class>pt.upa.transporter.ws.handler.BadTransporterServerHandler</handler-class>
+        </handler!-->
         <handler>
             <handler-class>example.ws.handler.LoggingHandler</handler-class>
         </handler>

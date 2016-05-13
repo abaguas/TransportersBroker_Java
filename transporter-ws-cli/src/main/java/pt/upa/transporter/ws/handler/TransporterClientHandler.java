@@ -81,7 +81,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		String TransporterName = (String) smc.get("Transporter");
             if (outboundElement.booleanValue()) {
             	try {
-	                System.out.println("Writing header in outbound SOAP message...");
+//	                System.out.println("Writing header in outbound SOAP message...");
 	
 	                // get SOAP envelope
 	                SOAPMessage msg = smc.getMessage();
@@ -105,11 +105,11 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	                //generate secure random number
 	        		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 	
-	        		System.out.println("Generating random byte array ...");
+//	        		System.out.println("Generating random byte array ...");
 	        		final byte[] nonce= new byte[16];
 	        		random.nextBytes(nonce);
 	
-	        		System.out.println(printBase64Binary(nonce));
+//	        		System.out.println(printBase64Binary(nonce));
 	        		headerElement.addTextNode(printBase64Binary(nonce));
 	 
 	                SOAPBody sb = se.getBody();
@@ -140,7 +140,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 						pk = getPrivateKeyFromKeystore();
 //						System.out.println("----"+printBase64Binary(pk.getEncoded())+"-------------------------------------");
 					} catch (Exception e) {
-						System.out.println("NAO DEU PARA OBTER A PK");
+//						System.out.println("NAO DEU PARA OBTER A PK");
 						e.printStackTrace();
 					}
 	                digest = parseBase64Binary(printBase64Binary(digest)+printBase64Binary(nonce));
@@ -234,7 +234,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                     // get a message digest object using the specified algorithm
             		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 
-            		System.out.println("Computing digest ...");
+//            		System.out.println("Computing digest ...");
             		messageDigest.update(plainBytes);
             		byte[] digest = messageDigest.digest();
 
@@ -256,7 +256,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
                 		
                 		if(verifySignedCertificate(cert)){
                 			pk = cert.getPublicKey();
-                			System.out.println("validei");
+//                			System.out.println("validei");
 //                    		System.out.println("*********************************" + pk);
                 		}
                 		else throw new InvalidSignedCertificateException();
@@ -272,7 +272,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
             		try {
     					boolean verified = verifyDigitalSignature(parseBase64Binary(digestResponseValue), digest, pk);
     					if (!verified){
-    						System.out.println("NAAAAAAAAAAAOOOOOOO DEUUUUUUUUUUUUuuu");
+//    						System.out.println("NAAAAAAAAAAAOOOOOOO DEUUUUUUUUUUUUuuu");
     						return false;
     					}
     					
@@ -318,14 +318,14 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		KeyStore keystore;
 		try {
 			keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-			System.out.println("Já tenho uma instancia do keystore");
+//			System.out.println("Já tenho uma instancia do keystore");
 		} catch (KeyStoreException e) {
 			System.out.println("could not get an instance of keysore");
 			throw e;
 		}
 		try {
 			keystore.load(fis, KEYSTORE_PASS.toCharArray());
-			System.out.println("Já loadei a keystore");
+//			System.out.println("Já loadei a keystore");
 		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
 			System.out.println("could not load keystore");
 			throw e;
@@ -338,7 +338,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 
 		KeyStore keystore;
 		try {
-			System.out.println("A ler o keystore");
+//			System.out.println("A ler o keystore");
 			keystore = readKeystoreFile();
 		} catch (Exception e) {
 			System.out.println("Could not read keystore");
@@ -346,7 +346,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		}
 		PrivateKey key = null;
 		try{
-			System.out.println("A sacar ganda key");
+//			System.out.println("A sacar ganda key");
 			key = (PrivateKey) keystore.getKey(ALIAS, KEY_PASSWORD.toCharArray());
 		}catch (Exception e){
 			System.out.println("Could not get key");
@@ -384,7 +384,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 	}
 	public static boolean verifySignedCertificate(Certificate certificateFile) throws CouldNotVerifyCertificateException  {
 		try {
-			System.out.println("Vou buscar a public key da CA");
+//			System.out.println("Vou buscar a public key da CA");
 			
 			String caCertString = ca.getCertificate("CA");
 			
@@ -399,13 +399,13 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 
 			PublicKey pk = caCertificate.getPublicKey();
 			
-			System.out.println("Vou verifcar o certificado com a public key que fui buscar");
+//			System.out.println("Vou verifcar o certificado com a public key que fui buscar");
 			
 			certificateFile.verify(pk);
 			
 		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
 				| SignatureException e) {
-			System.out.println("Falhei na validação do certificado");
+//			System.out.println("Falhei na validação do certificado");
 			return false;
 		} catch (Exception ee){
 			throw new CouldNotVerifyCertificateException();

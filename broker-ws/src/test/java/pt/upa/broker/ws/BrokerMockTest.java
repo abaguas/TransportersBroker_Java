@@ -90,51 +90,51 @@ public class BrokerMockTest extends AbstractBrokerTest{
         }
     }
 
-    @Test 
-    public void testPing(
-        @Mocked final  TransporterClient tc1,
-        @Mocked final  UDDINaming uddi)
-        throws Exception {
-
-        
-        new Expectations() {{
-        	new UDDINaming("http://localhost:9090");
-            uddi.lookup("UpaTransporter1");
-            result = "http://localhost:8081/transporter-ws/endpoint";
-            new TransporterClient("http://localhost:8081/transporter-ws/endpoint");
-            
-            
-            tc1.ping("UpaTransporter1");
-            
-            result = "UpaTransporter1";
-          
-            result = new WebServiceException("Unreachable");
-
-        }};
-
-        BrokerPort bp = new BrokerPort("UpaBroker", "http://localhost:9090", "http://localhost:9091", 0); 
-
-        try {
-
-            
-            bp.ping("UpaTransporter1");
-        } catch(WebServiceException e) {
-            // exception is not expected
-            fail();
-        }
-
-        // second call to mocked server
-        try {
-
-            bp.ping("UpaTransporter1");
-
-            fail();
-        } catch(WebServiceException e) {
-            // exception is expected
-            assertEquals("Unreachable", e.getMessage());
-        }
-    }
-    
+//    @Test 
+//    public void testPing(
+//        @Mocked final  TransporterClient tc1,
+//        @Mocked final  UDDINaming uddi)
+//        throws Exception {
+//
+//        
+//        new Expectations() {{
+//        	new UDDINaming("http://localhost:9090");
+//            uddi.lookup("UpaTransporter1");
+//            result = "http://localhost:8081/transporter-ws/endpoint";
+//            new TransporterClient("http://localhost:8081/transporter-ws/endpoint");
+//            
+//            
+//            tc1.ping("UpaTransporter1");
+//            
+//            result = "UpaTransporter1";
+//          
+//            result = new WebServiceException("Unreachable");
+//
+//        }};
+//
+//        BrokerPort bp = new BrokerPort("UpaBroker", "http://localhost:9090", "http://localhost:9091", 0); 
+//
+//        try {
+//
+//            
+//            bp.ping("UpaTransporter1");
+//        } catch(WebServiceException e) {
+//            // exception is not expected
+//            fail();
+//        }
+//
+//        // second call to mocked server
+//        try {
+//
+//            bp.ping("UpaTransporter1");
+//
+//            fail();
+//        } catch(WebServiceException e) {
+//            // exception is expected
+//            assertEquals("Unreachable", e.getMessage());
+//        }
+//    }
+//    
 //    @Test 
 //    public void testRequestTransport(
 //        @Mocked final  TransporterClient tc1,

@@ -17,6 +17,6 @@ public class PingTest extends AbstractBrokerTest {
     public void success() {
     	String ping = port.ping("UpaTransporter1");
     	assertNotNull("Ping is null", ping);
-    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
+    	assertEquals("Unsuccessful ping", ping, "OK");
     }
 }

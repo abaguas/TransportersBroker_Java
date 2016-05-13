@@ -78,10 +78,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 		System.out.println("Server: handleMessage()");
 		
         Boolean outboundElement = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-
 		String TransporterName = (String) smc.get("Transporter");
-	
-//		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "+ TransporterName);
             if (outboundElement.booleanValue()) {
             	try {
 	                System.out.println("Writing header in outbound SOAP message...");

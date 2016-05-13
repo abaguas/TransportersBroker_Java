@@ -21,7 +21,10 @@ public class CAImpl implements CA {
 	//"../../../../../resources/";
 	final static String UPABROKER = "UpaBroker";
 	final static String UPATRANSPORTER1 = "UpaTransporter1";
+	final static String UPATRANSPORTER2 = "UpaTransporter2";
+	final static String UPATRANSPORTER3 = "UpaTransporter3";
 	final static String UPATRANSPORTER4 = "UpaTransporter4";
+	final static String UPATRANSPORTER5 = "UpaTransporter5";
 	final static String CER = ".cer";
 	final static String CA_CERTIFICATE = "ca-certificate.pem.txt";
 	final static String CA = "CA";
@@ -35,8 +38,17 @@ public class CAImpl implements CA {
 		else if (name.equals(UPATRANSPORTER1)){
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER1+CER);
 		}
+		else if (name.equals(UPATRANSPORTER2)){
+			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER2+CER);
+		}
+		else if (name.equals(UPATRANSPORTER3)){
+			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER3+CER);
+		}
 		else if (name.equals(UPATRANSPORTER4)){
 			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER4+CER);
+		}
+		else if (name.equals(UPATRANSPORTER5)){
+			certificate = readCertificateFile(CERTIFICATE_FILES+UPATRANSPORTER5+CER);
 		}
 		else if (name.equals(CA)){
 			certificate = readCertificateFile(CERTIFICATE_FILES+CA_CERTIFICATE);
@@ -59,7 +71,7 @@ public class CAImpl implements CA {
 		try {
 			fis = new FileInputStream(certificateFilePath);
 		} catch (FileNotFoundException e) {
-			System.err.println("Certificate file <" + certificateFilePath + "> not fount.");
+			System.err.println("Certificate file <" + certificateFilePath + "> not found.");
 			return null;
 		}
 		BufferedInputStream bis = new BufferedInputStream(fis);

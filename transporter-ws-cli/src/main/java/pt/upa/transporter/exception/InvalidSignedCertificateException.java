@@ -1,0 +1,16 @@
+package pt.upa.transporter.exception;
+
+
+public class InvalidSignedCertificateException extends TransporterClientException{
+
+    private static final long serialVersionUID = 1L;
+
+
+    public InvalidSignedCertificateException(){ }
+
+
+    @Override
+    public String getMessage(){
+        return "This certificate is not from CA: ";
+    }
+}

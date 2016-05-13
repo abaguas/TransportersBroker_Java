@@ -1,4 +1,5 @@
-package pt.upa.broker.ws.it;
+//TESTS for demonstration
+/*package pt.upa.broker.ws.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -99,4 +100,4 @@ public class ReplicationIT extends AbstractIT {
 		assertEquals(tv.getPrice(), tv2.getPrice());
 		assertEquals(tv.getTransporterCompany(), tv2.getTransporterCompany());
 	}
-}
+}*/

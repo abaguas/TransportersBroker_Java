@@ -18,7 +18,6 @@ import pt.upa.ca.exception.InvalidWebServiceNameException;
 public class CAImpl implements CA {
 	
 	final static String CERTIFICATE_FILES = "src/main/resources/";
-	//"../../../../../resources/";
 	final static String UPABROKER = "UpaBroker";
 	final static String UPATRANSPORTER1 = "UpaTransporter1";
 	final static String UPATRANSPORTER2 = "UpaTransporter2";
@@ -58,8 +57,6 @@ public class CAImpl implements CA {
 			return null;
 		}
 		
-		
-		System.out.println("Estou a enviar o ganda certificado" + name);
 		return printBase64Binary(certificate.getEncoded());
 
 	}
@@ -81,8 +78,6 @@ public class CAImpl implements CA {
 		if (bis.available() > 0) {
 			Certificate cert = cf.generateCertificate(bis);
 			return cert;
-			// It is possible to print the content of the certificate file:
-			// System.out.println(cert.toString());
 		}
 		bis.close();
 		fis.close();

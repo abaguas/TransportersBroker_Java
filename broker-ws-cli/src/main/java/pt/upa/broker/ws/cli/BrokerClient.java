@@ -32,36 +32,11 @@ public class BrokerClient implements BrokerPortType{
 	@Override
 	public String requestTransport(String origin, String destination, int price) throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
 		return fe.requestTransport(origin, destination, price);
-//		try {
-//			return fe.requestTransport(origin, destination, price);
-//		} catch (InvalidPriceFault_Exception ipfe){
-//			int priceRequested = ipfe.getFaultInfo().getPrice();
-//			System.out.println("There are no for negative prices: "+ priceRequested);
-//		} catch (UnavailableTransportFault_Exception utfe) {
-//			String originRequested = utfe.getFaultInfo().getOrigin();
-//			String destinationRequested = utfe.getFaultInfo().getDestination();
-//			System.out.println("There are no transports available from: "+ originRequested + "to: " + destinationRequested);
-//		} catch (UnavailableTransportPriceFault_Exception utpfe) {
-//			int bestPrice = utpfe.getFaultInfo().getBestPriceFound();
-//			System.out.println("There are no transports available for this price: "+ price);
-//			System.out.println("Best offer was: "+ bestPrice);
-//		} catch	(UnknownLocationFault_Exception ulfe) {
-//			String location = ulfe.getFaultInfo().getLocation();
-//			System.out.println("This location is not valid: "+ location);
-//		}
-//		return "";
 	}
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
 		return fe.viewTransport(id);
-//		try {
-//			return fe.viewTransport(id);
-//		} catch (UnknownTransportFault_Exception utfe) {
-//			String identifier = utfe.getFaultInfo().getId();
-//			System.out.println("This identifier isnt valid: "+ identifier);
-//		}
-//		return null;
 	}
 
 	@Override

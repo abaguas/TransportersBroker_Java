@@ -134,6 +134,12 @@ public class FrontEnd implements BrokerPortType{
 	            Throwable cause = wse.getCause();
 	            if (cause != null && cause instanceof SocketTimeoutException) {
 	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), false);
+	                createStub();
+	                return port.ping(name);
+	            }
+	            else {
+	            	System.out.println("Connection, ardeu! Vou procurar no UDDI o Broker");
 	                lookUp(getUddiURL(), getSearchName(), true);
 	                createStub();
 	                return port.ping(name);
@@ -157,6 +163,12 @@ public class FrontEnd implements BrokerPortType{
 	            Throwable cause = wse.getCause();
 	            if (cause != null && cause instanceof SocketTimeoutException) {
 	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), false);
+	                createStub();
+	                return port.requestTransport(origin, destination, price);
+	            }
+	            else {
+	            	System.out.println("Connection, ardeu! Vou procurar no UDDI o Broker");
 	                lookUp(getUddiURL(), getSearchName(), true);
 	                createStub();
 	                return port.requestTransport(origin, destination, price);
@@ -177,6 +189,12 @@ public class FrontEnd implements BrokerPortType{
 	            Throwable cause = wse.getCause();
 	            if (cause != null && cause instanceof SocketTimeoutException) {
 	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), false);
+	                createStub();
+	                return port.viewTransport(id);
+	            }
+	            else {
+	            	System.out.println("Connection, ardeu! Vou procurar no UDDI o Broker");
 	                lookUp(getUddiURL(), getSearchName(), true);
 	                createStub();
 	                return port.viewTransport(id);
@@ -198,6 +216,12 @@ public class FrontEnd implements BrokerPortType{
 	            Throwable cause = wse.getCause();
 	            if (cause != null && cause instanceof SocketTimeoutException) {
 	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), false);
+	                createStub();
+	                return port.listTransports();
+	            }
+	            else {
+	            	System.out.println("Connection, ardeu! Vou procurar no UDDI o Broker");
 	                lookUp(getUddiURL(), getSearchName(), true);
 	                createStub();
 	                return port.listTransports();
@@ -218,6 +242,12 @@ public class FrontEnd implements BrokerPortType{
 	            Throwable cause = wse.getCause();
 	            if (cause != null && cause instanceof SocketTimeoutException) {
 	            	System.out.println("Timeout, ardeu! Vou procurar no UDDI o Broker");
+	                lookUp(getUddiURL(), getSearchName(), false);
+	                createStub();
+	                port.clearTransports();
+	            }
+	            else {
+	            	System.out.println("Connection, ardeu! Vou procurar no UDDI o Broker");
 	                lookUp(getUddiURL(), getSearchName(), true);
 	                createStub();
 	                port.clearTransports();

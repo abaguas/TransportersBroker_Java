@@ -11,7 +11,7 @@ public class TimeoutIT extends AbstractIT {
 
 
 	@Test
-	public void timoutExpiresButPrimaryBrokerDoesntCollapse() throws Exception {
+	public void timeoutExpiresButPrimaryBrokerDoesntCollapse() throws Exception {
 		int requestedPrice = 39;
 		String id = CLIENT.requestTransport("Faro", "Lisboa", requestedPrice);
 		TransportView tv = CLIENT.viewTransport(id);
@@ -20,7 +20,7 @@ public class TimeoutIT extends AbstractIT {
 	}
 	
 	@Test
-	public void timoutExpiresAfterPrimaryBrokerCollapses() throws Exception {
+	public void timeoutExpiresAfterPrimaryBrokerCollapses() throws Exception {
 		int requestedPrice = 39;
 		String id = CLIENT.requestTransport("Faro", "Lisboa", requestedPrice);
 		

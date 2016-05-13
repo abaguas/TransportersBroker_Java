@@ -3,6 +3,7 @@ package pt.upa.broker.ws.it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.Test;
@@ -25,19 +26,20 @@ public class ReplicationIT extends AbstractIT {
 		for (TransportView transportView: transportViews) {
 			assertTrue(transportView.getId().equals(idSouth) || transportView.getId().equals(idNorth));
 			if (transportView.getId().equals(idSouth)) {
-				assertTrue(transportView.getDestination().equals(SOUTH_1) );
-				assertTrue(transportView.getOrigin().equals(SOUTH_2) );
+				assertTrue(transportView.getDestination().equals(SOUTH_2) );
+				assertTrue(transportView.getOrigin().equals(SOUTH_1) );
 				assertTrue(transportView.getPrice() < 38);
-				assertTrue(transportView.getTransporterCompany().equals("Transporter1"));	
+				assertTrue(transportView.getTransporterCompany().equals("UpaTransporter1"));	
 			}
 			else {
-				assertTrue(transportView.getDestination().equals(NORTH_1) );
-				assertTrue(transportView.getOrigin().equals(NORTH_2) );
+				assertTrue(transportView.getDestination().equals(NORTH_2) );
+				assertTrue(transportView.getOrigin().equals(NORTH_1) );
 				assertTrue(transportView.getPrice() < 88);
-				assertTrue(transportView.getTransporterCompany().equals("Transporter4"));	
+				assertTrue(transportView.getTransporterCompany().equals("UpaTransporter4"));	
 			}
 		}
-			
+		
+		System.out.println(processToKill);
 		Runtime.getRuntime().exec("kill -9 "+ processToKill);
 
 		transportViews = CLIENT.listTransports();
@@ -46,16 +48,16 @@ public class ReplicationIT extends AbstractIT {
 		for (TransportView transportView: transportViews) {
 			assertTrue(transportView.getId().equals(idSouth) || transportView.getId().equals(idNorth));
 			if (transportView.getId().equals(idSouth)) {
-				assertTrue(transportView.getDestination().equals(SOUTH_1) );
-				assertTrue(transportView.getOrigin().equals(SOUTH_2) );
+				assertTrue(transportView.getDestination().equals(SOUTH_2) );
+				assertTrue(transportView.getOrigin().equals(SOUTH_1) );
 				assertTrue(transportView.getPrice() < 38);
-				assertTrue(transportView.getTransporterCompany().equals("Transporter1"));	
+				assertTrue(transportView.getTransporterCompany().equals("UpaTransporter1"));	
 			}
 			else {
-				assertTrue(transportView.getDestination().equals(NORTH_1) );
-				assertTrue(transportView.getOrigin().equals(NORTH_2) );
+				assertTrue(transportView.getDestination().equals(NORTH_2) );
+				assertTrue(transportView.getOrigin().equals(NORTH_1) );
 				assertTrue(transportView.getPrice() < 88);
-				assertTrue(transportView.getTransporterCompany().equals("Transporter4"));	
+				assertTrue(transportView.getTransporterCompany().equals("UpaTransporter4"));	
 			}
 		}
 	}
@@ -76,7 +78,9 @@ public class ReplicationIT extends AbstractIT {
 
 		Runtime.getRuntime().exec("kill -9 "+ processToKill);
 
-		assertTrue(CLIENT.listTransports().isEmpty());
+		ArrayList<TransportView> tv = (ArrayList<TransportView>) CLIENT.listTransports();
+		
+		assertTrue(tv.isEmpty());
 	}
 	
 	

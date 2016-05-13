@@ -18,6 +18,7 @@ public class AbstractIT {
 
 	private static final String TEST_PROP_FILE = "/test.properties";
 
+	public static int processToKill;
 	private static Properties PROPS;
 	protected static BrokerClient CLIENT;
 
@@ -60,6 +61,7 @@ public class AbstractIT {
 		String uddiURL = PROPS.getProperty("uddi.url");
 		String wsName = PROPS.getProperty("ws.name");
 		String wsURL = PROPS.getProperty("ws.url");
+		processToKill = Integer.parseInt(PROPS.getProperty("process"));
 
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
 			CLIENT = new BrokerClient(uddiURL, wsName);

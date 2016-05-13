@@ -171,12 +171,14 @@ public class BrokerPort implements BrokerPortType {
 			}		
 		} catch (BadLocationFault_Exception e) {
 			t.setState("FAILED");
+			t.setIdentifier(idFactory());
 			UnknownLocationFault ulf = new UnknownLocationFault();
 			ulf.setLocation(e.getFaultInfo().getLocation());
 			throw new UnknownLocationFault_Exception(e.getMessage(), ulf);
 		
 		} catch (BadPriceFault_Exception e) {
 			t.setState("FAILED");
+			t.setIdentifier(idFactory());
 			InvalidPriceFault ipf = new InvalidPriceFault();
 			ipf.setPrice(e.getFaultInfo().getPrice());
 			throw new InvalidPriceFault_Exception(e.getMessage(), ipf);
@@ -185,6 +187,7 @@ public class BrokerPort implements BrokerPortType {
 
 		if(jobViews.isEmpty()) {
 			t.setState("FAILED");
+			t.setIdentifier(idFactory());
 			UnavailableTransportFault utf = new UnavailableTransportFault();
 			utf.setOrigin(origin);
 			utf.setDestination(destination);
@@ -292,9 +295,6 @@ public class BrokerPort implements BrokerPortType {
 		
 		TransportView tv = transport.createTransportView();
 		
-		if (brokerClient != null) {
-			brokerClient.updateTransport(tv, endpoint);
-		}
 		return tv;
 		
 	}
@@ -308,11 +308,13 @@ public class BrokerPort implements BrokerPortType {
 		List<Transport> list = new ArrayList<Transport>(transps);
 		
 		for (Transport transport: list) {
-	        try {
-				transportViews.add(viewTransport(transport.getIdentifier()));
-			} catch (UnknownTransportFault_Exception e) {
-				System.out.println("Cosmic ray exception");
-				//never happens because the transporter id came from the transports map
+			if (!transport.getIdentifier().contains("t")) {
+		        try {
+					transportViews.add(viewTransport(transport.getIdentifier()));
+				} catch (UnknownTransportFault_Exception e) {
+					System.out.println("Cosmic ray exception");
+					//never happens because the transporter id came from the transports map
+				}
 			}
 	    }
 		return transportViews;
@@ -329,7 +331,8 @@ public class BrokerPort implements BrokerPortType {
 			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
-
+		
+		brokerClient.clearTransports();
 		transports.clear();
 	}
     

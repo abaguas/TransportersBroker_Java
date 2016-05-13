@@ -258,6 +258,7 @@ public class BrokerPort implements BrokerPortType {
 	
 	@Override
 	public String ping(String name) {
+		System.out.println("Ping");
 		nap(getNap());
 		TransporterClient tc = null;
 		Collection<String> list = list();
@@ -277,7 +278,7 @@ public class BrokerPort implements BrokerPortType {
 	public String requestTransport(String origin, String destination, int price)
 			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
 			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-
+		System.out.println("request");
 		nap(getNap());
 		Collection<String> endpoints = null;
 		Map<JobView, String> jobViews = new HashMap<JobView, String>();
@@ -392,7 +393,7 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		
+		System.out.println("view transport");
 		nap(getNap());
 		Transport transport = getTransportById(id);
 		TransporterClient tc=null;	
@@ -428,7 +429,7 @@ public class BrokerPort implements BrokerPortType {
 	public ArrayList<TransportView> listTransports() {
 		ArrayList<TransportView> transportViews = new ArrayList<TransportView>();
 		Collection<Transport> transps = transports.keySet();
-		
+		System.out.println("list transports");
 		nap(getNap());
 		List<Transport> list = new ArrayList<Transport>(transps);
 		
@@ -447,7 +448,7 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public void clearTransports() {
-		
+		System.out.println("clear transport");
 		nap(getNap());
 		TransporterClient tc = null;
 		Collection<String> clientEndpoints = transports.values();
@@ -456,8 +457,10 @@ public class BrokerPort implements BrokerPortType {
 			tc = new TransporterClient(endpoint);
 			tc.clearJobs();
 		}
+		if (brokerClient != null) {
+			brokerClient.clearTransports();
+        }
 		
-		brokerClient.clearTransports();
 		transports.clear();
 	}
     
@@ -553,13 +556,9 @@ public class BrokerPort implements BrokerPortType {
 	
 	private void nap(int seconds) {
         try {
-            System.out.printf("%s %s>%n    ", Thread.currentThread(), this);
             System.out.printf("Sleeping for %d seconds...%n", seconds);
 
             Thread.sleep(seconds*1000);
-
-            System.out.printf("%s %s>%n    ", Thread.currentThread(), this);
-            System.out.printf("Woke up!%n");
 
         } catch(InterruptedException e) {
             System.out.printf("%s %s>%n    ", Thread.currentThread(), this);

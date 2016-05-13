@@ -24,7 +24,7 @@
         <mainclass>pt.upa.broker.ws.cli.BrokerClientMain</mainclass>
 		
 		<!-- number of process of broker to kill in tests -->
-		<process>10000000000</process>
+		<process>9754</process>
 		
         <ws.name>UpaBroker</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>

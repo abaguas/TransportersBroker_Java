@@ -20,14 +20,14 @@ public class PingTest extends AbstractTransporterTest {
     public void oddPingTest() {
     	String ping = port1.ping("HelloWorld");
     	assertNotNull("Ping is null", ping);
-    	assertEquals("Unsuccessful ping", ping, "UpaTransporter1");
+    	assertEquals("Unsuccessful ping", ping, "OK");
     }
     
     @Test
     public void evenPairPingTest() {
     	String ping = port2.ping("HelloWorld");
     	assertNotNull("Ping is null", ping);
-    	assertEquals("Unsuccessful ping", ping, "UpaTransporter2");
+    	assertEquals("Unsuccessful ping", ping, "OK");
     }
 
 }

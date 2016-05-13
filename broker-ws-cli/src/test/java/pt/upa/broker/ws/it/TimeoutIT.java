@@ -1,3 +1,5 @@
+//TESTS for demonstration
+/*
 package pt.upa.broker.ws.it;
 
 import static org.junit.Assert.assertEquals;
@@ -31,4 +33,4 @@ public class TimeoutIT extends AbstractIT {
 		assertTrue(price >= ZERO_PRICE && price <= requestedPrice);
 	}
 	
-}
+}*/

@@ -61,7 +61,7 @@ public class TransporterClientHandler implements SOAPHandler<SOAPMessageContext>
 
 	private ArrayList<String> nonces = new ArrayList<String>();
 	public static CAClient ca = new CAClient("http://localhost:9090"); //FIXME TODO XXX
-	private static final String KEYSTORE_PATH = "/home/zacarias/SD/proj/A_64-project/broker-ws/src/main/resources/UpaBroker.jks";
+	private static final String KEYSTORE_PATH = "../broker-ws/src/main/resources/UpaBroker.jks";
 	private static final String KEYSTORE_PASS = "ins3cur3";
 	private final static String ALIAS = "upabroker";
 	private final static String KEY_PASSWORD = "1nsecure";

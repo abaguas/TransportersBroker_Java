@@ -49,7 +49,7 @@ public class TransporterPort implements TransporterPortType{
 	
 	@Override
 	public String ping(String name) {
-		return this.name;
+		return "OK";
 		
 	}
 	

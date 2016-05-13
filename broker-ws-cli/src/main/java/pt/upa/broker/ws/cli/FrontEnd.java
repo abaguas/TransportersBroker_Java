@@ -73,7 +73,7 @@ public class FrontEnd implements BrokerPortType{
 
     public void lookUp (String uddiURL, String searchName, boolean sleep) {
 		if (sleep) {
-			System.out.println("Sleeping in lookup");
+			System.out.println("Sleeping");
 			try {
 				Thread.sleep(6000);
 			} catch (InterruptedException e) {

@@ -61,6 +61,30 @@ cd ...
 mvn clean install
 ```
 
+-------------------------------------------------------------------------------
+
+### Serviço CA
+
+[1] Construir e executar **servidor**
+
+```
+cd ...-ws
+mvn clean install
+mvn exec:java
+```
+
+[2] Construir **cliente** e executar testes
+
+```
+cd ...-ws-cli
+mvn clean install
+```
+
+...
+
+
+-------------------------------------------------------------------------------
+
 
 -------------------------------------------------------------------------------
 
@@ -109,12 +133,15 @@ mvn clean install
 -------------------------------------------------------------------------------
 Instrucoes para o projeto:
 
-Correr transportadora cliente: usar procedimento semelhante as servidoras, usar a opcao -D (e.g. mvn -Dws.i=2 exec:java) a que transportadora servidora ela se deve ligar
+Nas transportadoras existe uma opção -Dws.i que define qual o seu número.
+Foram distribuidos certificados para transportadoras até ao número 5.
 
-Integracao transportadora: encontra-se em src/main/resources um ficheiro test.properties com o endereço do servidor UDDI e os nomes das transportadoras servidoras que serao conectadas. Adicionar mais entradas no caso de serem prentendidas mais tranportadoras. De seguida, em src/test/java/pt.upa.transporter.ws.it/AbstractIT.java chamar a funcao "properties.getPropValues(String,String)" com os campos pretendidos.
-Integracao do Broker: semelhante
+Nos brokers existe a opçao -Dws.br que define tambem o numero do broker. A falta de argumentos ou o numero 1 dá o nome ao broker principal: 'UpaBroker'. Qualquer outro número define um broker backup de nome 'UpaBrokerN'
+Também existe a opção -Dws.nap que define um tempo de espera no broker, para que tarde a resposta ao cliente.
+Para iniciar os brokers as tranportadoras e o CA devem estar publicados. A ordem de publicacao dos brokers é indiferente. Mas depois é necessário fazer um 'enter' no principal depois de o backup estar ativo, e depois enter no backup para que ele inicie o timer que verifica se houve ou não falha no Broker principal
 
-Todos as nossas classes têm como ficheiro principal o ...Main.java. A Application não é utilzada.
+
+Nos clientes do broker foi adicionada a opcão -Dprocess que envia um sigKill ao processo do broker. Esta opçao serve para os testes de IT a apresentar na demonstração.
 
 -------------------------------------------------------------------------------
 **FIM**

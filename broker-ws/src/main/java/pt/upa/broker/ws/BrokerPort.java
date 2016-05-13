@@ -1,6 +1,20 @@
 package pt.upa.broker.ws;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,11 +31,17 @@ import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
 import pt.upa.broker.exception.BrokerClientException;
 import pt.upa.broker.exception.BrokerServerException;
+import pt.upa.broker.exception.CouldNotConvertCertificateException;
+import pt.upa.broker.exception.CouldNotVerifyCertificateException;
+import pt.upa.broker.exception.InvalidSignedCertificateException;
 import pt.upa.broker.exception.UDDIException;
 import pt.upa.broker.ws.cli.BrokerClient;
 import pt.upa.ca.ws.CertificateException_Exception;
 import pt.upa.ca.ws.IOException_Exception;
+import pt.upa.ca.ws.cli.CAClient;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
 
@@ -43,7 +63,13 @@ public class BrokerPort implements BrokerPortType {
 	private String name = null;
 	private String searchName = "UpaTransporter%";
 	private Map<Transport, String> transports = new HashMap<Transport, String>();
+	private CAClient caCli = null;
+	private Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
 	private BrokerClient brokerClient = null;
+	private static final String KEYSTORE_PATH = "src/main/resources/UpaBroker.jks";
+	private static final String KEYSTORE_PASS = "ins3cur3";
+	private final static String ALIAS = "ca";
+	private final static String KEY_PASSWORD = "1nsecure";
 	private Timer timer = null;
 	private TimerTask timerTask = null;
 
@@ -94,6 +120,7 @@ public class BrokerPort implements BrokerPortType {
     	String searchName = getSearchName();
 		System.out.printf("Contacting UDDI at %s%n", uddiURL);
 		Collection<String> endpointAddress = null;
+		caCli = new CAClient(uddiURL);
     	try {
 			UDDINaming uddiNaming = new UDDINaming(uddiURL);
 	    	System.out.printf("Looking for '%s'%n", searchName);
@@ -103,9 +130,45 @@ public class BrokerPort implements BrokerPortType {
 	        	return endpointAddress;
 	        }
 
+	        else {
+	            Collection<UDDIRecord> records = uddiNaming.listRecords(searchName);
+	        	for (UDDIRecord rec : records) {
+	        		String transportName = rec.getOrgName();
+	        		System.out.println(rec.getOrgName());
+
+	        		String endpoint = rec.getUrl();
+	        		if(!keys.containsKey(transportName)){
+	        			String s = null;
+						
+						s = caCli.getCertificate(transportName);
+						
+	        			byte[] c = parseBase64Binary(s);
+	        			CertificateFactory certFactory = null;
+						
+						certFactory = CertificateFactory.getInstance("X.509");
+	        			
+	        			InputStream in = new ByteArrayInputStream(c);
+	        			Certificate cert = null;
+	        			
+						cert = certFactory.generateCertificate(in);
+						System.out.println("Printing the certificate");
+						System.out.println(cert);
+						
+						if(verifySignedCertificate(cert)){
+							PublicKey pk = cert.getPublicKey();
+							keys.put(endpoint, pk);
+							System.out.println("validei");
+							System.out.println(pk);
+						}
+						else throw new InvalidSignedCertificateException();
+	        		}
+	        	}
+	        }
     	} catch (JAXRException je) {
     		throw new UDDIException();
-    	}
+		} catch (IOException_Exception | CertificateException_Exception | CertificateException je){
+			throw new CouldNotConvertCertificateException();
+		}
         return endpointAddress;
     }
 	
@@ -125,6 +188,68 @@ public class BrokerPort implements BrokerPortType {
         }
     }
 	
+	public static boolean verifySignedCertificate(Certificate certificate) throws CouldNotVerifyCertificateException  {
+		try {
+			System.out.println("Vou buscar a public key da CA");
+			PublicKey pk = getCAPublicKey();
+			System.out.println("Vou verifcar o certificado com a public key que fui buscar");
+			certificate.verify(pk);
+		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
+				| SignatureException e) {
+			System.out.println("Falhei na validação");
+			return false;
+		} catch (Exception ee){
+			throw new CouldNotVerifyCertificateException();
+		}
+		return true;
+	}
+	
+	public static PublicKey getCAPublicKey() throws Exception {
+
+		KeyStore keystore;
+		try {
+			System.out.println("A ler o keystore");
+			keystore = readKeystoreFile();
+		} catch (Exception e) {
+			System.out.println("Could not read keystore");
+			throw e;
+		}
+		PublicKey key = null;
+		try{
+			System.out.println("A sacar ganda key");
+			key = keystore.getCertificate(ALIAS).getPublicKey();
+		}catch (Exception e){
+			System.out.println("Could not get key");
+			throw e;
+		}
+		return key;
+	}
+	
+	public static KeyStore readKeystoreFile() throws Exception{
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(KEYSTORE_PATH);
+		} catch (FileNotFoundException e) {
+			System.err.println("Keystore file <" + KEYSTORE_PATH + "> not found.");
+			return null;
+		}
+		KeyStore keystore;
+		try {
+			keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+			System.out.println("Já tenho uma instancia do keystore");
+		} catch (KeyStoreException e) {
+			System.out.println("could not get an instance of keysore");
+			throw e;
+		}
+		try {
+			keystore.load(fis, KEYSTORE_PASS.toCharArray());
+			System.out.println("Já loadei a keystore");
+		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
+			System.out.println("could not load keystore");
+			throw e;
+		}
+		return keystore;
+	}
 	
 //////////////////////////////////////////////////////////////////////////////////////////
           //                            OPERATIONS                          //	

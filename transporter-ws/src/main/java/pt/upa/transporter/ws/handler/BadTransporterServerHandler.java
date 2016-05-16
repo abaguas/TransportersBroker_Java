@@ -1,57 +1,18 @@
 package pt.upa.transporter.ws.handler;
 
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
-import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import pt.upa.ca.ws.CertificateException_Exception;
-import pt.upa.ca.ws.IOException_Exception;
-import pt.upa.ca.ws.cli.CAClient;
-import pt.upa.transporter.exception.CouldNotConvertCertificateException;
-import pt.upa.transporter.exception.CouldNotVerifyCertificateException;
-import pt.upa.transporter.exception.InvalidSignedCertificateException;
 
 
 
@@ -77,11 +38,26 @@ public class BadTransporterServerHandler implements SOAPHandler<SOAPMessageConte
  
                 SOAPBody sb = se.getBody();
 
-			
                 
-				String content = sb.getFirstChild().getTextContent();
-			
-				sb.getFirstChild().setTextContent(content+"something");
+                String content = sb.getFirstChild().getTextContent();
+                
+                
+                if(content.contains("PROPOSED")){
+                	System.out.println("Intruder: \"I'm getting the soap message body\"...");
+                    
+	                StringBuilder builder = new StringBuilder(content);
+	                System.out.println("Intruder: \"I'm changing the offer price\"...");
+	                
+	                builder.setCharAt(builder.length()-9,'9');
+	                
+	                sb.getFirstChild().setTextContent(builder.toString());
+	                System.out.println("Body of Transporter Handler: " + content);
+	                System.out.println("Body of Intruder Handler: " + builder.toString());
+	                
+	                System.out.println("Intruder: \"I finished hacking the system\"! Mwahahahah!");
+	                
+                
+                }
 
         	}
     		catch (SOAPException |TransformerFactoryConfigurationError e) {

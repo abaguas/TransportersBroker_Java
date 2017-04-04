@@ -1,34 +1,30 @@
-Software
+# Software #
 
-Para realizar os exercícios de laboratório e o projecto de SD é necessário instalar um conjunto de ferramentas e servidores. Todo o software listado abaixo está disponível em sistemas Windows, Linux e Mac.
-Nos caminhos de ficheiros (paths) em Windows usa-se a barra \ como separador; nos caminhos Linux e Mac usa-se /
 
-As instalações seguintes devem ser feitas numa pasta que não tenha espaços nem caracteres acentuados no nome, para evitar bugs existentes e ainda não resolvidos, sobretudo nas ferramentas Java em Windows.
-Nome de pasta raíz recomendada: C:\Java
-Nomes de pastas a evitar: C:\Program Files, C:\Users\João
+It will be necessary to configure environment variables. Here you can learn how to define them: [Mac OS X](http://www.mkyong.com/mac/how-to-set-environment-variables-on-mac-os-x/),  [Linux](http://www.cyberciti.biz/faq/set-environment-variable-linux/)  
 
-A maior parte das ferramentas necessita de configurar variáveis de ambiente.
-O procedimento para definir variáveis de ambiente depende do sistema operativo: Windows, Linux e Mac.
+## JDK
 
-Java Developer Kit, JDK (que inclui o Java Runtime Environment, JRE)
-Ambiente para programação na linguagem Java
-Obter
-JDK 8u72
-Instalar
-Configurar
-Definir variável de ambiente JAVA_HOME com o caminho para a pasta de instalação do JDK
-Acrescentar JAVA_HOME/bin à variável de ambiente PATH
-Executar comando javac -version para confirmar
-Apache Maven, MVN
-Ferramenta de linha de comando para a gestão do ciclo de vida de uma aplicação, incluindo a gestão de dependências de bibliotecas.
-Obter
-MVN 3.3.3 (preferência por esta versão por ser a utilizada internamente no Eclipse Mars.1)
-Instalar
-Configurar
-Definir variável de ambiente M2_HOME com o caminho para a pasta de instalação
-Acrescentar M2_HOME/bin à PATH
-Executar comando mvn --version para confirmar
-Git
+Obtain [JDK 8u72](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and install
+
+
+Configure:
+* Define the environment variable JAVA_HOME with the path to the folder where the JDK was installed
+* Add JAVA_HOME/bin to the environment variable PATH
+* Execute the command *javac -version* to confirm
+
+
+## Apache Maven, MVN
+Obtain [MVN 3.3.9](http://maven.apache.org/download.cgi) and install
+
+
+Configure:
+* Define the environment variable M2_HOME with the path to the folder where the MVN was installed
+* Add M2_HOME/bin to the environment variable PATH
+* Execute the command *mvn --version* to confirm
+
+
+## Git
 Ferramenta de linha de comando para fazer controlo de versões.
 Obter
 Git 2.x (escolher a versão estável mais recente disponível para a plataforma)
@@ -36,7 +32,9 @@ Instalar
 Installing Git
 Configurar
 Executar comando git --version para confirmar
-Eclipse for Java Enterprise Edition, Eclipse JEE
+
+
+## Eclipse for Java Enterprise Edition, Eclipse JEE
 Ambiente integrado de desenvolvimento para a plataforma Java, versão empresarial
 Obter o arquivo que contém o executável de Eclipse Mars e ficheiros associados:
 Eclipse JEE 4.5.1 - Mars Service Release 1 
@@ -59,7 +57,9 @@ m2e connector for maven-dependency-plugin
 m2e connector for org.codehaus.mojo:jaxb2-maven-plugin and org.jvnet.jaxb2.maven2:maven-jaxb2-plugin
 m2e-apt
 m2e-egit
-Apache jUDDI
+
+
+## Apache jUDDI
 Servidor de nomes para Web Services que segue a norma UDDI (Universal Description, Discovery, and Integration)
 Obter
 jUDDI 3.3.2 (configured for port 9090)

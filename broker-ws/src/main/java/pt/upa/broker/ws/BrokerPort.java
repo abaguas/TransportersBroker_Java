@@ -59,16 +59,16 @@ public class BrokerPort implements BrokerPortType {
 	
 	public void init() throws CertificateException_Exception, IOException_Exception, IOException {
 		if (name.equals("UpaBroker")) {
-			System.out.println("Press enter when UpaBroker2 is on");
+			System.out.println("Press enter when the backup is on");
 	        System.in.read();
 			brokerClient = new BrokerClient(uddiURL, "UpaBroker2");
 			brokerClient.iAmAlive("I am alive");
 		}
 		else {
-			System.out.println("Press enter to init the timer");
+			System.out.println("Press enter to init the timer, after you have pressed \"enter\" in the primal broker");
 	        System.in.read();
 			
-			System.out.println("Iniciei o timer de verificacao");
+			System.out.println("Timer initialized");
 
 			timer = new Timer();
 			timerTask = new TimerTask() {

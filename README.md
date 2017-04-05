@@ -36,7 +36,10 @@ In addition, the system is composed by other components that guarantee reliabili
 The client only communicates with the broker to request services. Then, the broker negotiates with the transporters to try to find the lowest price for the tranport. During this negotiation there are the following states:
 
 
-<img src="https://github.com/abaguas/UpaTransporter/blob/master/images/states.png" width ="600" height="600"> 
+<img src="https://github.com/abaguas/UpaTransporter/blob/master/images/states.png" width ="600" height="600">
+
+
+Operation details:
 
 
 -------------------------------------------------------------------------------
@@ -106,7 +109,6 @@ mvn clean install
 ```
 
 
-
 ### Transporter
 
 [1] Build and execute the **server**
@@ -153,16 +155,34 @@ mvn clean install
 -------------------------------------------------------------------------------
 ## Running instructions
 
+You can keep the 2 Transporters and the CA running.
+Then launch the Broker:
 
-Nas transportadoras existe uma opção -Dws.i que define qual o seu número.
-Foram distribuidos certificados para transportadoras até ao número 5.
+```
+cd broker-ws
+mvn exec:java
+```
 
-Nos brokers existe a opçao -Dws.br que define tambem o numero do broker. A falta de argumentos ou o numero 1 dá o nome ao broker principal: 'UpaBroker'. Qualquer outro número define um broker backup de nome 'UpaBrokerN'
-Também existe a opção -Dws.nap que define um tempo de espera no broker, para que tarde a resposta ao cliente.
-Para iniciar os brokers as tranportadoras e o CA devem estar publicados. A ordem de publicacao dos brokers é indiferente. Mas depois é necessário fazer um 'enter' no principal depois de o backup estar ativo, e depois enter no backup para que ele inicie o timer que verifica se houve ou não falha no Broker principal
+And launch the backup Broker:
+
+```
+cd broker-ws
+mvn exec:java -Dws.br=2
+```
+
+Follow the instructions on both terminals (i.e. on the primal Broker press "enter" and, after, on the backup Broker press "enter")
 
 
-Nos clientes do broker foi adicionada a opcão -Dprocess que envia um sigKill ao processo do broker. Esta opçao serve para os testes de IT a apresentar na demonstração.
+Now launch the Client:
+```
+cd broker-ws-cli
+mvn exec:java
+```
+
+
+You can kill the Broker's process to verify the primary Backup.
+
+Disclaimer: It was not the aim of this project to provide a interface to the client. When launching the client it only runs a small demonstration. The correctness of the system can be verified by the tests.
 
 -------------------------------------------------------------------------------
-**FIM**
+**END**

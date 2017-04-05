@@ -44,13 +44,13 @@ public class BrokerClientMain {
         System.in.read();
         ArrayList<TransportView> list = (ArrayList<TransportView>) client.listTransports();
         for (TransportView tv: list) {
-        	System.out.println(tv.getId());
-        	System.out.println(tv.getOrigin());
-        	System.out.println(tv.getDestination());
-        	System.out.println(tv.getTransporterCompany());
-        	System.out.println(tv.getPrice());
-        	System.out.println(tv.getState().value());
-        	System.out.println(tv.toString());
+        	System.out.println("Id: " + tv.getId());
+        	System.out.println("Origin: " + tv.getOrigin());
+        	System.out.println("Destination: " + tv.getDestination());
+        	System.out.println("Transporter: " + tv.getTransporterCompany());
+        	System.out.println("Price: " + tv.getPrice());
+        	System.out.println("State: " + tv.getState().value());
+		System.out.println("-----------------------------------------");
         }
         
         System.out.println("Will request a transport from Porto to Guarda at price 40");
@@ -65,13 +65,13 @@ public class BrokerClientMain {
         System.in.read();
         list = (ArrayList<TransportView>) client.listTransports();
         for (TransportView tv: list) {
-        	System.out.println(tv.getId());
-        	System.out.println(tv.getOrigin());
-        	System.out.println(tv.getDestination());
-        	System.out.println(tv.getTransporterCompany());
-        	System.out.println(tv.getPrice());
-        	System.out.println(tv.getState().value());
-        	System.out.println(tv.toString());
+        	System.out.println("Id: " + tv.getId());
+        	System.out.println("Origin: " + tv.getOrigin());
+        	System.out.println("Destination: " + tv.getDestination());
+        	System.out.println("Transporter: " + tv.getTransporterCompany());
+        	System.out.println("Price: " + tv.getPrice());
+        	System.out.println("State: " + tv.getState().value());
+		System.out.println("-----------------------------------------");
         }
         
         System.out.println("Enter to finish");

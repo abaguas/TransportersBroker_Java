@@ -193,6 +193,9 @@ mvn exec:java
 You can (and should) kill the Broker's process to verify that the primary Backup is working correctly.
 
 
+<br><br>
+
+
 Disclaimer: It was not the aim of this project to provide a interface to the client, it only runs a small demonstration. The tests verify the correctness of all the operation implemented in the system.
 
 

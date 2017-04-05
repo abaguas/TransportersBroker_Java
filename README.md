@@ -58,7 +58,7 @@ There are some rules concerning max and min price as well as areas of operation 
 Refer to [INSTALL.md](https://github.com/abaguas/UpaTransporter/blob/master/INSTALL.md)
 
 -------------------------------------------------------------------------------
-## Installing instructions
+## Installation instructions
 
 
 ### Environment

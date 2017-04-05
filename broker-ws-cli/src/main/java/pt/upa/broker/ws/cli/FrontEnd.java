@@ -264,7 +264,6 @@ public class FrontEnd implements BrokerPortType{
 
 	@Override
 	public void iAmAlive(String iAmAlive) {
-		System.out.println("I am alive will be sent in 3 seconds");
 
 		timer = new Timer();
 		TimerTask timerTask = new TimerTask(){
@@ -272,7 +271,6 @@ public class FrontEnd implements BrokerPortType{
 			@Override
 			public void run() {
 				port.iAmAlive(iAmAlive);
-				System.out.println("I am alive sent");
 				iAmAlive(iAmAlive);
 			}
 		};

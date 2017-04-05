@@ -10,7 +10,7 @@ João Neto - 78745 - joao.b.neto@ist.utl.pt
 
 
 Repository:
-[tecnico-distsys/A_64-project](https://github.com/tecnico-distsys/A_64-project/)
+[abaguas/UpaTransporter](https://github.com/abaguas/UpaTransporter)
 
 -------------------------------------------------------------------------------
 ## Description
@@ -33,7 +33,7 @@ The client only communicates with the broker to request services. Then, the brok
 
 ## Dependencies
 
-Refer to Software_dependencies.md
+Refer to INSTALL.md
 
 ## Installation Instructions
 

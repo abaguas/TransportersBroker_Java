@@ -325,7 +325,6 @@ public class BrokerPort implements BrokerPortType {
 
 	@Override
 	public void clearTransports() {
-		System.out.println("clear transport");
 		nap(getNap());
 		TransporterClient tc = null;
 		Collection<String> clientEndpoints = transports.values();
@@ -433,8 +432,6 @@ public class BrokerPort implements BrokerPortType {
 	
 	private void nap(int seconds) {
         try {
-            System.out.printf("Sleeping for %d seconds...%n", seconds);
-
             Thread.sleep(seconds*1000);
 
         } catch(InterruptedException e) {

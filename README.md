@@ -17,7 +17,7 @@ Repository:
 
 Development of a sistemy basead in Web Services, implemented in the J2EE plarform, to aggregate services of good transporters, similar to Uber's service with passengers.
 
-The main components of the system are clients, a broker, transporters and a name server (UDDI). The transporters publish themselves in the name server and the broker uses this server to find them and negotiate the services requested by the clients. All the operations are described in an WSDL contract.
+The main components of the system are clients, a broker, transporters and a name server (UDDI). The transporters publish themselves in the name server. The broker uses this server to find them and negotiate the services requested by the clients. All the operations are described in a WSDL contract.
 Here is a simple figure of the system's architecture: 
 
 <img src="https://github.com/abaguas/UpaTransporter/blob/master/images/architecture.png" width ="800" height="400">
@@ -36,12 +36,6 @@ The broker is the most complex component and is divided in 4 modules:
 The client is just a *broker-ws-cli* module and the transporter a *transporter-ws*.
 
 
-The protocol states that the client only communicates with the broker to request services. Then, the broker negotiates with the transporters to try to find the lowest price for the tranport. During this negotiation the service will go through the following states:
-
-
-<img src="https://github.com/abaguas/UpaTransporter/blob/master/images/states.png" width ="600" height="600">
-
-
 Basic rules of operation:
 
 1) The client requests a transport from an *origin* to a *destination* for a *maximum price*
@@ -49,12 +43,19 @@ Basic rules of operation:
 3) The broker assigns the task to the transporter which offered the lowest value
 
 
-In addition there are some rules concerning max and min price as well as areas of operation of transporters with odd or even id (for further details refer to [enunciado(portuguese)](https://github.com/abaguas/UpaTransporter/blob/master/enunciado.pdf))
+All the states of a service are described bellow:
+
+
+<img src="https://github.com/abaguas/UpaTransporter/blob/master/images/states.png" width ="600" height="600">
+
+
+
+There are some rules concerning max and min price as well as areas of operation of transporters according to odd or even id (for further details refer to [enunciado (portuguese only)](https://github.com/abaguas/UpaTransporter/blob/master/enunciado.pdf))
 
 -------------------------------------------------------------------------------
 ## Dependencies
 
-Refer to INSTALL.md
+Refer to [INSTALL.md](https://github.com/abaguas/UpaTransporter/blob/master/INSTALL.md)
 
 -------------------------------------------------------------------------------
 ## Installing instructions
@@ -189,9 +190,13 @@ mvn exec:java
 ```
 
 
-You can kill the Broker's process to verify the primary Backup.
+You can (and should) kill the Broker's process to verify that the primary Backup is working correctly.
+
 
 Disclaimer: It was not the aim of this project to provide a interface to the client, it only runs a small demonstration. The tests verify the correctness of all the operation implemented in the system.
+
+
+PS: The prints are meant to better understand the operations that the system is performing.
 
 -------------------------------------------------------------------------------
 **END**

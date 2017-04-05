@@ -25,50 +25,18 @@ Configure:
 
 
 ## Git
-Ferramenta de linha de comando para fazer controlo de versões.
-Obter
-Git 2.x (escolher a versão estável mais recente disponível para a plataforma)
-Instalar
-Installing Git
-Configurar
-Executar comando git --version para confirmar
+Obtain [Git 2.x](https://git-scm.com/download/) and [install](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 
-## Eclipse for Java Enterprise Edition, Eclipse JEE
-Ambiente integrado de desenvolvimento para a plataforma Java, versão empresarial
-Obter o arquivo que contém o executável de Eclipse Mars e ficheiros associados:
-Eclipse JEE 4.5.1 - Mars Service Release 1 
-Atenção: se tem instalado no seu sistema operativo o JDK 32 bits, deve obter o Eclipse 32 bits; se instalou o JDK 64 bits, deve obter o Eclipse 64 bits.
-Nota: o arquivo para Windows vem em formato .zip, para outros sistemas operativos vem em .tar.gz.
-Instalar:
-Extrair o arquivo para um diretório com permissões de escrita.
-Possível resultado: C:\Users\john\Documents\eclipse em Windows, ou /home/john/Documents/eclipse em Linux para um utilizador chamado john
-Configurar:
-Especificar o JDK como Standard VM
-Nota: só deverá ser necessário este passo em Windows. Reveja este passo em outros sistemas operativos se encontrar problemas ao compilar código no Eclipse nos vários exercícios ao longo do semestre
-Window -> Preferences -> Java -> Installed JREs -> Add...
-Indicar o caminho até ao diretório do JDK: ex. C:\Java\jdk1.8.0_72
-Confirmar que as "Installed JREs" apenas faz referência ao JDK instalado nas opções ativadas
-Conectores m2e (maven 2 eclipse)
-Window -> Preferences -> Maven -> Discovery e clicar em "Open catalog".
-Seleccionar:
-m2e connector for jaxws-maven-plugin
-m2e connector for maven-dependency-plugin
-m2e connector for org.codehaus.mojo:jaxb2-maven-plugin and org.jvnet.jaxb2.maven2:maven-jaxb2-plugin
-m2e-apt
-m2e-egit
+Configure:
+* Execute the command *git --version* to confirm
 
 
 ## Apache jUDDI
-Servidor de nomes para Web Services que segue a norma UDDI (Universal Description, Discovery, and Integration)
-Obter
-jUDDI 3.3.2 (configured for port 9090)
-Instalar
-Em Linux ou Mac, tornar os scripts de lançamento executáveis:
-chmod +x juddi-3.3.2_tomcat-7.0.64_9090/bin/*.sh
-Para lançar o servidor, basta executar o seguinte comando na pasta juddi-3.3.2_tomcat-7.0.64_9090/bin:
-startup.sh (Linux e Mac)
-startup.bat (Windows)
-Para confirmar funcionamento, aceder à página de índice do jUDDI, que dá também acesso à interface de administração
-http://localhost:9090/juddiv3/
-utilizador:senha uddiadmin:da_password1
+Obtain [jUDDI 3.3.2](http://disciplinas.tecnico.ulisboa.pt/leic-sod/2015-2016/download/juddi-3.3.2_tomcat-7.0.64_9090.zip)
+
+
+Configure:
+* Make the scripts executable: *chmod +x juddi-3.3.2_tomcat-7.0.64_9090/bin/\*.sh*
+* Launch the server: *./juddi-3.3.2_tomcat-7.0.64_9090/bin/startup.sh*
+* Access to the indice page of jUDDI to confirm it is working properly [http://localhost:9090/juddiv3/](http://localhost:9090/juddiv3/)

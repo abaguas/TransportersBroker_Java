@@ -50,9 +50,7 @@ public class CAClient {
 	}
 	
 	public String getCertificate(String name) throws CertificateException_Exception, IOException_Exception{
-		System.out.println("Vou obter o certificado ao CA");
 		String c = port.getCertificate(name);
-		System.out.println("Recebi o certificado");
 		return c;
 	}
 

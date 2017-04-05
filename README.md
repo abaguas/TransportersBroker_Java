@@ -33,7 +33,7 @@ The client only communicates with the broker to request services. Then, the brok
 
 ## Dependencies
 
-Refer to SoftwareDependencies.txt
+Refer to Software_dependencies.md
 
 ## Installation Instructions
 
@@ -42,14 +42,14 @@ Refer to SoftwareDependencies.txt
 
 [0] Boot the OS
 
-Linux
+Linux or Mac OS X
 
 
 [1] Initiate the support servers
 
 JUDDI:
 ```
-...
+./juddi-3.3.2_tomcat-7.0.64_9090/bin/startup.sh
 ```
 
 
@@ -64,8 +64,8 @@ mkdir ...
 [3] Obtain source code of the project
 
 ```
-git clone https://github.com/tecnico-distsys/A_64-project.git (via https) 
-git clone git@github.com:tecnico-distsys/A_64-project.git (via ssh)
+git clone https://github.com/abaguas/UpaTransporter.git (via https) 
+git clone git@github.com:abaguas/UpaTransporter.git (via ssh)
 ```
 
 

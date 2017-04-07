@@ -15,7 +15,7 @@ Repository:
 -------------------------------------------------------------------------------
 ## Description
 
-Development of a sistemy basead in Web Services, implemented in the J2EE plarform, to aggregate services of good transporters, similar to Uber's service with passengers.
+Development of a sistemy based in SOAP Web Services, implemented in the J2EE plarform, to aggregate services of good transporters, similar to Uber's service with passengers.
 
 
 ### Architecture
